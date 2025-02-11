@@ -1,0 +1,48 @@
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: chaukawaii!
+    volumes:
+      - mongodb_data_container:/data/db
+
+
+  frontend:
+    container_name: pc-shop-frontend
+    build:
+      context: ./pc-shop-fe
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./pc-shop-fe:/app #mount local code to container
+      - /app/node_modules #mount node_modules to persist across builds
+    command: npm run dev
+    depends_on:
+      - backend
+
+
+  backend:
+    container_name: pc-shop-backend
+    build:
+      context: ./pc-shop-be
+      dockerfile: Dockerfile
+    ports:
+    - "8080:8080"
+    environment: 
+    - NODE_ENV=development
+    volumes:
+      - ./pc-shop-be:/app #mount local code to container
+      - /app/node_modules #mount node_modules to persist across builds
+    command: npm run start:dev
+    depends_on:
+      - mongodb
+
+volumes:
+  mongodb_data_container:
+
