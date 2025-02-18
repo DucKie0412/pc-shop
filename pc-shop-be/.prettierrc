@@ -1,5 +1,14 @@
 {
   "singleQuote": true,
   "trailingComma": "all",
-  "endOfLine": "lf"
+  "endOfLine": "auto",
+  "usePrettierrc": false,
+
+  "prettier/prettier": [
+    "error",
+    {
+      "parser": "flow",
+      "usePrettierrc": false
+    }
+  ]
 }

@@ -7,8 +7,15 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
+# Install NestJS CLI globally
+RUN npm install -g @nestjs/cli
+
 # Install dependencies
-RUN npm install
+RUN npm install --force
+RUN npm rebuild bcrypt --build-from-source
+
+#Clean installation
+RUN npm ci --omit=dev
 
 # Copy the rest of the application code
 COPY . .
