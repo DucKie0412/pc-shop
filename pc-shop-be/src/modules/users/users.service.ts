@@ -1,4 +1,4 @@
-import {Model} from 'mongoose';
+import mongoose, {Model} from 'mongoose';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -6,6 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
 import { hashPasswordUtil } from 'src/utils/util';
 import aqp from 'api-query-params';
+import { CreateAuthDto } from 'src/auth/dto/create-auth.dto';
 
 @Injectable()
 export class UsersService {
@@ -67,11 +68,54 @@ export class UsersService {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async findByEmail(email: string) {
+    return await this.userModel.findOne({email})
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async findByPhone(phone: string) {
+    return await this.userModel.findOne({phone})
+  }
+
+  async update(updateUserDto: UpdateUserDto) {
+    return await this.userModel.updateOne({_id: updateUserDto._id}, {...updateUserDto});
+  }
+
+  remove(_id: string) {
+    //check mongoId is valid
+    if(mongoose.isValidObjectId(_id)){
+      return this.userModel.deleteOne({_id})
+    }
+    else{
+      throw new BadRequestException(`Id: ${_id} is not exist in the database`);
+    }
+  }
+
+  async handleRegister(registerDto: CreateAuthDto) {
+    const { name, email, password } = registerDto;
+
+    //check email exist
+    const isEmailExist = await this.isEmailExist(email);
+    if (isEmailExist) {
+      throw new BadRequestException(`Email: ${email} is already exist`);
+    }
+
+    //hash password
+    const hashPassword = await hashPasswordUtil(password);
+    const generateCodeId = () => Math.floor(100000 + Math.random() * 900000).toString();
+    const createdUser = await this.userModel.create(
+      {
+        name,
+        email,
+        password: hashPassword,
+        isActive: false,
+        codeId: generateCodeId(),
+        codeExpired: new Date((new Date().getTime() + 1000 * 60 * 5)) //5'
+      });
+
+    
+
+    return {
+      _id: createdUser._id,
+    }
   }
 }
