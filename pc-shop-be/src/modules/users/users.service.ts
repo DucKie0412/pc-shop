@@ -7,12 +7,14 @@ import { User } from './schemas/user.schema';
 import { hashPasswordUtil } from 'src/utils/util';
 import aqp from 'api-query-params';
 import { CreateAuthDto } from 'src/auth/dto/create-auth.dto';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<User>
-  
+    @InjectModel(User.name) 
+    private userModel: Model<User>,
+    private mailerService: MailerService,
   ) {}
 
   isEmailExist = async (email: string) => {
@@ -112,7 +114,16 @@ export class UsersService {
         codeExpired: new Date((new Date().getTime() + 1000 * 60 * 5)) //5'
       });
 
-    
+    //send verification email
+    this.mailerService.sendMail({
+      to: createdUser.email, // list of receivers
+      subject: 'Active your account at Duckie Shop', // Subject line
+      template: "sending-activation-code",
+      context: {
+        name: createdUser?.name ?? createdUser.email, //return name if exists or email if not
+        activationCode: createdUser?.codeId ?? "123456"
+      }
+    })
 
     return {
       _id: createdUser._id,
