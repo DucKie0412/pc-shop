@@ -1,5 +1,3 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
-
 import {
     Sidebar,
     SidebarContent,
@@ -11,22 +9,24 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-// Menu items.
+import { Home, User, ShoppingBag, Search, Settings } from "lucide-react"
+
+
 const items = [
     {
-        title: "Home",
-        url: "#",
+        title: "Dashboard",
+        url: "/admin/dashboard",
         icon: Home,
     },
     {
-        title: "Inbox",
-        url: "#",
-        icon: Inbox,
+        title: "User",
+        url: "/admin/users",
+        icon: User,
     },
     {
-        title: "Calendar",
-        url: "#",
-        icon: Calendar,
+        title: "Product",
+        url: "/admin/products",
+        icon: ShoppingBag,
     },
     {
         title: "Search",
@@ -45,7 +45,9 @@ export function AdminSidebar() {
         <Sidebar collapsible="icon" side="left">
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel>Application</SidebarGroupLabel>
+                    <SidebarGroupLabel>
+                        Welcome
+                    </SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {items.map((item) => (

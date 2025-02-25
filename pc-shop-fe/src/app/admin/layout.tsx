@@ -1,7 +1,8 @@
 import { cookies } from "next/headers"
 
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AdminSidebar } from "@/components/admin-sidebar"
+import { AdminSidebar } from "@/components/admin/admin-sidebar"
+
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
     const cookieStore = await cookies()

@@ -9,6 +9,12 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT') || 8080;
+  app.enableCors({
+    origin: true,
+    method: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    credentials: true, //allow credentials (cookies) in requests 
+  }); //enable cors for all routes
 
   app.setGlobalPrefix('api/v1', { exclude: ['/'] }); //eg: homepage url don't need /api/v1/homepage
   app.useGlobalPipes(

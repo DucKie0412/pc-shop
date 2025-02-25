@@ -36,7 +36,7 @@ export class User {
     codeId: string;
 
     @Prop()
-    codeExpired: string;
+    codeExpired: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
