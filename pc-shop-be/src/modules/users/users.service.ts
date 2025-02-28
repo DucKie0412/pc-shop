@@ -6,7 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
 import { hashPasswordUtil } from 'src/utils/util';
 import aqp from 'api-query-params';
-import { ActiveAuthDto, CreateAuthDto } from 'src/auth/dto/create-auth.dto';
+import { ActiveAuthDto, CreateAuthDto, ReactiveAuthDto } from 'src/auth/dto/create-auth.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
@@ -153,6 +153,52 @@ export class UsersService {
     await this.userModel.updateOne({ _id }, { isActive: true });
 
     return { message: "Account activated successfully!" };
+  }
+
+  async handleReactive(email: string) {
+    const user = await this.userModel.findOne({ email: email });
+
+    //check if the user has actived
+    if (user?.isActive) {
+      throw new BadRequestException('Account is already active!');
+    }
+
+    // Kiểm tra code đã hết hạn chưa
+    if (user?.codeExpired && new Date(user?.codeExpired) < new Date()) {
+      //renew date
+      const generateCodeId = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+      //send verification email
+      this.mailerService.sendMail({
+        to: user.email, // list of receivers
+        subject: 'Active your account at Duckie Shop', // Subject line
+        template: "sending-activation-code",
+        context: {
+          name: user?.name ?? user.email, //return name if exists or email if not
+          activationCode: generateCodeId ?? "123456"
+        }
+      })
+
+      await this.userModel.updateOne(
+        { email },
+        {
+          codeId: generateCodeId(),
+          codeExpired: new Date((new Date().getTime() + 1000 * 60 * 5))
+        });
+    }
+    else {
+      //send verification email
+      this.mailerService.sendMail({
+        to: user?.email, // list of receivers
+        subject: 'Active your account at Duckie Shop', // Subject line
+        template: "sending-activation-code",
+        context: {
+          name: user?.name ?? user?.email, //return name if exists or email if not
+          activationCode: user?.codeId ?? "123456"
+        }
+      })
+    }
+    return { message: "Resend active code successfully!", email: email, _id: user?._id };
   }
 
 }

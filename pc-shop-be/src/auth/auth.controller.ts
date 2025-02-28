@@ -1,7 +1,7 @@
 import { UsersService } from 'src/modules/users/users.service';
 import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ActiveAuthDto, CreateAuthDto } from './dto/create-auth.dto';
+import { ActiveAuthDto, CreateAuthDto, ReactiveAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { LocalAuthGuard } from './passport/local-auth.guard';
 import { Public } from './decorator/customize-guard';
@@ -14,7 +14,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly mailerService: MailerService,
-  ) {}
+  ) { }
 
   @Post('login')
   @Public()  //don't check jwt logic if using @Public() decorator
@@ -36,5 +36,13 @@ export class AuthController {
   @ResponseMessage('Active successfully')
   handleActive(@Body() activeDto: ActiveAuthDto) {
     return this.authService.activeAccount(activeDto);
+  }
+
+
+  @Post('reactive')
+  @Public()
+  @ResponseMessage('Reactive successfully')
+  handleReactive(@Body("email") email: string) {
+    return this.authService.reactiveAccount(email);
   }
 }

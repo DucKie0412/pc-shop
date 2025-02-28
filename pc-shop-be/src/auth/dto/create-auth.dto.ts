@@ -20,5 +20,9 @@ export class ActiveAuthDto {
     @IsNotEmpty({message: "Please enter an active code"})
     activeCode: string;
 
+}
 
+export class ReactiveAuthDto{
+    @IsNotEmpty({message: "Please enter a email"})
+    email: string;
 }
