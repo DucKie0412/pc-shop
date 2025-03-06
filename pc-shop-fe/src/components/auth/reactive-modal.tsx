@@ -34,7 +34,6 @@ const ReactiveModal = ({ isOpen, setIsOpen, userEmail }: { isOpen: boolean; setI
                 body: { email },
             });
 
-            console.log("Response:", res);
 
             if (res?.statusCode === 400) {
                 toast.warning("Your email has already been activated!", { autoClose: 4000 });

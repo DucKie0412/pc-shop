@@ -2,10 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { authenticate } from "@/utils/actions";
@@ -13,6 +12,7 @@ import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import ReactiveModal from "./reactive-modal";
 import { useState } from "react";
+import ForgotPasswordModal from "./forgot-password-modal";
 
 const LoginForm = () => {
     const router = useRouter();
@@ -23,6 +23,7 @@ const LoginForm = () => {
         },
     });
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [forgotPasswordModalOpen, setForgotPasswordModalOpen] = useState(false);
     const [isUserEmail, setIsUserEmail] = useState("");
 
     const onSubmit = async (values: any) => {
@@ -92,10 +93,10 @@ const LoginForm = () => {
                                 <Button type="submit" className="w-full">Login</Button>
                             </form>
                         </Form>
-                        <div className="mt-4 text-center">
-                            <Link href="/" className="text-blue-500 flex items-center justify-center gap-1">
-                                <ArrowLeft size={16} /> Back to homepage
-                            </Link>
+                        <div className="flex items-center justify-center ">
+                            <button type="button" className="text-sm mt-4 text-center text-blue-500" onClick={() => setForgotPasswordModalOpen(true)}>
+                                Forgot password?
+                            </button>
                         </div>
                         <div className="mt-2 text-center text-sm">
                             Haven't account yet?
@@ -104,7 +105,8 @@ const LoginForm = () => {
                     </CardContent>
                 </Card>
             </div>
-            <ReactiveModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} userEmail={isUserEmail}/>
+            <ReactiveModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} userEmail={isUserEmail} />
+            <ForgotPasswordModal isOpen={forgotPasswordModalOpen} setIsOpen={setForgotPasswordModalOpen} userEmail={isUserEmail} />
         </>
     );
 };

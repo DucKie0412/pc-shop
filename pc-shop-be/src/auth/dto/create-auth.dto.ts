@@ -26,3 +26,17 @@ export class ReactiveAuthDto{
     @IsNotEmpty({message: "Please enter a email"})
     email: string;
 }
+
+export class ChangePasswordDto{
+    @IsNotEmpty({message: "Please enter a email"})
+    email: string;
+
+    @IsNotEmpty({message: "Please enter a code"})
+    codeId: string;
+
+    @IsNotEmpty({message: "Please enter a new password"})
+    newPassword: string;
+
+    @IsNotEmpty({message: "Please enter a confirm password"})
+    confirmPassword: string;
+}

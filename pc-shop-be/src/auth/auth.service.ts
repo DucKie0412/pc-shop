@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ActiveAuthDto, CreateAuthDto, ReactiveAuthDto } from './dto/create-auth.dto';
+import { ActiveAuthDto, CreateAuthDto, ChangePasswordDto } from './dto/create-auth.dto';
 import { UsersService } from 'src/modules/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { comparePasswordUtil } from 'src/utils/util';
@@ -47,5 +47,13 @@ export class AuthService {
 
   async reactiveAccount(email: string) {
     return await this.usersService.handleReactive(email);
+  }
+
+  async changePassword(changePasswordDto: ChangePasswordDto  ) {
+    return await this.usersService.handleChangePassword(changePasswordDto);
+  }
+
+  async sendEmail(email: string) {
+    return await this.usersService.handleSendCodeId(email);
   }
 }

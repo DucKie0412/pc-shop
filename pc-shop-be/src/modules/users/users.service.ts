@@ -6,7 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
 import { hashPasswordUtil } from 'src/utils/util';
 import aqp from 'api-query-params';
-import { ActiveAuthDto, CreateAuthDto, ReactiveAuthDto } from 'src/auth/dto/create-auth.dto';
+import { ActiveAuthDto, ChangePasswordDto, CreateAuthDto, ReactiveAuthDto } from 'src/auth/dto/create-auth.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
@@ -130,6 +130,51 @@ export class UsersService {
     }
   }
 
+  async handleSendCodeId(email: string) {
+    const user = await this.userModel.findOne({ email: email });
+
+    //check if the user is existing
+    if (!user) {
+      throw new BadRequestException('User not found!');
+    }
+
+    // check if the code has expired
+    if (user?.codeExpired && new Date(user?.codeExpired) < new Date()) {
+      //renew date
+      const generateCodeId = () => Math.floor(100000 + Math.random() * 900000).toString();
+
+      //send verification email
+      this.mailerService.sendMail({
+        to: user.email, // list of receivers
+        subject: 'Change your password account at Duckie Shop', // Subject line
+        template: "sending-change-password-code",
+        context: {
+          name: user?.name ?? user.email, //return name if exists or email if not
+          activationCode: generateCodeId ?? "123456"
+        }
+      })
+
+      await this.userModel.updateOne(
+        { email },
+        {
+          codeId: generateCodeId(),
+          codeExpired: new Date((new Date().getTime() + 1000 * 60 * 5))
+        });
+    }
+    else {
+      //send verification email
+      this.mailerService.sendMail({
+        to: user?.email, // list of receivers
+        subject: 'Change your password account at Duckie Shop', // Subject line
+        template: "sending-change-password-code",
+        context: {
+          name: user?.name ?? user?.email, //return name if exists or email if not
+          activationCode: user?.codeId ?? "123456"
+        }
+      })
+    }
+  }
+
   async handleActive(activeDto: ActiveAuthDto) {
     const { _id, activeCode } = activeDto;
 
@@ -163,7 +208,7 @@ export class UsersService {
       throw new BadRequestException('Account is already active!');
     }
 
-    // Kiểm tra code đã hết hạn chưa
+    // check if the code has expired
     if (user?.codeExpired && new Date(user?.codeExpired) < new Date()) {
       //renew date
       const generateCodeId = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -199,6 +244,31 @@ export class UsersService {
       })
     }
     return { message: "Resend active code successfully!", email: email, _id: user?._id };
+  }
+
+  async handleChangePassword(changePasswordDto: ChangePasswordDto) {
+    const { email, codeId, newPassword, confirmPassword } = changePasswordDto;
+    const user = await this.userModel.findOne({ email: email });
+
+    //check if the user is existing
+    if (!user) {
+      throw new BadRequestException('User not found!');
+    }
+
+    // So sánh codeId từ database với activeCode từ request
+    if (user.codeId !== codeId) {
+      throw new BadRequestException('Invalid change password code or wrong code!');
+    }
+
+    //update new password
+    if (newPassword !== confirmPassword) {
+      throw new BadRequestException('Confirm password does not match!');
+    }
+
+    const hashPassword = await hashPasswordUtil(newPassword);
+    await this.userModel.updateOne({ email }, { password: hashPassword });
+
+    return { message: "Change password successfully!", user: user };
   }
 
 }

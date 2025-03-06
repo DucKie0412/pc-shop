@@ -1,7 +1,7 @@
 import { UsersService } from 'src/modules/users/users.service';
 import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ActiveAuthDto, CreateAuthDto, ReactiveAuthDto } from './dto/create-auth.dto';
+import { ActiveAuthDto, ChangePasswordDto, CreateAuthDto, ReactiveAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { LocalAuthGuard } from './passport/local-auth.guard';
 import { Public } from './decorator/customize-guard';
@@ -44,5 +44,19 @@ export class AuthController {
   @ResponseMessage('Reactive successfully')
   handleReactive(@Body("email") email: string) {
     return this.authService.reactiveAccount(email);
+  }
+
+  @Post('change-password')
+  @Public()
+  @ResponseMessage('Change password successfully')
+  handleChangePassword(@Body() changePasswordDto: ChangePasswordDto) {
+    return this.authService.changePassword(changePasswordDto);
+  }
+
+  @Post('send-code')
+  @Public()
+  @ResponseMessage('Send code successfully')
+  handleSendEmail(@Body("email") email: string) {
+    return this.authService.sendEmail(email);
   }
 }
