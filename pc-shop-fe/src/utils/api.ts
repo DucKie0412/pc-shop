@@ -1,4 +1,5 @@
 import queryString from 'query-string';
+import { auth } from "@/auth";
 
 export const sendRequest = async <T>(props: IRequest) => { //type
     let {
@@ -10,6 +11,17 @@ export const sendRequest = async <T>(props: IRequest) => { //type
         headers = {},
         nextOption = {}
     } = props;
+
+    // Nếu URL bắt đầu bằng "/", thêm BASE_URL vào (chạy trên server)
+    if (typeof window === "undefined" && url.startsWith("/")) {
+        url = `${process.env.NEXT_PUBLIC_API_URL}${url}`;
+    }
+    // // Lấy accessToken từ session (nếu có)
+    // const session = await auth();
+    // const token = session?.user?.accessToken;
+    // if (token) {
+    //     headers = { ...headers, Authorization: `Bearer ${token}` };
+    // }
 
     const options: any = {
         method: method,
@@ -79,3 +91,7 @@ export const sendRequestFile = async <T>(props: IRequest) => { //type
         }
     });
 };
+function Auth() {
+    throw new Error('Function not implemented.');
+}
+

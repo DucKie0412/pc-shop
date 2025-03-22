@@ -4,6 +4,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { IUser } from "@/types/next-auth";
 import {
     DropdownMenu,
     DropdownMenuItem,
@@ -12,40 +14,92 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
+import { sendRequest } from "@/utils/api";
+import { useSession } from "next-auth/react";
+import { toast } from "react-toastify";
 
-export type User = {
-    id: string,
-    name: string,
-    email: string,
-    phone: string,
-    address: string,
-    isActive: boolean
-}
-
-export const Columns: ColumnDef<User>[] = [
+export const Columns: ColumnDef<IUser>[] = [
     {
         header: "ID",
-        accessorKey: "id",
+        accessorKey: "_id",
+        enableSorting: false,
+        size: 50,
     },
     {
-        header: "Name",
+        header: ({ column }) => (
+            <div
+                onClick={column.getToggleSortingHandler()}
+                className="cursor-pointer flex items-center gap-1"
+            >
+                Name
+                {column.getCanSort() && (
+                    <span>
+                        {column.getIsSorted() === "asc" ? "↑" : column.getIsSorted() === "desc" ? "↓" : "↕"}
+                    </span>
+                )}
+            </div>
+        ),
         accessorKey: "name",
+        enableResizing: true,
+
+        size: 100,
+        minSize: 50,
+        maxSize: 200,
     },
     {
-        header: "Email",
-        accessorKey: "email",
+        header: ({ column }) => (
+            <div
+                onClick={column.getToggleSortingHandler()}
+                className="cursor-pointer flex items-center gap-1"
+            >
+                Email
+                {column.getCanSort() && (
+                    <span>
+                        {column.getIsSorted() === "asc" ? "↑" : column.getIsSorted() === "desc" ? "↓" : "↕"}
+                    </span>
+                )}
+            </div>
+        ), accessorKey: "email",
+        size: 120,
+        enableResizing: true,
+
+        minSize: 50,
+        maxSize: 200,
     },
     {
         header: "Phone",
         accessorKey: "phone",
+        enableSorting: false,
+        size: 110,
+        minSize: 50,
+        maxSize: 200,
     },
     {
         header: "Address",
         accessorKey: "address",
+        enableSorting: false,
+        size: 150,
+        minSize: 50,
+        maxSize: 200,
     },
     {
-        header: "Active Status",
-        accessorKey: "isActive",
+        header: ({ column }) => (
+            <div
+                onClick={column.getToggleSortingHandler()}
+                className="cursor-pointer flex items-center gap-1"
+            >
+                Active Status
+                {column.getCanSort() && (
+                    <span>
+                        {column.getIsSorted() === "asc" ? "↑" : column.getIsSorted() === "desc" ? "↓" : "↕"}
+                    </span>
+                )}
+            </div>
+        ), accessorKey: "isActive",
+        enableSorting: true,
+        size: 50,
+        minSize: 50,
+        maxSize: 200,
         cell: ({ row }) => {
             const isActive = row.original.isActive;
             return <Badge className={isActive ? "border-transparent bg-emerald-500 text-primary-foreground shadow hover:bg-emerald-500/80"
@@ -58,6 +112,25 @@ export const Columns: ColumnDef<User>[] = [
         id: "actions",
         cell: ({ row }) => {
             const user = row.original
+            const router = useRouter()
+            const session = useSession();
+
+            async function handleDelete() {
+                const res = await sendRequest<IBackendRes<any>>({
+                    method: "DELETE",
+                    url: `${process.env.NEXT_PUBLIC_API_URL}/users/${user._id}`,
+                    headers: { Authorization: `Bearer ${session?.data?.user.accessToken}` },
+                });
+                console.log("User deleted:", res);
+                if (res?.statusCode === 200) {
+                    toast.success("User deleted successfully!", { autoClose: 2300 });
+                    router.refresh();
+                }
+
+                if (res?.statusCode === 400) {
+                    toast.warning("Server error!", { autoClose: 2000 });
+                }
+            }
 
             return (
                 <DropdownMenu>
@@ -70,14 +143,16 @@ export const Columns: ColumnDef<User>[] = [
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(user.id)}
+                            onClick={() => navigator.clipboard.writeText(user._id)}
                         >
-                            Copy
+                            Copy user ID
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>View customer</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {
+                            router.push(`/admin/users/edit/${user._id}`)
+                        }}>Edit user</DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>View payment details</DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleDelete}>Delete user</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
             )

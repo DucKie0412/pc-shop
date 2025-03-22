@@ -43,31 +43,14 @@ export class UsersService {
   }
 
   //pagination
-  async findAll(query: string, current: number, pageSize: number) {
-    const { filter, sort } = aqp(query);
+  async findAll( query: any) {
 
-    if (filter.current) delete filter.current;
-    if (filter.pageSize) delete filter.pageSize;
+    return await this.userModel.find().select('-password');
 
-    if (!current) current = 1;
-    if (!pageSize) pageSize = 5;
-
-    const totalItems = (await this.userModel.find(filter)).length;
-    const totalPages = Math.ceil(totalItems / pageSize);
-    const skip = (current - 1) * pageSize
-
-    const results = await this.userModel
-      .find(filter)
-      .limit(pageSize)
-      .skip(skip)
-      .select('-password')  //hide password field
-      .sort(sort as any)
-
-    return { results, totalPages };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOne(id: string) {
+    return this.userModel.findById(id).select('-password');
   }
 
   async findByEmail(email: string) {
@@ -93,7 +76,7 @@ export class UsersService {
   }
 
   async handleRegister(registerDto: CreateAuthDto) {
-    const { email, password, name } = registerDto;
+    const { email, password, name, phone, address } = registerDto;
 
     //check email exist
     const isEmailExist = await this.isEmailExist(email);
@@ -109,9 +92,11 @@ export class UsersService {
         name,
         email,
         password: hashPassword,
+        phone,
+        address,
         isActive: false,
         codeId: generateCodeId(),
-        codeExpired: new Date((new Date().getTime() + 1000 * 60 * 5)) //5'
+        codeExpired: new Date((new Date().getTime() + 1000 * 60 * 15)) // expire in 15'
       });
 
     //send verification email

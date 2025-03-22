@@ -3,9 +3,7 @@ import React from 'react';
 
 const DashboardPage = async () => {
 
-    const session = await auth();
-    console.log("session: ", session);
-    
+    const session = await auth();    
 
     if(session?.user){
         return (

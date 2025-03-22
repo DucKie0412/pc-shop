@@ -23,8 +23,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     }
                 })
 
-                console.log("res: ", res);
-
                 //call backend to verify user
                 //user exist
                 if (+res.statusCode === 201) {

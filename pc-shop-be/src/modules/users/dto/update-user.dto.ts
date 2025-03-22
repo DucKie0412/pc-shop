@@ -1,5 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateUserDto } from './create-user.dto';
+
 import { IsMongoId, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class UpdateUserDto {
@@ -8,16 +7,13 @@ export class UpdateUserDto {
     _id: string;
 
     @IsOptional()
+    email: string;
+
+    @IsOptional()
     name: string;
 
     @IsOptional()
-    password: string;
-
-    @IsOptional()
     phone: string;
-
-    @IsOptional()
-    avatar: string;
 
     @IsOptional()
     address: string;

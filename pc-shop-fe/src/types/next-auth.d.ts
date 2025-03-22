@@ -5,6 +5,9 @@ interface IUser {
     _id: string;
     name: string;
     email: string;
+    phone: string,
+    address: string,
+    accessToken: string,
     isActive: boolean,
     accountType: string;
     role: string;

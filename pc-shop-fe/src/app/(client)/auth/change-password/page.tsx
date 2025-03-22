@@ -56,7 +56,7 @@ const ChangePassword = () => {
         <div className="flex justify-center mt-10">
             <Card className="w-full max-w-md p-6 shadow-lg">
                 <CardHeader>
-                    <CardTitle className="text-center">Login</CardTitle>
+                    <CardTitle className="text-center">Change Password</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Form {...form}>

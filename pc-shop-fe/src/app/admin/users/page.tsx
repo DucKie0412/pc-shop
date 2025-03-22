@@ -1,116 +1,35 @@
-import { User, Columns } from "./columns";
+import { auth } from "@/auth";
+import { Columns } from "./columns";
+import { IUser } from "@/types/next-auth";
 import { DataTable } from "@/components/ui/data-table";
+import { sendRequest } from "@/utils/api";
 
-async function getData() : Promise<User[]>{
-    //fetch data here
 
-    return [
-        {
-            id: "1",
-            name: "John Doe",
-            email: "akshdaksjhdh@mail.com",
-            phone: "0123388234",
-            address: "ahdashj auwioqu wqeuqwe",
-            isActive: true,
-        },
-        {
-            id: "2",
-            name: "Jane Doe",
-            email: "akshdaksjhdh@mail.com",
-            phone: "0123388234",
-            address: "ahdashj auwioqu wqeuqwe",
-            isActive: false,
-        },
-        {
-            id: "3",
-            name: "John Smith",
-            email: "akshdaksjhdh@mail.com",
-            phone: "0123388234",
-            address: "ahdashj auwioqu wqeuqwe",
-            isActive: true,
-        },
-        {
-            id: "4",
-            name: "Jane Smith",
-            email: "akshdaksjhdh@mail.com",
-            phone: "0123388234",
-            address: "ahdashj auwioqu wqeuqwe",
-            isActive: false,
-        },
-        {
-            id: "1",
-            name: "John Doe",
-            email: "akshdaksjhdh@mail.com",
-            phone: "0123388234",
-            address: "ahdashj auwioqu wqeuqwe",
-            isActive: true,
-        },
-        {
-            id: "2",
-            name: "Jane Doe",
-            email: "akshdaksjhdh@mail.com",
-            phone: "0123388234",
-            address: "ahdashj auwioqu wqeuqwe",
-            isActive: false,
-        },
-        {
-            id: "3",
-            name: "John Smith",
-            email: "akshdaksjhdh@mail.com",
-            phone: "0123388234",
-            address: "ahdashj auwioqu wqeuqwe",
-            isActive: true,
-        },
-        {
-            id: "4",
-            name: "Jane Smith",
-            email: "akshdaksjhdh@mail.com",
-            phone: "0123388234",
-            address: "ahdashj auwioqu wqeuqwe",
-            isActive: false,
-        },
-        {
-            id: "1",
-            name: "John Doe",
-            email: "akshdaksjhdh@mail.com",
-            phone: "0123388234",
-            address: "ahdashj auwioqu wqeuqwe",
-            isActive: true,
-        },
-        {
-            id: "2",
-            name: "Jane Doe",
-            email: "akshdaksjhdh@mail.com",
-            phone: "0123388234",
-            address: "ahdashj auwioqu wqeuqwe",
-            isActive: false,
-        },
-        {
-            id: "3",
-            name: "John Smith",
-            email: "akshdaksjhdh@mail.com",
-            phone: "0123388234",
-            address: "ahdashj auwioqu wqeuqwe",
-            isActive: true,
-        },
-        {
-            id: "4",
-            name: "Jane Smith",
-            email: "akshdaksjhdh@mail.com",
-            phone: "0123388234",
-            address: "ahdashj auwioqu wqeuqwe",
-            isActive: false,
-        },
-    ]
+async function getUsers(): Promise<IUser[]> {
+    const session = await auth();
+    try {
+        const res = await sendRequest<IBackendRes<any>>({
+            method: "GET",
+            url: `${process.env.NEXT_PUBLIC_API_URL}/users`,
+            headers: { Authorization: `Bearer ${session?.user.accessToken}` },
+            nextOption: { cache: "no-store" }
+        });
 
+        return res.data || [];
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        return [];
+    }
 }
+
+
+
 export default async function UserPage() {
-    const data = await getData();
+    const users = await getUsers();
 
     return (
-        <div className="container mx-auto py-10"> 
-            <DataTable columns={Columns} data={data} />
+        <div className="">
+            <DataTable columns={Columns} data={users} />
         </div>
     );
 }
-

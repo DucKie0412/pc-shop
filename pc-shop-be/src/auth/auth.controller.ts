@@ -47,7 +47,6 @@ export class AuthController {
   }
 
   @Post('change-password')
-  @Public()
   @ResponseMessage('Change password successfully')
   handleChangePassword(@Body() changePasswordDto: ChangePasswordDto) {
     return this.authService.changePassword(changePasswordDto);

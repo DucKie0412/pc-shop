@@ -7,8 +7,17 @@ export class CreateAuthDto {
     @IsNotEmpty({message: "Please enter a password"})
     password: string;
 
+    @IsNotEmpty({message: "Please enter your full name"})
+    name: string;
+
+    @IsNotEmpty({message: "Please enter your phone number"})
+    phone: string;
+
     @IsOptional()
-    name:string;
+    avatar: string;
+
+    @IsNotEmpty({message: "Please enter an address"})
+    address: string;
 }
 
 

@@ -11,7 +11,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     return (
         <SidebarProvider defaultOpen={defaultOpen}>
             <AdminSidebar />
-            <main>
+            <main className="flex-1 mx-10">
                 <SidebarTrigger />
                 {children}
             </main>
