@@ -1,0 +1,23 @@
+/* Nút login */
+.button:hover {
+    padding: 0 2px;
+    box-shadow: 0 0 5px rgba(99, 102, 241, 0.5);
+}
+
+/* Hiệu ứng khi rê chuột vào "Forgot password?" */
+.text_link:hover {
+    text-decoration: underline;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+/* Hiệu ứng Card */
+.card_shadow {
+    
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-clip: padding-box;
+    transition: 0.2s;
+    box-sizing: border-box;
+    /* @apply shadow-lg border border-gray-200 rounded-xl; */
+}
+

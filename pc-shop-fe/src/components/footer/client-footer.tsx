@@ -2,7 +2,7 @@ import React from 'react'
 
 function ClientFooter() {
     return (
-        <div>ClientFooter</div>
+        <div className='bg-blue-300 w-full'>ClientFooter</div>
     )
 }
 

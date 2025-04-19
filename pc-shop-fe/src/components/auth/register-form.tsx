@@ -54,7 +54,7 @@ const RegisterForm = () => {
         <div className="flex justify-center mt-10">
             <Card className="w-full max-w-md p-6 shadow-lg">
                 <CardHeader>
-                    <CardTitle className="text-center">Register</CardTitle>
+                    <CardTitle className="text-center">Đăng ký</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Form {...form}>
@@ -79,7 +79,7 @@ const RegisterForm = () => {
                                 rules={{ required: "Please input your password!" }}
                                 render={({ field }) => (
                                     <FormItem>
-                                        <Label>Password</Label>
+                                        <Label>Mật khẩu</Label>
                                         <FormControl>
                                             <Input type="password" {...field} />
                                         </FormControl>
@@ -92,7 +92,7 @@ const RegisterForm = () => {
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <Label>Name (optional)</Label>
+                                        <Label>Tên</Label>
                                         <FormControl>
                                             <Input type="text" {...field} />
                                         </FormControl>
@@ -100,12 +100,12 @@ const RegisterForm = () => {
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit" className="w-full">Register</Button>
+                            <Button type="submit" className="w-full">Đăng ký</Button>
                         </form>
                     </Form>
                     <div className="mt-6 text-center text-sm">
-                        Have an account?
-                        <Link href="/auth/login" className="text-blue-500 pl-2">Login</Link>
+                        Đã có tài khoản?
+                        <Link href="/auth/login" className="text-blue-500 pl-2">Đăng nhập</Link>
                     </div>
                 </CardContent>
             </Card>

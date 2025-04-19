@@ -19,16 +19,31 @@ export class ProductsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.productsService.findOne(+id);
+    // Check if the id is a valid MongoDB ObjectId
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      return this.productsService.findOne(id);
+    }
+    // If not an ObjectId, treat it as a slug
+    return this.productsService.findOneBySlug(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(+id, updateProductDto);
+    // Check if the id is a valid MongoDB ObjectId
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      return this.productsService.update(id, updateProductDto);
+    }
+    // If not an ObjectId, treat it as a slug
+    return this.productsService.updateBySlug(id, updateProductDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.productsService.remove(+id);
+    // Check if the id is a valid MongoDB ObjectId
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      return this.productsService.remove(id);
+    }
+    // If not an ObjectId, treat it as a slug
+    return this.productsService.removeBySlug(id);
   }
 }

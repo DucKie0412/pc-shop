@@ -18,7 +18,6 @@ export class CreateUserDto {
     phone: string;
 
     
-    avatar: string;
     accountType: string;
     role: string;
     isActive: boolean;

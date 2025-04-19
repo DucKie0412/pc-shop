@@ -11,7 +11,7 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-import { Home, User, ShoppingBag, Search, Settings } from "lucide-react"
+import { Home, User, ShoppingBag, Search, Settings, ArrowLeftCircle } from "lucide-react"
 
 
 const items = [
@@ -40,6 +40,11 @@ const items = [
         url: "#",
         icon: Settings,
     },
+    {
+        title: "Back to homepage",
+        url: "/",
+        icon: ArrowLeftCircle,
+    }
 ]
 
 export function AdminSidebar() {
