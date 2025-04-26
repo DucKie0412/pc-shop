@@ -35,32 +35,20 @@ export default function ProductsPage() {
                 console.log('API Response:', result);
                 
                 if (result?.data) {
-                    console.log('Setting products:', result.data);
                     setProducts(result.data);
                 }
+
+                console.log('Products state:', products);
             } catch (error) {
                 console.error("Error fetching products:", error);
             } finally {
                 setIsLoading(false);
             }
         }
-
         if (session) {
             fetchProducts();
-        } else {
-            setProducts([]);
-            setIsLoading(false);
         }
     }, [session]);
-
-    console.log('Current products state:', products);
-
-    const filteredProducts = Array.isArray(products) ? products.filter(product => {
-        if (!product?.name) return false;
-        return product.name.toLowerCase().includes(searchQuery.toLowerCase());
-    }) : [];
-
-    console.log('Filtered products:', filteredProducts);
 
     if (!session) {
         return <div className="container mx-auto py-10">Please sign in to view products.</div>;
@@ -90,7 +78,7 @@ export default function ProductsPage() {
                     {isLoading ? (
                         <div className="p-4 text-center">Loading...</div>
                     ) : (
-                        <DataTable columns={columns} data={filteredProducts} />
+                        <DataTable columns={columns} data={products} />
                     )}
                 </div>
             </div>

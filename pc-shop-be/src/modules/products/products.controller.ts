@@ -9,22 +9,12 @@ export class ProductsController {
 
   @Post()
   async create(@Body() createProductDto: CreateProductDto) {
-    const product = await this.productsService.create(createProductDto);
-    return {
-      statusCode: 201,
-      message: "Product created successfully",
-      data: product
-    };
+    return await this.productsService.create(createProductDto);
   }
 
   @Get()
   async findAll() {
-    const products = await this.productsService.findAll();
-    return {
-      statusCode: 200,
-      message: "Products retrieved successfully",
-      data: products
-    };
+    return await this.productsService.findAll();
   }
 
   @Get(':id')
@@ -37,11 +27,7 @@ export class ProductsController {
       // If not an ObjectId, treat it as a slug
       product = await this.productsService.findOneBySlug(id);
     }
-    return {
-      statusCode: 200,
-      message: "Product retrieved successfully",
-      data: product
-    };
+    return product;
   }
 
   @Patch(':id')
@@ -54,11 +40,7 @@ export class ProductsController {
       // If not an ObjectId, treat it as a slug
       product = await this.productsService.updateBySlug(id, updateProductDto);
     }
-    return {
-      statusCode: 200,
-      message: "Product updated successfully",
-      data: product
-    };
+    return product;
   }
 
   @Delete(':id')

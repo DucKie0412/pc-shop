@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useEffect, useState } from "react";
 import { ICategory } from "@/types/category";
 import { IManufacturer } from "@/types/manufacturer";
+import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -40,39 +41,36 @@ interface ProductFormProps {
 
 export function ProductForm({ initialData }: ProductFormProps) {
     const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
     const [categories, setCategories] = useState<ICategory[]>([]);
     const [manufacturers, setManufacturers] = useState<IManufacturer[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const { data: session } = useSession();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                setIsLoading(true);
-                const [categoriesRes, manufacturersRes] = await Promise.all([
-                    sendRequest<{ statusCode: number; message: string; data: ICategory[] }>({
-                        url: `${process.env.NEXT_PUBLIC_API_URL}/categories`,
-                        method: "GET",
-                    }),
-                    sendRequest<{ statusCode: number; message: string; data: IManufacturer[] }>({
-                        url: `${process.env.NEXT_PUBLIC_API_URL}/manufacturers`,
-                        method: "GET",
-                    }),
-                ]);
-
-                console.log('Categories response:', categoriesRes);
-                console.log('Manufacturers response:', manufacturersRes);
+                // Fetch categories
+                const categoriesRes = await sendRequest<IBackendRes<ICategory[]>>({
+                    url: '/api/categories',
+                    method: 'GET',
+                });
 
                 if (categoriesRes?.data) {
                     setCategories(categoriesRes.data);
                 }
+
+                // Fetch manufacturers
+                const manufacturersRes = await sendRequest<IBackendRes<IManufacturer[]>>({
+                    url: '/api/manufacturers',
+                    method: 'GET',
+                });
+
                 if (manufacturersRes?.data) {
                     setManufacturers(manufacturersRes.data);
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
                 toast.error("Failed to load categories and manufacturers");
-            } finally {
-                setIsLoading(false);
             }
         };
 
@@ -99,20 +97,36 @@ export function ProductForm({ initialData }: ProductFormProps) {
             setIsLoading(true);
             if (initialData) {
                 // Update product
-                await sendRequest({
+                const response: IBackendRes<any> = await sendRequest({
                     method: "PATCH",
-                    url: `${process.env.NEXT_PUBLIC_API_URL}/products/${initialData.slug}`,
+                    url: `${process.env.NEXT_PUBLIC_API_URL}/products/${initialData._id}`,
                     body: values,
+                    headers: {
+                        'Authorization': `Bearer ${session?.user?.accessToken}`
+                    }
                 });
-                toast.success("Product updated successfully");
+                if (response?.statusCode === 200) {
+                    toast.success("Product updated successfully");
+                } else {
+                    toast.error(response?.message || "Failed to update product");
+                    return;
+                }
             } else {
                 // Create product
-                await sendRequest({
+                const response: IBackendRes<any> = await sendRequest({
                     method: "POST",
                     url: `${process.env.NEXT_PUBLIC_API_URL}/products`,
                     body: values,
+                    headers: {
+                        'Authorization': `Bearer ${session?.user?.accessToken}`
+                    }
                 });
-                toast.success("Product created successfully");
+                if (response?.statusCode === 200) {
+                    toast.success("Product created successfully");
+                } else {
+                    toast.error(response?.message || "Failed to create product");
+                    return;
+                }
             }
             router.push("/admin/products");
             router.refresh();

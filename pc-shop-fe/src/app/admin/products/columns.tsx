@@ -116,7 +116,6 @@ export const columns: ColumnDef<IProduct>[] = [
                         url: `${process.env.NEXT_PUBLIC_API_URL}/products/${product.slug}`,
                         headers: { Authorization: `Bearer ${session?.data?.user.accessToken}` },
                     });
-                    console.log("Product deleted:", res);
                     if (res?.statusCode === 200) {
                         toast.success("Product deleted successfully!", { autoClose: 2300 });
                         router.refresh();
