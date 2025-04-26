@@ -6,6 +6,8 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import { ProductsModule } from './modules/products/products.module';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { ManufacturersModule } from './modules/manufacturers/manufacturers.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
@@ -14,6 +16,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
 import { ResponseInterceptor } from './core/response.interceptor';
+import { UploadModule } from './modules/upload/upload.module';
 
 @Module({
   imports: [
@@ -53,8 +56,11 @@ import { ResponseInterceptor } from './core/response.interceptor';
       inject: [ConfigService],
     }),
     ProductsModule,
+    CategoriesModule,
+    ManufacturersModule,
     UsersModule,
-    AuthModule,
+    UploadModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService,

@@ -15,61 +15,78 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import { IUser } from "@/types/next-auth";
+import * as z from "zod";
+
+const formSchema = z.object({
+    email: z.string().email().optional(),
+    name: z.string().min(1, "Name is required"),
+    phone: z.string().optional(),
+    address: z.string().optional(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 export default function EditUserPage() {
     const { id } = useParams();
     const session = useSession();
-    const [user, setUser] = useState(null as IUser | null);
-    const form = useForm();
+    const [user, setUser] = useState<IUser | null>(null);
     const router = useRouter();
+    
+    const form = useForm<FormValues>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            email: "",
+            name: "",
+            phone: "",
+            address: "",
+        },
+    });
+
     useEffect(() => {
         async function fetchUser() {
-            const res = await sendRequest<IBackendRes<any>>({
+            const res = await sendRequest<IBackendRes<IUser>>({
                 method: "GET",
                 url: `${process.env.NEXT_PUBLIC_API_URL}/users/${id}`,
                 headers: { Authorization: `Bearer ${session?.data?.user.accessToken}` },
             });
-            setUser(res?.data);
-            console.log("User fetched:", res);
+            if (res?.data) {
+                setUser(res.data);
+                form.reset({
+                    email: res.data.email || "",
+                    name: res.data.name || "",
+                    phone: res.data.phone || "",
+                    address: res.data.address || "",
+                });
+            }
         }
-        if (id) fetchUser();
-    }, [id, session]);
+        if (id && session?.data?.user.accessToken) {
+            fetchUser();
+        }
+    }, [id, session, form]);
 
-    // Reset form when user fetched
-    useEffect(() => {
-        if (user) {
-            form.reset({
-                email: user.email || "",
-                name: user.name || "",
-                phone: user.phone || "",
-                address: user.address || ""
+    async function handleUpdate(values: FormValues) {
+        try {
+            const res = await sendRequest<IBackendRes<any>>({
+                method: "PATCH",
+                url: `${process.env.NEXT_PUBLIC_API_URL}/users`,
+                headers: { Authorization: `Bearer ${session?.data?.user.accessToken}` },
+                body: {
+                    _id: id,
+                    ...values,
+                },
             });
-        }
-    }, [user]); 
-
-    async function handleUpdate(values: any) {
-        const {name, phone, address} = values;
-        const res = await sendRequest<IBackendRes<any>>({
-            method: "PATCH",
-            url: `${process.env.NEXT_PUBLIC_API_URL}/users`,
-            headers: { Authorization: `Bearer ${session?.data?.user.accessToken}` },
-            body: {
-                _id: id,
-                ...values,
-            },
-        });
-        console.log("User updated:", res);
-        if (res?.statusCode === 200) {
-            toast.success("User updated successfully!", { autoClose: 3000 });
-            setTimeout(() => {
-                router.push(`/admin/users`);
-            }, 2500);
-        }
-
-        if(res?.statusCode === 400){
-            toast.warning("Invalid data or server error!", { autoClose: 2000 });
+            
+            if (res?.statusCode === 200) {
+                toast.success("User updated successfully!");
+                router.push("/admin/users");
+            } else {
+                toast.error("Failed to update user");
+            }
+        } catch (error) {
+            toast.error("An error occurred while updating user");
         }
     }
 
@@ -89,7 +106,7 @@ export default function EditUserPage() {
                                     <FormItem>
                                         <Label>Email</Label>
                                         <FormControl>
-                                            <Input type="email" {...field} disabled/>
+                                            <Input type="email" {...field} disabled />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -134,7 +151,7 @@ export default function EditUserPage() {
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit" className="w-full">Change Information</Button>
+                            <Button type="submit" className="w-full">Save Changes</Button>
                         </form>
                     </Form>
                 </CardContent>

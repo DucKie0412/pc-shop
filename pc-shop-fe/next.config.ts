@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import type { Configuration } from "webpack";
 
 const nextConfig: NextConfig = {
+  turbo: false,
   /* config options here */
   reactStrictMode: true,
   webpackDevMiddleware: (config: Configuration) => {

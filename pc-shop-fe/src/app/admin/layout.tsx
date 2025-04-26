@@ -1,20 +1,26 @@
-import { cookies } from "next/headers"
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { Sidebar } from "@/components/admin/sidebar";
 
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AdminSidebar } from "@/components/admin/admin-sidebar"
+export default async function AdminLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+    const session = await auth();
 
+    if (!session) {
+        redirect("/auth/signin");
+    }
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-    const cookieStore = await cookies()
-    const defaultOpen = cookieStore.get("sidebar_state")?.value === "true"
+    if (session.user.role !== "ADMIN") {
+        redirect("/");
+    }
 
     return (
-        <SidebarProvider defaultOpen={defaultOpen}>
-            <AdminSidebar />
-            <main className="flex-1 mx-10">
-                <SidebarTrigger />
-                {children}
-            </main>
-        </SidebarProvider>
-    )
+        <div className="flex">
+            <Sidebar />
+            <main className="flex-1">{children}</main>
+        </div>
+    );
 }

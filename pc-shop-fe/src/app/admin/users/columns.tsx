@@ -18,7 +18,7 @@ import { sendRequest } from "@/utils/api";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 
-export const Columns: ColumnDef<IUser>[] = [
+export const columns: ColumnDef<IUser>[] = [
     {
         header: "ID",
         accessorKey: "_id",
@@ -41,7 +41,6 @@ export const Columns: ColumnDef<IUser>[] = [
         ),
         accessorKey: "name",
         enableResizing: true,
-
         size: 100,
         minSize: 50,
         maxSize: 200,
@@ -59,26 +58,26 @@ export const Columns: ColumnDef<IUser>[] = [
                     </span>
                 )}
             </div>
-        ), accessorKey: "email",
+        ),
+        accessorKey: "email",
         size: 120,
         enableResizing: true,
-
         minSize: 50,
         maxSize: 200,
     },
     {
         header: "Phone",
         accessorKey: "phone",
-        enableSorting: false,
-        size: 110,
+        size: 120,
+        enableResizing: true,
         minSize: 50,
         maxSize: 200,
     },
     {
         header: "Address",
         accessorKey: "address",
-        enableSorting: false,
-        size: 150,
+        size: 120,
+        enableResizing: true,
         minSize: 50,
         maxSize: 200,
     },
@@ -95,7 +94,8 @@ export const Columns: ColumnDef<IUser>[] = [
                     </span>
                 )}
             </div>
-        ), accessorKey: "isActive",
+        ),
+        accessorKey: "isActive",
         enableSorting: true,
         size: 50,
         minSize: 50,

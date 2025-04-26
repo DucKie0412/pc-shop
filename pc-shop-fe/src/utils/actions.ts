@@ -31,10 +31,7 @@ export async function authenticate(username: string, password: string) {
                 code: 2
             };
         } else {
-            return {
-                error: "Internal Server Error. Please try again",
-                code: 3
-            };
+            throw new Error(`Authentication failed: ${error.message}`);
         }
     }
 }

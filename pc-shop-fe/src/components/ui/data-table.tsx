@@ -6,7 +6,10 @@ import {
     getCoreRowModel,
     useReactTable,
     getPaginationRowModel,
-    getSortedRowModel
+    getSortedRowModel,
+    SortingState,
+    getFilteredRowModel,
+    ColumnFiltersState,
 } from "@tanstack/react-table";
 import {
     Table,
@@ -16,17 +19,27 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Button } from "./button";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
+    searchPlaceholder?: string;
+    searchColumn?: string;
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({
+    columns,
+    data,
+    searchPlaceholder = "Search...",
+    searchColumn,
+}: DataTableProps<TData, TValue>) {
     const [pageSize, setPageSize] = useState(5); // Default rows per page
+    const [sorting, setSorting] = useState<SortingState>([]);
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
     const table = useReactTable({
         data,
@@ -35,10 +48,29 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
         initialState: { pagination: { pageSize } },
+        onSortingChange: setSorting,
+        onColumnFiltersChange: setColumnFilters,
+        getFilteredRowModel: getFilteredRowModel(),
+        state: {
+            sorting,
+            columnFilters,
+        },
     });
 
     return (
         <div className="w-full">
+            {searchColumn && (
+                <div className="flex items-center py-4">
+                    <Input
+                        placeholder={searchPlaceholder}
+                        value={(table.getColumn(searchColumn)?.getFilterValue() as string) ?? ""}
+                        onChange={(event) =>
+                            table.getColumn(searchColumn)?.setFilterValue(event.target.value)
+                        }
+                        className="max-w-sm"
+                    />
+                </div>
+            )}
             {/* Table Wrapper */}
             <div className="rounded-md border overflow-x-auto">
                 <Table className="w-full">

@@ -8,42 +8,71 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.create(createProductDto);
+  async create(@Body() createProductDto: CreateProductDto) {
+    const product = await this.productsService.create(createProductDto);
+    return {
+      statusCode: 201,
+      message: "Product created successfully",
+      data: product
+    };
   }
 
   @Get()
-  findAll() {
-    return this.productsService.findAll();
+  async findAll() {
+    const products = await this.productsService.findAll();
+    return {
+      statusCode: 200,
+      message: "Products retrieved successfully",
+      data: products
+    };
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
+    let product;
     // Check if the id is a valid MongoDB ObjectId
     if (/^[0-9a-fA-F]{24}$/.test(id)) {
-      return this.productsService.findOne(id);
+      product = await this.productsService.findOne(id);
+    } else {
+      // If not an ObjectId, treat it as a slug
+      product = await this.productsService.findOneBySlug(id);
     }
-    // If not an ObjectId, treat it as a slug
-    return this.productsService.findOneBySlug(id);
+    return {
+      statusCode: 200,
+      message: "Product retrieved successfully",
+      data: product
+    };
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
+  async update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
+    let product;
     // Check if the id is a valid MongoDB ObjectId
     if (/^[0-9a-fA-F]{24}$/.test(id)) {
-      return this.productsService.update(id, updateProductDto);
+      product = await this.productsService.update(id, updateProductDto);
+    } else {
+      // If not an ObjectId, treat it as a slug
+      product = await this.productsService.updateBySlug(id, updateProductDto);
     }
-    // If not an ObjectId, treat it as a slug
-    return this.productsService.updateBySlug(id, updateProductDto);
+    return {
+      statusCode: 200,
+      message: "Product updated successfully",
+      data: product
+    };
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     // Check if the id is a valid MongoDB ObjectId
     if (/^[0-9a-fA-F]{24}$/.test(id)) {
-      return this.productsService.remove(id);
+      await this.productsService.remove(id);
+    } else {
+      // If not an ObjectId, treat it as a slug
+      await this.productsService.removeBySlug(id);
     }
-    // If not an ObjectId, treat it as a slug
-    return this.productsService.removeBySlug(id);
+    return {
+      statusCode: 200,
+      message: "Product deleted successfully"
+    };
   }
 }
