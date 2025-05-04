@@ -17,6 +17,7 @@ export default function EditProductPage() {
     const router = useRouter();
 
     useEffect(() => {
+        if (session.status !== "authenticated") return;
         const fetchProduct = async () => {
             try {
                 setIsLoading(true);
@@ -26,7 +27,6 @@ export default function EditProductPage() {
                     headers: {
                         'Authorization': `Bearer ${session.data?.user.accessToken}`
                     },
-
                 });
 
                 if (result?.data) {
@@ -43,17 +43,10 @@ export default function EditProductPage() {
                 setIsLoading(false);
             }
         };
+        fetchProduct();
+    }, [slug, session.status, session.data, router]);
 
-        if (session) {
-            fetchProduct();
-        }
-    }, [slug, session, router]);
-
-    if (!session) {
-        return <div className="container mx-auto py-10">Please sign in to edit products.</div>;
-    }
-
-    if (isLoading) {
+    if (session.status === "loading" || isLoading) {
         return (
             <Card>
                 <CardHeader>
@@ -61,6 +54,10 @@ export default function EditProductPage() {
                 </CardHeader>
             </Card>
         );
+    }
+
+    if (!session.data) {
+        return <div className="container mx-auto py-10">Please sign in to edit products.</div>;
     }
 
     if (!product) {

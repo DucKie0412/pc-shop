@@ -1,19 +1,18 @@
 "use client";
 
-import { Product } from "@/types/product";
+import { IProduct } from "@/types/product";
 import Link from "next/link";
 import { useState } from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import styles from '@/ui/css/product-card.module.css';
-import { cn } from "@/lib/utils";
+
 
 
 type ProductCardSliderProps = {
     title: string;
-    products: Product[];
+    products: IProduct[];
     viewAllLink?: string;
     autoPlayInterval?: number;
 };
@@ -92,7 +91,7 @@ export default function ProductCardSlider({
                     }}
                 >
                     {products.map((product) => (
-                        <SwiperSlide key={product.id}>
+                        <SwiperSlide key={product._id}>
                             <Link href={`/product/${product.slug}`}>
                                 <div className="bg-white rounded-lg overflow-hidden border hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                                     {/* Discount Badge */}
@@ -105,8 +104,8 @@ export default function ProductCardSlider({
                                     {/* Product Image */}
                                     <div className="relative aspect-square">
                                         <img
-                                            src={product.image}
-                                            alt={product.title}
+                                            src={product?.images[0]}
+                                            alt={product.name}
                                             className="w-full h-full object-cover"
                                         />
                                     </div>
@@ -114,7 +113,7 @@ export default function ProductCardSlider({
                                     {/* Product Info */}
                                     <div className="p-3">
                                         <h3 className="text-sm font-medium text-gray-900 line-clamp-2 min-h-[2.5rem]">
-                                            {product.title}
+                                            {product.name}
                                         </h3>
                                         <div className="mt-2 space-y-1">
                                             <p className="text-lg font-bold text-[#E31837]">

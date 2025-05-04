@@ -67,7 +67,7 @@ export default function ManufacturersPage() {
                 </div>
                 <div className="flex items-center gap-4">
                     <Input
-                        placeholder="Search manufacturers by name..."
+                        placeholder="Search manufacturer by name..."
                         className="max-w-sm"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}

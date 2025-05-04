@@ -31,14 +31,10 @@ export default function ProductsPage() {
                     url: '/api/products',
                     method: 'GET',
                 });
-                
-                console.log('API Response:', result);
-                
+                                
                 if (result?.data) {
                     setProducts(result.data);
                 }
-
-                console.log('Products state:', products);
             } catch (error) {
                 console.error("Error fetching products:", error);
             } finally {
@@ -50,6 +46,9 @@ export default function ProductsPage() {
         }
     }, [session]);
 
+    const filteredProducts = products.filter(product =>
+        product?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
     if (!session) {
         return <div className="container mx-auto py-10">Please sign in to view products.</div>;
     }
@@ -78,7 +77,7 @@ export default function ProductsPage() {
                     {isLoading ? (
                         <div className="p-4 text-center">Loading...</div>
                     ) : (
-                        <DataTable columns={columns} data={products} />
+                        <DataTable columns={columns} data={filteredProducts} />
                     )}
                 </div>
             </div>
