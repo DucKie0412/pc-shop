@@ -161,31 +161,42 @@ function Header() {
                                     {/* Mega Menu */}
                                     <div className="absolute mt-5 left-0 w-[800px] bg-white shadow-lg z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-y-2 group-hover:translate-y-0">
                                         <div className="p-6">
-                                            <div className="grid grid-cols-3 gap-6">
+                                            <div className="grid grid-cols-4 gap-6">
                                                 <div className="space-y-4">
-                                                    <h3 className="font-bold text-[#0088D1] border-b pb-2">PC GAMING</h3>
+                                                    <h3 className="font-bold text-[#0088D1] border-b pb-2">CPU</h3>
                                                     <ul className="space-y-2 text-gray-700">
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Gaming giá rẻ</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Gaming tầm trung</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Gaming cao cấp</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Gaming siêu cao cấp</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Intel Core</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">AMD Ryzen</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Intel Xeon</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">AMD Threadripper</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Celeron</li>
                                                     </ul>
                                                 </div>
                                                 <div className="space-y-4">
-                                                    <h3 className="font-bold text-[#0088D1] border-b pb-2">PC WORKSTATION</h3>
+                                                    <h3 className="font-bold text-[#0088D1] border-b pb-2">MAINBOARD</h3>
                                                     <ul className="space-y-2 text-gray-700">
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Render & Design</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Đồ họa chuyên nghiệp</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Machine Learning</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">ASROCK</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">GIGABYTE</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">MSI</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">ASUS</li>
                                                     </ul>
                                                 </div>
                                                 <div className="space-y-4">
-                                                    <h3 className="font-bold text-[#0088D1] border-b pb-2">LINH KIỆN MÁY TÍNH</h3>
+                                                    <h3 className="font-bold text-[#0088D1] border-b pb-2">RAM</h3>
                                                     <ul className="space-y-2 text-gray-700">
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">CPU - Bộ vi xử lý</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Mainboard - Bo mạch chủ</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">VGA - Card màn hình</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">RAM - Bộ nhớ trong</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Corsair</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">G.SKILL</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Kingston</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Crucial</li>
+                                                    </ul>
+                                                </div>
+                                                <div className="space-y-4">
+                                                    <h3 className="font-bold text-[#0088D1] border-b pb-2">VGA</h3>
+                                                    <ul className="space-y-2 text-gray-700">
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">NVIDIA</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">ZOTAC</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">ASUS</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">GIGABYTE</li>
                                                     </ul>
                                                 </div>
                                             </div>

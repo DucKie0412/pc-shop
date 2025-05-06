@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { Public } from 'src/auth/decorator/customize-guard';
 
 @Controller('products')
 export class ProductsController {
@@ -12,11 +13,13 @@ export class ProductsController {
     return await this.productsService.create(createProductDto);
   }
 
+  @Public()
   @Get()
   async findAll() {
     return await this.productsService.findAll();
   }
 
+  @Public()
   @Get(':id')
   async findOne(@Param('id') id: string) {
     let product;

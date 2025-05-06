@@ -6,7 +6,7 @@ export default function CreateProductPage() {
             <div className="flex justify-between items-center mb-4">
                 <h1 className="text-2xl font-bold">Create Product</h1>
             </div>
-            <div className="max-w-2xl">
+            <div className="w-full">
                 <ProductForm />
             </div>
         </div>

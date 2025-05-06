@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import { sendRequest } from "@/utils/api";
+import { ICategory } from "@/types/category";
 
 interface IBackendResponse<T> {
     statusCode: number;
@@ -19,6 +20,8 @@ interface IBackendResponse<T> {
 
 export default function ProductsPage() {
     const [products, setProducts] = useState<IProduct[]>([]);
+    const [categories, setCategories] = useState<ICategory[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<string>("all");
     const [searchQuery, setSearchQuery] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const { data: session } = useSession();
@@ -46,9 +49,26 @@ export default function ProductsPage() {
         }
     }, [session]);
 
-    const filteredProducts = products.filter(product =>
-        product?.name?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    useEffect(() => {
+        async function fetchCategories() {
+            try {
+                const res = await sendRequest<IBackendResponse<ICategory[]>>({
+                    url: '/api/categories',
+                    method: 'GET',
+                });
+                setCategories(res?.data || []);
+            } catch (err) {
+                setCategories([]);
+            }
+        }
+        fetchCategories();
+    }, []);
+
+    const filteredProducts = products.filter(product => {
+        const matchesCategory = selectedCategory === "all" || product.categoryId?._id === selectedCategory;
+        const matchesSearch = product?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesCategory && matchesSearch;
+    });
     if (!session) {
         return <div className="container mx-auto py-10">Please sign in to view products.</div>;
     }
@@ -72,6 +92,23 @@ export default function ProductsPage() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
+                </div>
+                <div className="flex gap-2 mb-4">
+                    <button
+                        className={`px-3 py-1 rounded ${selectedCategory === "all" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                        onClick={() => setSelectedCategory("all")}
+                    >
+                        All
+                    </button>
+                    {categories.map(cat => (
+                        <button
+                            key={cat._id}
+                            className={`px-3 py-1 rounded ${selectedCategory === cat._id ? "bg-blue-600 text-white" : "bg-gray-200"}`}
+                            onClick={() => setSelectedCategory(cat._id)}
+                        >
+                            {cat.name}
+                        </button>
+                    ))}
                 </div>
                 <div className="rounded-md border">
                     {isLoading ? (

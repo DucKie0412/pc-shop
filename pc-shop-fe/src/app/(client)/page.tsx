@@ -6,7 +6,6 @@ import HomepageSubBanner from "@/components/client/homepage-sub-banner";
 import ProductCardSlider from "@/components/client/product-card-slider";
 import { IProduct } from "@/types/product";
 import { sendRequest } from "@/utils/api";
-import { useSession } from "next-auth/react";
 
 const images = [
     {
@@ -44,11 +43,9 @@ const subBannerImages = [
     }
 ]
 
-
 function Homepage() {
     const [products, setProducts] = useState<IProduct[]>([]);
     const [loading, setLoading] = useState(true);
-    const { data: session } = useSession();
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -65,8 +62,9 @@ function Homepage() {
                 setLoading(false);
             }
         };
-        if (session) fetchProducts();
-    }, [session]);
+        fetchProducts();
+        console.log("products", products);
+    }, []);
 
     return (
         <div>
