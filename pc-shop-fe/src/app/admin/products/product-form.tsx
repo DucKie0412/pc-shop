@@ -1,6 +1,6 @@
 "use client"
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,17 +24,20 @@ import { IManufacturer } from "@/types/manufacturer";
 import { useSession } from "next-auth/react";
 import { CldUploadWidget } from 'next-cloudinary';
 import Image from 'next/image';
+import { PRODUCT_TYPE_SPECS, PRODUCT_TYPES } from "@/constants/productSpecs";
 
-const formSchema = z.object({
+const baseSchema = z.object({
     name: z.string().min(1, "Name is required"),
     description: z.string().min(1, "Description is required"),
+    type: z.enum(PRODUCT_TYPES as [string, ...string[]]),
     categoryId: z.string().min(1, "Category is required"),
     manufacturerId: z.string().min(1, "Manufacturer is required"),
     stock: z.coerce.number().min(0, "Stock must be at least 0"),
     originalPrice: z.coerce.number().min(0, "Price must be at least 0"),
-    discount: z.coerce.number().min(0, "Discount must be at least 0"),
+    discount: z.coerce.number().min(0, "Discount must be at least 0").max(100, "Discount must be at most 100"),
     images: z.array(z.string()).optional(),
     imagePublicIds: z.array(z.string()).optional(),
+    specs: z.record(z.any()),
 });
 
 interface ProductFormProps {
@@ -49,6 +52,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
     const [images, setImages] = useState<string[]>(initialData?.images || []);
     const [imagePublicIds, setImagePublicIds] = useState<string[]>(initialData?.imagePublicIds || []);
     const { data: session } = useSession();
+    const [selectedType, setSelectedType] = useState(initialData?.type || PRODUCT_TYPES[0]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -81,11 +85,12 @@ export function ProductForm({ initialData }: ProductFormProps) {
         fetchData();
     }, []);
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const form = useForm<z.infer<typeof baseSchema>>({
+        resolver: zodResolver(baseSchema),
         defaultValues: {
             name: initialData?.name || "",
             description: initialData?.description || "",
+            type: initialData?.type || PRODUCT_TYPES[0],
             categoryId: initialData?.categoryId?._id || "",
             manufacturerId: initialData?.manufacturerId?._id || "",
             stock: initialData?.stock || 0,
@@ -93,10 +98,18 @@ export function ProductForm({ initialData }: ProductFormProps) {
             discount: initialData?.discount || 0,
             images: initialData?.images || [],
             imagePublicIds: initialData?.imagePublicIds || [],
+            specs: initialData?.specs || {},
         },
     });
 
-    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    // Update type and reset specs when type changes
+    const handleTypeChange = (value: string) => {
+        setSelectedType(value);
+        form.setValue("type", value);
+        form.setValue("specs", {});
+    };
+
+    const onSubmit = async (values: z.infer<typeof baseSchema>) => {
         try {
             setIsLoading(true);
             const formData = {
@@ -104,6 +117,9 @@ export function ProductForm({ initialData }: ProductFormProps) {
                 images,
                 imagePublicIds,
             };
+
+            // Calculate finalPrice
+            formData.finalPrice = formData.originalPrice - (formData.originalPrice * formData.discount) / 100;
 
             if (initialData) {
                 // Update product
@@ -173,6 +189,37 @@ export function ProductForm({ initialData }: ProductFormProps) {
                             <FormControl>
                                 <Textarea placeholder="Product description" {...field} />
                             </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="type"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Type</FormLabel>
+                            <Select
+                                value={field.value}
+                                onValueChange={(value) => {
+                                    field.onChange(value);
+                                    handleTypeChange(value);
+                                }}
+                                disabled={isLoading}
+                            >
+                                <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a type" />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {PRODUCT_TYPES.map((type: string) => (
+                                        <SelectItem key={type} value={type}>
+                                            {type.toUpperCase()}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -347,6 +394,24 @@ export function ProductForm({ initialData }: ProductFormProps) {
                                 </button>
                             )}
                         </CldUploadWidget>
+                    </div>
+                </div>
+                <div>
+                    <FormLabel>Technical Specs</FormLabel>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {PRODUCT_TYPE_SPECS[selectedType].map((spec: { name: string; label: string; type: string }) => (
+                            <div key={spec.name}>
+                                <FormLabel>{spec.label}</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type={spec.type}
+                                        placeholder={spec.label}
+                                        {...form.register(`specs.${spec.name}`)}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </div>
+                        ))}
                     </div>
                 </div>
                 <Button type="submit" disabled={isLoading}>

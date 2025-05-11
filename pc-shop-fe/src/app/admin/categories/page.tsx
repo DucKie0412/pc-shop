@@ -22,25 +22,25 @@ export default function CategoriesPage() {
     const [isLoading, setIsLoading] = useState(true);
     const { data: session } = useSession();
 
-    useEffect(() => {
-        async function fetchCategories() {
-            try {
-                const response = await fetch('/api/categories');
-                const data = await response.json();
+    const fetchCategories = async () => {
+        try {
+            const response = await fetch('/api/categories');
+            const data = await response.json();
 
-                if (data.error) {
-                    console.error("Error:", data.error);
-                    return;
-                }
-
-                setCategories(data.data || []);
-            } catch (error) {
-                console.error("Error fetching categories:", error);
-            } finally {
-                setIsLoading(false);
+            if (data.error) {
+                console.error("Error:", data.error);
+                return;
             }
-        }
 
+            setCategories(data.data || []);
+        } catch (error) {
+            console.error("Error fetching categories:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    useEffect(() => {          
         if (session) {
             fetchCategories();
         }
@@ -76,7 +76,7 @@ export default function CategoriesPage() {
                     {isLoading ? (
                         <div className="p-4 text-center">Loading...</div>
                     ) : (
-                        <DataTable columns={columns} data={filteredCategories} />
+                        <DataTable columns={columns(fetchCategories)} data={filteredCategories} />
                     )}
                 </div>
             </div>

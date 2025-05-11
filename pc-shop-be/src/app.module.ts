@@ -42,7 +42,7 @@ import { UploadModule } from './modules/upload/upload.module';
           },
         },
         defaults: {
-          from: '"Duckie PC Shop" <no-reply@duckieshop.com>',
+          from: 'dinhtranduc0412@gmail.com',
         },
         //preview: true,
         template: {

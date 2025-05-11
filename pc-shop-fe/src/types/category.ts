@@ -3,6 +3,7 @@ export interface ICategory {
     name: string;
     description?: string;
     image?: string;
+    type?: string;
     createdAt?: string;
     updatedAt?: string;
 } 

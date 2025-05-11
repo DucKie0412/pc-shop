@@ -1,4 +1,5 @@
 import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { CategoryType } from '../schemas/category.schema';
 
 export class CreateCategoryDto {
   @IsString()
@@ -12,4 +13,8 @@ export class CreateCategoryDto {
   @IsString()
   @IsOptional()
   image?: string;
+
+  @IsString()
+  @IsOptional()
+  type?: CategoryType;
 } 

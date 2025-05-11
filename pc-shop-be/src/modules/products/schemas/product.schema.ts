@@ -5,17 +5,32 @@ import { Manufacturer } from '../../manufacturers/schemas/manufacturer.schema';
 
 export type ProductDocument = HydratedDocument<Product>;
 
+export enum ProductType {
+    CPU = 'cpu',
+    VGA = 'vga',
+    RAM = 'ram',
+    SSD = 'ssd',
+    MAINBOARD = 'mainboard',
+    PSU = 'psu',
+    CASE = 'case',
+    MONITOR = 'monitor',
+    OTHER = 'other'
+}
+
 @Schema({ timestamps: true })
-export class Product {
+export class Product extends Document {
 
-    @Prop()
-    id: string;                 // id sản phẩm
-
-    @Prop()
+    @Prop({ required: true })
     name: string;               // tên sản phẩm
 
-    @Prop()
+    @Prop({ required: true })
     description: string;        // mô tả sản phẩm
+
+    @Prop({
+        required: true,
+        enum: ProductType
+    })
+    type: ProductType;
 
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Category' })
     categoryId: Category;       // id danh mục sản phẩm
@@ -23,17 +38,20 @@ export class Product {
     @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Manufacturer' })
     manufacturerId: Manufacturer; // id nhà sản xuất
 
-    @Prop({ default: 0 })
+    @Prop({ default: 0, min: 0 })
     stock: number;              // tồn kho sản phẩm
 
-    @Prop()
+    @Prop({ required: true, min: 0 })
     originalPrice: number;      // giá gốc sản phẩm
 
-    @Prop({ default: 0 })
+    @Prop({ default: 0, min: 0, max: 100 })
     discount: number;           // giảm giá sản phẩm
 
-    @Prop({ default: 0 })
-    price: number;              // giá sau khi giảm
+    @Prop({ required: true, min: 0 })
+    finalPrice: number;
+
+    @Prop({ type: Object, required: true })
+    specs: Record<string, any>;
 
     @Prop()
     images: string[];           // lưu đường dẫn tất cả hình ảnh của sản phẩm
@@ -61,7 +79,7 @@ ProductSchema.pre('save', function (next) {
     // Calculate price based on originalPrice and discount
     if (this.isModified('originalPrice') || this.isModified('discount')) {
         const discountAmount = (this.originalPrice * this.discount) / 100;
-        this.price = this.originalPrice - discountAmount;
+        this.finalPrice = this.originalPrice - discountAmount;
     }
 
     next();

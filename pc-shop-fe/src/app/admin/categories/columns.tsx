@@ -20,7 +20,7 @@ import { toast } from "react-toastify";
 import { SortableHeader } from "@/components/ui/sortable-header";
 import Image from "next/image";
 
-export const columns: ColumnDef<ICategory>[] = [
+export const columns = (refreshTable: () => void): ColumnDef<ICategory>[] => [
     {
         header: "ID",
         accessorKey: "_id",
@@ -56,10 +56,9 @@ export const columns: ColumnDef<ICategory>[] = [
                     url: `${process.env.NEXT_PUBLIC_API_URL}/categories/${category._id}`,
                     headers: { Authorization: `Bearer ${session?.data?.user.accessToken}` },
                 });
-                console.log("Category deleted:", res);
                 if (res?.statusCode === 200) {
                     toast.success("Category deleted successfully!", { autoClose: 2300 });
-                    router.refresh();
+                    refreshTable();
                 }
 
                 if (res?.statusCode === 400) {

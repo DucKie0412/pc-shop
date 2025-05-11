@@ -18,19 +18,23 @@ const RegisterForm = () => {
         defaultValues: {
             email: "",
             password: "",
-            name: ""
+            name: "",
+            phone: "",
+            address: ""
         },
     });
 
     const onSubmit = async (values:any) => {
-        const {email, password, name} = values
+        const {email, password, name, phone, address} = values
         const res = await sendRequest<IBackendRes<any>>({
             method: "POST",
             url: `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
             body: {
                 email,
                 password,
-                name
+                name,
+                phone,
+                address
             }
         })
 
@@ -90,9 +94,38 @@ const RegisterForm = () => {
                             <FormField
                                 control={form.control}
                                 name="name"
+                                rules={{ required: "Please input your name!" }}
                                 render={({ field }) => (
                                     <FormItem>
                                         <Label>Tên</Label>
+                                        <FormControl>
+                                            <Input type="text" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="phone"
+                                rules={{ required: "Please input your phone number!" }}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <Label>Số điện thoại</Label>
+                                        <FormControl>
+                                            <Input type="text" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="address"
+                                rules={{ required: "Please input your address!" }}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <Label>Địa chỉ</Label>
                                         <FormControl>
                                             <Input type="text" {...field} />
                                         </FormControl>

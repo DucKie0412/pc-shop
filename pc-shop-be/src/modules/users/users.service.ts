@@ -100,7 +100,7 @@ export class UsersService {
       });
 
     //send verification email
-    this.mailerService.sendMail({
+    await this.mailerService.sendMail({
       to: createdUser.email, // list of receivers
       subject: 'Active your account at Duckie Shop', // Subject line
       template: "sending-activation-code",
@@ -129,7 +129,7 @@ export class UsersService {
       const generateCodeId = () => Math.floor(100000 + Math.random() * 900000).toString();
 
       //send verification email
-      this.mailerService.sendMail({
+      await this.mailerService.sendMail({
         to: user.email, // list of receivers
         subject: 'Change your password account at Duckie Shop', // Subject line
         template: "sending-change-password-code",
@@ -148,7 +148,7 @@ export class UsersService {
     }
     else {
       //send verification email
-      this.mailerService.sendMail({
+      await this.mailerService.sendMail({
         to: user?.email, // list of receivers
         subject: 'Change your password account at Duckie Shop', // Subject line
         template: "sending-change-password-code",
@@ -199,7 +199,7 @@ export class UsersService {
       const generateCodeId = () => Math.floor(100000 + Math.random() * 900000).toString();
 
       //send verification email
-      this.mailerService.sendMail({
+      await this.mailerService.sendMail({
         to: user.email, // list of receivers
         subject: 'Active your account at Duckie Shop', // Subject line
         template: "sending-activation-code",
@@ -218,7 +218,7 @@ export class UsersService {
     }
     else {
       //send verification email
-      this.mailerService.sendMail({
+      await this.mailerService.sendMail({
         to: user?.email, // list of receivers
         subject: 'Active your account at Duckie Shop', // Subject line
         template: "sending-activation-code",

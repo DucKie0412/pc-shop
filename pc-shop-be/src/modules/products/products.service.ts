@@ -14,7 +14,15 @@ export class ProductsService {
     ) { }
 
     async create(createProductDto: CreateProductDto): Promise<Product> {
-        const createdProduct = new this.productModel(createProductDto);
+        // Calculate final price
+        const discountAmount = (createProductDto.originalPrice * createProductDto.discount) / 100;
+        const finalPrice = createProductDto.originalPrice - discountAmount;
+
+        const createdProduct = new this.productModel({
+            ...createProductDto,
+            finalPrice
+        });
+
         return createdProduct.save();
     }
 

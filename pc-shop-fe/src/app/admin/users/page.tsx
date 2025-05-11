@@ -53,10 +53,6 @@ export default function UsersPage() {
             <div className="flex flex-col gap-4">
                 <div className="flex justify-between items-center">
                     <h1 className="text-3xl font-bold">Users</h1>
-                    <Button>
-                        <Plus className="mr-2 h-4 w-4" />
-                        <Link href="/admin/users/create">Add User</Link>
-                    </Button>
                 </div>
                 <div className="flex items-center gap-4">
                     <Input

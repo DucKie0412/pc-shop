@@ -92,13 +92,13 @@ export const columns: ColumnDef<IProduct>[] = [
     },
     {
         header: ({ column }) => <SortableHeader column={column} title="Final Price" />,
-        accessorKey: "price",
+        accessorKey: "finalPrice",
         size: 120,
         enableResizing: true,
         minSize: 50,
         maxSize: 200,
         cell: ({ row }) => {
-            const price = row.original.price;
+            const price = row.original.finalPrice;
             return formatCurrency(price);
         },
     },

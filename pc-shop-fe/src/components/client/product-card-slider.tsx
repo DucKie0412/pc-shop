@@ -23,13 +23,13 @@ export default function ProductCardSlider({
     viewAllLink,
     autoPlayInterval = 3000,
 }: ProductCardSliderProps) {
-    const formatPrice = (price: number) => {
+    const formatPrice = (finalPrice: number) => {
         return new Intl.NumberFormat('vi-VN', {
             style: 'currency',
             currency: 'VND',
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
-        }).format(price);
+        }).format(finalPrice);
     };
 
     return (
@@ -117,7 +117,7 @@ export default function ProductCardSlider({
                                         </h3>
                                         <div className="mt-2 space-y-1">
                                             <p className="text-lg font-bold text-[#E31837]">
-                                                {formatPrice(product.price)}
+                                                {formatPrice(product.finalPrice)}
                                             </p>
                                             {product.discount > 0 && (
                                                 <p className="text-sm text-gray-500 line-through">

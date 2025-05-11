@@ -63,7 +63,6 @@ function Homepage() {
             }
         };
         fetchProducts();
-        console.log("products", products);
     }, []);
 
     return (

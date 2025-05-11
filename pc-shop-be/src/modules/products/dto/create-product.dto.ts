@@ -1,5 +1,6 @@
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Min, IsEnum, IsObject } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { ProductType } from '../schemas/product.schema';
 
 export class CreateProductDto {
     @IsString()
@@ -9,6 +10,10 @@ export class CreateProductDto {
     @IsString()
     @IsOptional()
     description?: string;
+
+    @IsEnum(ProductType)
+    @IsNotEmpty({ message: "Product type is required" })
+    type: ProductType;
 
     @IsNotEmpty({ message: "Category ID is required" })
     @IsString()
@@ -20,24 +25,28 @@ export class CreateProductDto {
 
     @IsNumber()
     @Min(0)
-    @Transform(({ value }) => parseInt(value, 10))
+    @Transform(({ value }) => typeof value === 'string' ? parseFloat(value) : value)
     stock: number;
 
     @IsNotEmpty({ message: "Original price is required" })
     @IsNumber()
     @Min(0)
-    @Transform(({ value }) => parseInt(value, 10))
+    @Transform(({ value }) => typeof value === 'string' ? parseFloat(value) : value)
     originalPrice: number;
 
     @IsNotEmpty({ message: "Discount is required" })
     @IsNumber()
     @Min(0)
-    @Transform(({ value }) => parseInt(value, 10))
+    @Transform(({ value }) => typeof value === 'string' ? parseFloat(value) : value)
     discount: number;
 
     @IsNumber()
     @IsOptional()
     price?: number;  // Nếu cần tính tự động
+
+    @IsObject()
+    @IsNotEmpty({ message: "Product specifications are required" })
+    specs: Record<string, any>;
 
     @IsArray()
     @IsOptional()

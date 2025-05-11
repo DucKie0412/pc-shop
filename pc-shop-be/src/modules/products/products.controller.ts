@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -10,7 +10,19 @@ export class ProductsController {
 
   @Post()
   async create(@Body() createProductDto: CreateProductDto) {
-    return await this.productsService.create(createProductDto);
+    try {
+      const product = await this.productsService.create(createProductDto);
+      return {
+        statusCode: HttpStatus.CREATED,
+        message: "Product created successfully",
+        data: product
+      };
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to create product',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
   }
 
   @Public()

@@ -16,7 +16,9 @@ export interface IProduct {
     stock: number;
     originalPrice: number;
     discount: number;
-    price: number;
     createdAt: string;
     updatedAt: string;
+    type: string;
+    specs: Record<string, any>;
+    finalPrice: number;
 } 
