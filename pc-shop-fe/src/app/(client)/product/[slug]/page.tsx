@@ -8,6 +8,7 @@ interface IProduct {
     name: string;
     price: number;
     originalPrice: number;
+    discount: number;
     images: string[];
     detail: string;
     // add other fields as needed
@@ -27,7 +28,7 @@ function ProductPage() {
                     url: `${process.env.NEXT_PUBLIC_API_URL}/products/${slug}`,
                     method: 'GET',
                 });
-                
+
                 if (res?.data) {
                     setProduct(res.data);
                     setMainImage(res.data.images[0] || null);
@@ -73,10 +74,19 @@ function ProductPage() {
                 <div className="md:w-1/2">
                     <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
                     <div className="flex items-center gap-4 mb-2">
-                        <span className="text-2xl font-bold text-red-600">{product.price.toLocaleString()}₫</span>
-                        {product.originalPrice > product.price && (
-                            <span className="text-lg line-through text-gray-400">{product.originalPrice.toLocaleString()}₫</span>
-                        )}
+                        {(() => {
+                            const price = product.price ?? (product.originalPrice && product.discount !== undefined
+                                ? product.originalPrice - (product.originalPrice * product.discount) / 100
+                                : 0);
+                            return (
+                                <>
+                                    <span className="text-2xl font-bold text-red-600">{typeof price === 'number' ? price.toLocaleString() : 'N/A'}₫</span>
+                                    {product.originalPrice > price && (
+                                        <span className="text-lg line-through text-gray-400">{product.originalPrice.toLocaleString()}₫</span>
+                                    )}
+                                </>
+                            );
+                        })()}
                     </div>
                     <div className="mb-4">
                         <h2 className="text-lg font-semibold mb-1">Chi tiết cấu hình:</h2>

@@ -7,7 +7,9 @@ import { ICategory } from "@/types/category";
 import { IManufacturer } from "@/types/manufacturer";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
+import { toast } from "react-toastify"; 
+import Image from "next/image";
+import { CldUploadWidget } from 'next-cloudinary';
 import {
   Form,
   FormControl,
@@ -27,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const gpuSchema = z.object({
+const vgaSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
   categoryId: z.string().min(1, "Category is required"),
@@ -37,18 +39,22 @@ const gpuSchema = z.object({
   discount: z.coerce.number().min(0).max(100),
   vram: z.string().min(1, "VRAM must be at least 1"),
   vramType: z.string().min(1, "VRAM type is required"),
+  images: z.array(z.string()).optional(),
+  imagePublicIds: z.array(z.string()).optional(),
 });
 
-export default function AddGPUForm({ onBack }: { onBack: () => void }) {
+export default function AddVGAForm({ onBack }: { onBack: () => void }) {
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [manufacturers, setManufacturers] = useState<IManufacturer[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [categoryLocked, setCategoryLocked] = useState(false);
+  const [images, setImages] = useState<string[]>([]);
+  const [imagePublicIds, setImagePublicIds] = useState<string[]>([]);
   const { data: session } = useSession();
   const router = useRouter();
 
   const form = useForm({
-    resolver: zodResolver(gpuSchema),
+    resolver: zodResolver(vgaSchema),
     defaultValues: { 
       stock: 0, 
       originalPrice: 0, 
@@ -58,7 +64,9 @@ export default function AddGPUForm({ onBack }: { onBack: () => void }) {
       name: "",
       description: "",
       categoryId: "",
-      manufacturerId: ""
+      manufacturerId: "",
+      images: [],
+      imagePublicIds: []
     },
   });
 
@@ -126,6 +134,8 @@ export default function AddGPUForm({ onBack }: { onBack: () => void }) {
           vram: values.vram,
           vramType: values.vramType,
         },
+        images: values.images,
+        imagePublicIds: values.imagePublicIds
       };
       const response = await sendRequest<IBackendRes<any>>({
         url: "/api/products",
@@ -346,6 +356,83 @@ export default function AddGPUForm({ onBack }: { onBack: () => void }) {
                   </FormItem>
                 )}
               />
+            </div>
+          </div>
+          <div className="space-y-4">
+            <FormLabel>Product Images</FormLabel>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {images.map((image, index) => (
+                <div key={index} className="relative group">
+                  <Image
+                    src={image}
+                    alt={`Product image ${index + 1}`}
+                    width={200}
+                    height={200}
+                    className={`rounded-lg object-cover ${index === 0 ? 'ring-2 ring-blue-500' : ''}`}
+                  />
+                  {index === 0 && (
+                    <span className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
+                      Main
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // Move this image to the first position
+                      setImages([image, ...images.filter((_, i) => i !== index)]);
+                      setImagePublicIds([imagePublicIds[index], ...imagePublicIds.filter((_, i) => i !== index)]);
+                    }}
+                    className="absolute bottom-2 left-2 bg-white text-blue-600 border border-blue-500 px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                    disabled={index === 0}
+                  >
+                    Set as Main
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setImages(images.filter((_, i) => i !== index));
+                      setImagePublicIds(imagePublicIds.filter((_, i) => i !== index));
+                    }}
+                    className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+              <CldUploadWidget
+                uploadPreset="pc_shop_products"
+                options={{ multiple: true }}
+                onSuccess={(result: any) => {
+                  if (Array.isArray(result)) {
+                    setImages(prev => [
+                      ...prev,
+                      ...result.map((r) => r.info.secure_url)
+                    ]);
+                    setImagePublicIds(prev => [
+                      ...prev,
+                      ...result.map((r) => r.info.public_id)
+                    ]);
+                  } else if (result?.info?.secure_url) {
+                    setImages(prev => [...prev, result.info.secure_url]);
+                    setImagePublicIds(prev => [...prev, result.info.public_id]);
+                  }
+                }}
+              >
+                {({ open }) => (
+                  <button
+                    type="button"
+                    onClick={() => open()}
+                    className="flex flex-col items-center justify-center h-[200px] border-2 border-dashed rounded-lg hover:border-blue-500 transition-colors"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    <span className="mt-2 text-sm text-gray-500">Upload Image</span>
+                  </button>
+                )}
+              </CldUploadWidget>
             </div>
           </div>
           <Button type="submit" className="w-full">Add VGA</Button>

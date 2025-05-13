@@ -6,7 +6,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import { sendRequest } from "@/utils/api";
@@ -26,28 +26,28 @@ export default function ProductsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const { data: session } = useSession();
 
-    useEffect(() => {
-        async function fetchProducts() {
-            try {
-                setIsLoading(true);
-                const result = await sendRequest<IBackendResponse<IProduct[]>>({
-                    url: '/api/products',
-                    method: 'GET',
-                });
-                                
-                if (result?.data) {
-                    setProducts(result.data);
-                }
-            } catch (error) {
-                console.error("Error fetching products:", error);
-            } finally {
-                setIsLoading(false);
+    const fetchProducts = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            const result = await sendRequest<IBackendResponse<IProduct[]>>({
+                url: '/api/products',
+                method: 'GET',
+            });
+            if (result?.data) {
+                setProducts(result.data);
             }
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        } finally {
+            setIsLoading(false);
         }
+    }, []);
+
+    useEffect(() => {
         if (session) {
             fetchProducts();
         }
-    }, [session]);
+    }, [session, fetchProducts]);
 
     useEffect(() => {
         async function fetchCategories() {
@@ -114,7 +114,7 @@ export default function ProductsPage() {
                     {isLoading ? (
                         <div className="p-4 text-center">Loading...</div>
                     ) : (
-                        <DataTable columns={columns} data={filteredProducts} />
+                        <DataTable columns={columns(fetchProducts)} data={filteredProducts} />
                     )}
                 </div>
             </div>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { PRODUCT_TYPES } from "@/constants/productSpecs";
 import AddCPUForm from "./forms/AddCPUForm";
-import AddGPUForm from "./forms/AddGPUForm";
+import AddVGAForm from "./forms/AddVGAForm";
 import AddRAMForm from "./forms/AddRAMForm";
 import AddSSDForm from "./forms/AddSSDForm";
 import AddMainboardForm from "./forms/AddMainboardForm";
@@ -14,7 +14,7 @@ import AddOtherForm from "./forms/AddOtherForm";
 
 const typeToForm: Record<string, React.FC<{ onBack: () => void }>> = {
   cpu: AddCPUForm,
-  gpu: AddGPUForm,
+  vga: AddVGAForm,
   ram: AddRAMForm,
   ssd: AddSSDForm,
   mainboard: AddMainboardForm,

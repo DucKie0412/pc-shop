@@ -25,6 +25,7 @@ import { useSession } from "next-auth/react";
 import { CldUploadWidget } from 'next-cloudinary';
 import Image from 'next/image';
 import { PRODUCT_TYPE_SPECS, PRODUCT_TYPES } from "@/constants/productSpecs";
+import type { PRODUCT_TYPE_SPECS as ProductTypeSpecsType } from "@/constants/productSpecs";
 
 const baseSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -119,7 +120,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
             };
 
             // Calculate finalPrice
-            formData.finalPrice = formData.originalPrice - (formData.originalPrice * formData.discount) / 100;
+            (formData as any).finalPrice = formData.originalPrice - (formData.originalPrice * formData.discount) / 100;
 
             if (initialData) {
                 // Update product
@@ -195,37 +196,6 @@ export function ProductForm({ initialData }: ProductFormProps) {
                 />
                 <FormField
                     control={form.control}
-                    name="type"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Type</FormLabel>
-                            <Select
-                                value={field.value}
-                                onValueChange={(value) => {
-                                    field.onChange(value);
-                                    handleTypeChange(value);
-                                }}
-                                disabled={isLoading}
-                            >
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a type" />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    {PRODUCT_TYPES.map((type: string) => (
-                                        <SelectItem key={type} value={type}>
-                                            {type.toUpperCase()}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
                     name="categoryId"
                     render={({ field }) => (
                         <FormItem>
@@ -233,7 +203,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
                             <Select
                                 value={field.value}
                                 onValueChange={field.onChange}
-                                disabled={isLoading}
+                                disabled={true}
                             >
                                 <FormControl>
                                     <SelectTrigger>
@@ -399,19 +369,38 @@ export function ProductForm({ initialData }: ProductFormProps) {
                 <div>
                     <FormLabel>Technical Specs</FormLabel>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {PRODUCT_TYPE_SPECS[selectedType].map((spec: { name: string; label: string; type: string }) => (
-                            <div key={spec.name}>
-                                <FormLabel>{spec.label}</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        type={spec.type}
-                                        placeholder={spec.label}
-                                        {...form.register(`specs.${spec.name}`)}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </div>
-                        ))}
+                        {Array.isArray(PRODUCT_TYPE_SPECS[selectedType as keyof typeof PRODUCT_TYPE_SPECS]) &&
+                            (PRODUCT_TYPE_SPECS[selectedType as keyof typeof PRODUCT_TYPE_SPECS] as Array<{ name: string; label: string; type: string; options?: string[] }>).map((spec) => (
+                                <div key={spec.name}>
+                                    <FormLabel>{spec.label}</FormLabel>
+                                    <FormControl>
+                                        {spec.options ? (
+                                            <Select
+                                                value={form.watch(`specs.${spec.name}`)}
+                                                onValueChange={val => form.setValue(`specs.${spec.name}`, val)}
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder={`Select ${spec.label}`} />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {spec.options.map((option: string) => (
+                                                        <SelectItem key={option} value={option}>
+                                                            {option}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        ) : (
+                                            <Input
+                                                type={spec.type}
+                                                placeholder={spec.label}
+                                                {...form.register(`specs.${spec.name}`)}
+                                            />
+                                        )}
+                                    </FormControl>
+                                    <FormMessage />
+                                </div>
+                            ))}
                     </div>
                 </div>
                 <Button type="submit" disabled={isLoading}>

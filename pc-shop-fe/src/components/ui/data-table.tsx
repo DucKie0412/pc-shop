@@ -29,6 +29,7 @@ interface DataTableProps<TData, TValue> {
     data: TData[];
     searchPlaceholder?: string;
     searchColumn?: string;
+    refreshProducts?: () => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -36,6 +37,7 @@ export function DataTable<TData, TValue>({
     data,
     searchPlaceholder = "Search...",
     searchColumn,
+    refreshProducts,
 }: DataTableProps<TData, TValue>) {
     const [pageSize, setPageSize] = useState(5); // Default rows per page
     const [sorting, setSorting] = useState<SortingState>([]);

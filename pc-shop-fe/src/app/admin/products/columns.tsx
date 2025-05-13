@@ -19,7 +19,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useSession } from "next-auth/react";
 import { SortableHeader } from "@/components/ui/sortable-header";
 
-export const columns: ColumnDef<IProduct>[] = [
+export const columns = (refreshProducts?: () => void): ColumnDef<IProduct>[] => [
     {
         header: "ID",
         accessorKey: "_id",
@@ -118,7 +118,7 @@ export const columns: ColumnDef<IProduct>[] = [
                     });
                     if (res?.statusCode === 200) {
                         toast.success("Product deleted successfully!", { autoClose: 2300 });
-                        router.refresh();
+                        if (refreshProducts) refreshProducts();
                     }
 
                     if (res?.statusCode === 400) {
