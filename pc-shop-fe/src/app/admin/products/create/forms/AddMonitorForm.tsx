@@ -101,7 +101,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
           headers: { Authorization: `Bearer ${session.user.accessToken}` },
         });
         if (manufacturersRes?.data) {
-          setManufacturers(manufacturersRes.data);
+          setManufacturers(manufacturersRes.data.filter(m => m.type === 'monitor'));
         } else if (manufacturersRes?.error) {
           toast.error(manufacturersRes.error);
         }

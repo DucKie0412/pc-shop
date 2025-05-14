@@ -85,7 +85,7 @@ export default function AddOtherForm({ onBack }: { onBack: () => void }) {
           headers: { Authorization: `Bearer ${session.user.accessToken}` },
         });
         if (manufacturersRes?.data) {
-          setManufacturers(manufacturersRes.data);
+          setManufacturers(manufacturersRes.data.filter(m => m.type === 'other'));
         } else if (manufacturersRes?.error) {
           toast.error(manufacturersRes.error);
         }

@@ -18,6 +18,9 @@ export class Manufacturer extends Document {
 
     @Prop()
     website?: string;
+
+    @Prop({ required: true })
+    type: string; // e.g., 'cpu', 'mainboard', etc.
 }
 
 export const ManufacturerSchema = SchemaFactory.createForClass(Manufacturer); 

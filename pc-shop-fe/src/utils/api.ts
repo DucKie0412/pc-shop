@@ -16,12 +16,14 @@ export const sendRequest = async <T>(props: IRequest) => { //type
     if (typeof window === "undefined" && url.startsWith("/")) {
         url = `${process.env.NEXT_PUBLIC_API_URL}${url}`;
     }
-    // // Lấy accessToken từ session (nếu có)
-    // const session = await auth();
-    // const token = session?.user?.accessToken;
-    // if (token) {
-    //     headers = { ...headers, Authorization: `Bearer ${token}` };
-    // }
+    // Only run this on the server
+    if (typeof window === "undefined") {
+        const session = await auth();
+        const token = session?.user?.accessToken;
+        if (token) {
+            headers = { ...headers, Authorization: `Bearer ${token}` };
+        }
+    }
 
     const options: any = {
         method: method,

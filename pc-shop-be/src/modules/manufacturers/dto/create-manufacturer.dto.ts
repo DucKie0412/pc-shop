@@ -16,4 +16,8 @@ export class CreateManufacturerDto {
   @IsUrl()
   @IsOptional()
   website?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  type: string;
 } 

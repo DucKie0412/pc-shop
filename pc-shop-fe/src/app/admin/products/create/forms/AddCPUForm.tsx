@@ -27,6 +27,8 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { CldUploadWidget } from 'next-cloudinary';
+import { sendRequestClient } from "@/utils/api.client";
+import { IManufacturer } from "@/types/manufacturer";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -38,7 +40,7 @@ const cpuSchema = z.object({
   stock: z.coerce.number().min(0, "Stock must be at least 0"),
   originalPrice: z.coerce.number().min(0, "Price must be at least 0"),
   discount: z.coerce.number().min(0).max(100),
-  brand: z.string().min(1, "CPU brand is required"),
+  manufacturerId: z.string().min(1, "CPU Brand is required"),
   cores: z.coerce.number().min(1, "Cores must be at least 1"),
   threads: z.coerce.number().min(1, "Threads must be at least 1"),
   socket: z.string().min(1, "Socket is required"),
@@ -53,13 +55,13 @@ const INTEL_SOCKETS = [
 
 export default function AddCPUForm({ onBack }: { onBack: () => void }) {
   const [categories, setCategories] = useState<ICategory[]>([]);
+  const [manufacturers, setManufacturers] = useState<IManufacturer[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [categoryLocked, setCategoryLocked] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [imagePublicIds, setImagePublicIds] = useState<string[]>([]);
   const { data: session } = useSession();
   const router = useRouter();
-  const [cpuBrand, setCpuBrand] = useState<string>("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,7 +78,6 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
         });
         if (categoriesRes?.data) {
           setCategories(categoriesRes.data);
-          // Find CPU category
           const cpuCategory = categoriesRes.data.find(
             cat => cat.name.trim().toLowerCase() === "cpu"
           );
@@ -89,9 +90,21 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
         } else if (categoriesRes?.error) {
           toast.error(categoriesRes.error);
         }
+
+        // Fetch manufacturers of type 'cpu'
+        const manufacturersRes = await sendRequest<IBackendRes<IManufacturer[]>>({
+          url: '/api/manufacturers',
+          method: 'GET',
+          headers: { Authorization: `Bearer ${session.user.accessToken}` },
+        });
+        if (manufacturersRes?.data) {
+          setManufacturers(manufacturersRes.data.filter(m => m.type === 'cpu'));
+        } else if (manufacturersRes?.error) {
+          toast.error(manufacturersRes.error);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
-        toast.error("Failed to load categories");
+        toast.error("Failed to load data");
       } finally {
         setIsLoading(false);
       }
@@ -105,7 +118,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
       stock: 0,
       originalPrice: 0,
       discount: 0,
-      brand: "",
+      manufacturerId: "",
       images: [],
       imagePublicIds: []
     },
@@ -121,26 +134,30 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
         ...values,
         type: "cpu",
         categoryId: values.categoryId,
+        manufacturerId: values.manufacturerId,
         images,
         imagePublicIds,
         specs: {
-          brand: values.brand,
           cores: values.cores,
           threads: values.threads,
           socket: values.socket,
         },
       };
-      const response = await sendRequest<IBackendRes<any>>({
+      const response = await sendRequestClient<IBackendRes<any>>({
         url: "/api/products",
         method: "POST",
         body: payload,
-        headers: { Authorization: `Bearer ${session.user.accessToken}` },
+        headers: { Authorization: `Bearer ${session.user.accessToken}`, 
+        'Content-Type': 'application/json' },
       });
       if (response.error) {
         toast.error(response.error);
       } else {
-        toast.success("CPU added successfully");
+        toast.success("CPU added successfully");        
+        
         form.reset();
+        setImages([]);
+        setImagePublicIds([]);
         setTimeout(() => { router.push("/admin/products"); }, 2000);
       }
     } catch (error) {
@@ -148,6 +165,13 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
       toast.error("Failed to add CPU");
     }
   };
+
+  const selectedManufacturer = manufacturers.find(m => m._id === form.watch("manufacturerId"));
+  const sockets = selectedManufacturer?.name?.toLowerCase()?.includes("amd")
+    ? AMD_SOCKETS
+    : selectedManufacturer?.name?.toLowerCase()?.includes("intel")
+      ? INTEL_SOCKETS
+      : [];
 
   return (
     <div className="max-w-xl mx-auto mt-8 bg-white rounded-xl shadow-lg p-8">
@@ -210,6 +234,34 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="manufacturerId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Manufacturer</FormLabel>
+                  <FormControl>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={isLoading}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a manufacturer" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {manufacturers.map((manufacturer) => (
+                          <SelectItem key={manufacturer._id} value={manufacturer._id}>
+                            {manufacturer.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
           <div className="grid grid-cols-3 gap-4">
             <FormField
@@ -257,34 +309,6 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
             <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={form.control}
-                name="brand"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>CPU Brand</FormLabel>
-                    <FormControl>
-                      <Select
-                        value={cpuBrand}
-                        onValueChange={val => {
-                          setCpuBrand(val);
-                          form.setValue("brand", val);
-                          form.setValue("socket", "");
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select brand" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="amd">AMD</SelectItem>
-                          <SelectItem value="intel">Intel</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
                 name="cores"
                 render={({ field }) => (
                   <FormItem>
@@ -319,13 +343,13 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                       <Select
                         value={field.value}
                         onValueChange={field.onChange}
-                        disabled={!cpuBrand}
+                        disabled={!form.watch("manufacturerId")}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select a socket" />
                         </SelectTrigger>
                         <SelectContent>
-                          {(cpuBrand === "amd" ? AMD_SOCKETS : cpuBrand === "intel" ? INTEL_SOCKETS : []).map(socket => (
+                          {sockets.map(socket => (
                             <SelectItem key={socket} value={socket}>{socket}</SelectItem>
                           ))}
                         </SelectContent>
@@ -357,7 +381,6 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                     <button
                       type="button"
                       onClick={() => {
-                        // Move this image to the first position
                         setImages([image, ...images.filter((_, i) => i !== index)]);
                         setImagePublicIds([imagePublicIds[index], ...imagePublicIds.filter((_, i) => i !== index)]);
                       }}

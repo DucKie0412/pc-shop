@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Plus } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Manufacturer {
     _id: string;
@@ -15,6 +16,7 @@ interface Manufacturer {
     description?: string;
     logo?: string;
     website?: string;
+    type: string;
 }
 
 export default function ManufacturersPage() {
@@ -22,6 +24,7 @@ export default function ManufacturersPage() {
     const [searchQuery, setSearchQuery] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const { data: session } = useSession();
+    const [typeFilter, setTypeFilter] = useState("all");
 
     useEffect(() => {
         async function fetchManufacturers() {
@@ -48,7 +51,8 @@ export default function ManufacturersPage() {
     }, [session]);
 
     const filteredManufacturers = manufacturers.filter(manufacturer =>
-        manufacturer.name.toLowerCase().includes(searchQuery.toLowerCase())
+        manufacturer.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+        (typeFilter === "all" || manufacturer.type === typeFilter)
     );
 
     if (!session) {
@@ -72,6 +76,23 @@ export default function ManufacturersPage() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
+                    <Select value={typeFilter} onValueChange={setTypeFilter}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Filter by type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Types</SelectItem>
+                            <SelectItem value="cpu">CPU</SelectItem>
+                            <SelectItem value="mainboard">Mainboard</SelectItem>
+                            <SelectItem value="ram">RAM</SelectItem>
+                            <SelectItem value="vga">VGA</SelectItem>
+                            <SelectItem value="ssd">SSD</SelectItem>
+                            <SelectItem value="psu">PSU</SelectItem>
+                            <SelectItem value="case">Case</SelectItem>
+                            <SelectItem value="monitor">Monitor</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
                 <div className="rounded-md border">
                     {isLoading ? (

@@ -76,6 +76,14 @@ export const columns: ColumnDef<IManufacturer>[] = [
         },
     },
     {
+        header: ({ column }) => <SortableHeader column={column} title="Type" />,
+        accessorKey: "type",
+        size: 100,
+        enableResizing: true,
+        minSize: 50,
+        maxSize: 200,
+    },
+    {
         id: "actions",
         cell: ({ row }) => {
             const manufacturer = row.original

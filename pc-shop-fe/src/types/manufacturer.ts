@@ -4,6 +4,7 @@ export interface IManufacturer {
     description?: string;
     logo?: string;
     website?: string;
+    type: string; // e.g., 'cpu', 'mainboard', etc.
     createdAt?: string;
     updatedAt?: string;
 } 

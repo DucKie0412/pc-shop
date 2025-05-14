@@ -18,12 +18,14 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { sendRequest } from "@/utils/api";
 import { useSession } from "next-auth/react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
     description: z.string().optional(),
     logo: z.string().url().optional(),
     website: z.string().url().optional(),
+    type: z.string().min(1, "Type is required"),
 });
 
 interface ManufacturerFormProps {
@@ -33,6 +35,7 @@ interface ManufacturerFormProps {
         description?: string;
         logo?: string;
         website?: string;
+        type: string;
     };
 }
 
@@ -47,6 +50,7 @@ export function ManufacturerForm({ initialData }: ManufacturerFormProps) {
             description: "",
             logo: "",
             website: "",
+            type: "",
         },
     });
 
@@ -129,6 +133,34 @@ export function ManufacturerForm({ initialData }: ManufacturerFormProps) {
                             <FormControl>
                                 <Input placeholder="Manufacturer website URL" {...field} />
                             </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="type"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Type</FormLabel>
+                            <Select value={field.value} onValueChange={field.onChange}>
+                                <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a type" />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    <SelectItem value="cpu">CPU</SelectItem>
+                                    <SelectItem value="mainboard">Mainboard</SelectItem>
+                                    <SelectItem value="ram">RAM</SelectItem>
+                                    <SelectItem value="vga">VGA</SelectItem>
+                                    <SelectItem value="ssd">SSD</SelectItem>
+                                    <SelectItem value="psu">PSU</SelectItem>
+                                    <SelectItem value="case">Case</SelectItem>
+                                    <SelectItem value="monitor">Monitor</SelectItem>
+                                    <SelectItem value="other">Other</SelectItem>
+                                </SelectContent>
+                            </Select>
                             <FormMessage />
                         </FormItem>
                     )}

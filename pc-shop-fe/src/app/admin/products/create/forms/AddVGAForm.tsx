@@ -105,7 +105,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
           headers: { Authorization: `Bearer ${session.user.accessToken}` },
         });
         if (manufacturersRes?.data) {
-          setManufacturers(manufacturersRes.data);
+          setManufacturers(manufacturersRes.data.filter(m => m.type === 'vga'));
         } else if (manufacturersRes?.error) {
           toast.error(manufacturersRes.error);
         }
