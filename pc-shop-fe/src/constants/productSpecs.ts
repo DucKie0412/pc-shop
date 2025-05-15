@@ -1,17 +1,17 @@
 export const PRODUCT_TYPE_SPECS = {
   cpu: [
-    { name: 'cores', label: 'Cores', type: 'number' },
-    { name: 'threads', label: 'Threads', type: 'number' },
-    { name: 'socket', label: 'Socket', type: 'text', options: ['AM4', 'AM5', 'LGA 1200', 'LGA 1700'] },
+    { name: 'cores', label: 'Cores', type: 'number', options: ['1', '2', '4', '6', '8', '12', '16', '24', '32', '64'] },
+    { name: 'threads', label: 'Threads', type: 'number', options: ['1', '2', '4', '6', '8', '12', '16', '24', '32', '64'] },
+    { name: 'socket', label: 'Socket', type: 'text', options: ['AM4', 'AM5', 'LGA 1200', 'LGA 1700'] }, 
   ],
   vga: [
     { name: 'vram', label: 'VRAM (GB)', type: 'number' },
     { name: 'vramType', label: 'VRAM Type', type: 'text', options: ['GDDR5', 'GDDR6', 'GDDR6X', 'HBM2'] },
   ],
   ram: [
-    { name: 'size', label: 'Size (GB)', type: 'number' },
+    { name: 'size', label: 'Size (GB)', type: 'number', options: ['1', '2', '4', '8', '16', '32', '64', '128', '256', '512'] },
     { name: 'type', label: 'Type', type: 'text', options: ['DDR3', 'DDR4', 'DDR5'] },
-    { name: 'bus', label: 'Bus', type: 'text', options: ['2133', '2400', '2666', '2933', '3200', '3600', '4000'] },
+    { name: 'bus', label: 'Bus', type: 'text', options: ['2133', '2400', '2666', '2933', '3200', '3600', '4000', ] },
   ],
   ssd: [
     { name: 'capacity', label: 'Capacity (GB)', type: 'number' },

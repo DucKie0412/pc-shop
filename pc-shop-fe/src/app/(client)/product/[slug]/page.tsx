@@ -11,6 +11,7 @@ interface IProduct {
     discount: number;
     images: string[];
     detail: string;
+    finalPrice: number;
     // add other fields as needed
 }
 
@@ -75,13 +76,10 @@ function ProductPage() {
                     <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
                     <div className="flex items-center gap-4 mb-2">
                         {(() => {
-                            const price = product.price ?? (product.originalPrice && product.discount !== undefined
-                                ? product.originalPrice - (product.originalPrice * product.discount) / 100
-                                : 0);
                             return (
                                 <>
-                                    <span className="text-2xl font-bold text-red-600">{typeof price === 'number' ? price.toLocaleString() : 'N/A'}₫</span>
-                                    {product.originalPrice > price && (
+                                    <span className="text-2xl font-bold text-red-600">{typeof product.finalPrice === 'number' ? product.finalPrice.toLocaleString() : 'N/A'}₫</span>
+                                    {product.originalPrice > product.finalPrice && (
                                         <span className="text-lg line-through text-gray-400">{product.originalPrice.toLocaleString()}₫</span>
                                     )}
                                 </>

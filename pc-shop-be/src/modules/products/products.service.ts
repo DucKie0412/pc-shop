@@ -67,7 +67,7 @@ export class ProductsService {
             const originalPrice = updateProductDto.originalPrice ?? product.originalPrice;
             const discount = updateProductDto.discount ?? product.discount;
             const discountAmount = (originalPrice * discount) / 100;
-            updateProductDto.price = originalPrice - discountAmount;
+            updateProductDto.finalPrice = originalPrice - discountAmount;
         }
 
         try {
@@ -83,7 +83,7 @@ export class ProductsService {
                 { 
                     $set: {
                         ...updateProductDto,
-                        price: updateProductDto.price // Ensure price is included in the update
+                        finalPrice: updateProductDto.finalPrice // Ensure finalPrice is included in the update
                     }
                 }
             );
@@ -116,7 +116,7 @@ export class ProductsService {
             const originalPrice = updateProductDto.originalPrice ?? product.originalPrice;
             const discount = updateProductDto.discount ?? product.discount;
             const discountAmount = (originalPrice * discount) / 100;
-            updateProductDto.price = originalPrice - discountAmount;
+            updateProductDto.finalPrice = originalPrice - discountAmount;
         }
 
         try {
@@ -132,7 +132,7 @@ export class ProductsService {
                 { 
                     $set: {
                         ...updateProductDto,
-                        price: updateProductDto.price // Ensure price is included in the update
+                        finalPrice: updateProductDto.finalPrice // Ensure finalPrice is included in the update
                     }
                 }
             );

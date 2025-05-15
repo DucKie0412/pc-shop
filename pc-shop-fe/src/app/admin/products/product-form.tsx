@@ -25,7 +25,6 @@ import { useSession } from "next-auth/react";
 import { CldUploadWidget } from 'next-cloudinary';
 import Image from 'next/image';
 import { PRODUCT_TYPE_SPECS, PRODUCT_TYPES } from "@/constants/productSpecs";
-import type { PRODUCT_TYPE_SPECS as ProductTypeSpecsType } from "@/constants/productSpecs";
 
 const baseSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -110,6 +109,11 @@ export function ProductForm({ initialData }: ProductFormProps) {
         form.setValue("specs", {});
     };
 
+    // Filter manufacturers by selectedType
+    const filteredManufacturers = manufacturers.filter(
+        (m) => m.type === selectedType
+    );
+
     const onSubmit = async (values: z.infer<typeof baseSchema>) => {
         try {
             setIsLoading(true);
@@ -118,9 +122,6 @@ export function ProductForm({ initialData }: ProductFormProps) {
                 images,
                 imagePublicIds,
             };
-
-            // Calculate finalPrice
-            (formData as any).finalPrice = formData.originalPrice - (formData.originalPrice * formData.discount) / 100;
 
             if (initialData) {
                 // Update product
@@ -132,10 +133,14 @@ export function ProductForm({ initialData }: ProductFormProps) {
                         'Authorization': `Bearer ${session?.user?.accessToken}`
                     }
                 });
+                console.log('PATCH response:', response);
                 if (response?.statusCode === 200) {
                     toast.success("Product updated successfully");
                 } else {
                     toast.error(response?.message || "Failed to update product");
+                    if (response?.message) {
+                        console.error('Backend error message:', response.message);
+                    }
                     return;
                 }
             } else {
@@ -148,10 +153,14 @@ export function ProductForm({ initialData }: ProductFormProps) {
                         'Authorization': `Bearer ${session?.user?.accessToken}`
                     }
                 });
+                console.log('POST response:', response);
                 if (response?.statusCode === 200) {
                     toast.success("Product created successfully");
                 } else {
                     toast.error(response?.message || "Failed to create product");
+                    if (response?.message) {
+                        console.error('Backend error message:', response.message);
+                    }
                     return;
                 }
             }
@@ -239,7 +248,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                    {manufacturers.map((manufacturer) => (
+                                    {filteredManufacturers.map((manufacturer) => (
                                         <SelectItem key={manufacturer._id} value={manufacturer._id}>
                                             {manufacturer.name}
                                         </SelectItem>
