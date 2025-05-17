@@ -3,30 +3,43 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import styles from "@/ui/css/subBanner.module.css"
+import Image from "next/image";
 
-type SubBannerProps = {
-    subBannerImages: {
-        id: string;
-        url: string;
-        link: string;
-    }[];
+interface SubBannerImage {
+    id: string;
+    url: string;
+    link: string;
+}
+
+interface Props {
+    subBannerImages: SubBannerImage[];
     height?: string;
 }
 
-export default function HomepageSubBanner({ subBannerImages, height }: SubBannerProps) {
+export default function HomepageSubBanner({ subBannerImages, height = "192px" }: Props) {
     return (
-        <div className="flex gap-4" style={{ height }}>
-            {subBannerImages?.map((image) => (
-                <Link key={image.id} className="flex-1 h-full" href={image.link}>
-                    <div className={styles.imageContainer}>
-                        <img
-                            src={image.url}
-                            alt={`Sub-banner ${image.id}`}
-                            className={styles.image}
-                        />
-                    </div>
-                </Link>
-            ))}
+        <div className="w-full my-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {subBannerImages.map((banner) => (
+                    <a
+                        key={banner.id}
+                        href={banner.link}
+                        className="block w-full rounded-lg overflow-hidden relative"
+                        style={{ height }}
+                    >
+                        <div style={{ width: "100%", height: "100%", position: "relative" }}>
+                            <Image
+                                src={banner.url}
+                                alt=""
+                                fill
+                                style={{ objectFit: "cover" }}
+                                sizes="(max-width: 768px) 100vw, 33vw"
+                                priority
+                            />
+                        </div>
+                    </a>
+                ))}
+            </div>
         </div>
-    )
+    );
 }

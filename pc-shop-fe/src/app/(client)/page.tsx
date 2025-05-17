@@ -5,71 +5,83 @@ import HomepageCarousel from "@/components/client/homepage-carousel";
 import HomepageSubBanner from "@/components/client/homepage-sub-banner";
 import ProductCardSlider from "@/components/client/product-card-slider";
 import { IProduct } from "@/types/product";
+import { IBanner, BannerType } from "@/types/banner";
 import { sendRequest } from "@/utils/api";
-
-const images = [
-    {
-        id: '1',
-        url: 'https://res.cloudinary.com/demo/image/upload/sample.jpg',
-        link: '/1'
-    },
-    {
-        id: '2',
-        url: 'https://res.cloudinary.com/demo/image/upload/another.jpg',
-        link: '/2'
-    },
-    {
-        id: '3',
-        url: 'https://res.cloudinary.com/demo/image/upload/more.jpg',
-        link: '/3'
-    },
-];
-
-const subBannerImages = [
-    {
-        id: '1',
-        url: 'https://pcmarket.vn/media/banner/banner3-new.jpg',
-        link: '/11'
-    },
-    {
-        id: '2',
-        url: 'https://pcmarket.vn/media/banner/Banner4-new.jpg',
-        link: '/22'
-    },
-    {
-        id: '3',
-        url: 'https://pcmarket.vn/media/banner/banner5.jpg',
-        link: '/33'
-    }
-]
+import { useSession } from "next-auth/react";
 
 function Homepage() {
+    const { data: session, status } = useSession();
     const [products, setProducts] = useState<IProduct[]>([]);
+    const [carouselBanners, setCarouselBanners] = useState<IBanner[]>([]);
+    const [subBanners, setSubBanners] = useState<IBanner[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchProducts = async () => {
+        if (status !== "authenticated") return; // Wait for authentication
+
+        const fetchData = async () => {
             try {
                 setLoading(true);
-                const res = await sendRequest<{ statusCode: number, message: string, data: IProduct[] }>({
+                // Fetch products
+                const productsRes = await sendRequest<IBackendRes<IProduct[]>>({
                     url: '/api/products',
                     method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${session?.user?.accessToken}`
+                    }
                 });
-                setProducts(res?.data || []);
+                setProducts(productsRes?.data || []);
+
+                // Fetch carousel banners
+                const carouselRes = await sendRequest<IBackendRes<IBanner[]>>({
+                    url: `${process.env.NEXT_PUBLIC_API_URL}/banners?type=${BannerType.CAROUSEL}`,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${session?.user?.accessToken}`
+                    }
+                });
+                setCarouselBanners(carouselRes?.data || []);
+                
+                // Fetch sub banners
+                const subBannerRes = await sendRequest<IBackendRes<IBanner[]>>({
+                    url: `${process.env.NEXT_PUBLIC_API_URL}/banners?type=${BannerType.SUB_BANNER}`,
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${session?.user?.accessToken}`
+                    }
+                });
+                setSubBanners(subBannerRes?.data || []);
             } catch (err) {
+                console.error("Error fetching data:", err);
                 setProducts([]);
+                setCarouselBanners([]);
+                setSubBanners([]);
             } finally {
                 setLoading(false);
             }
         };
-        fetchProducts();
-    }, []);
+        fetchData();
+    }, [session, status]);
 
     return (
         <div>
             <div className="container mx-auto mt-4">
-                <HomepageCarousel images={images} height="400px" />
-                <HomepageSubBanner subBannerImages={subBannerImages} height="auto" />
+                <HomepageCarousel 
+                    images={carouselBanners.map(banner => ({
+                        id: banner._id,
+                        url: banner.url,
+                        link: banner.link
+                    }))} 
+                    height="400px" 
+                />
+                <HomepageSubBanner 
+                    subBannerImages={subBanners.map(banner => ({
+                        id: banner._id,
+                        url: banner.url,
+                        link: banner.link
+                    }))} 
+                    height="230px" 
+                />
                 {loading ? (
                     <div>Loading products...</div>
                 ) : (
@@ -77,9 +89,58 @@ function Homepage() {
                         <ProductCardSlider
                             title="BEST SELLER"
                             products={products}
-                            viewAllLink="/category/pc-amd-gaming"
+                            viewAllLink="/"
                         />
-                        {/* Repeat for other sliders as needed */}
+                        <ProductCardSlider
+                            title="CPU"
+                            products={products}
+                            viewAllLink="/category/cpu"
+                        />
+                        <ProductCardSlider
+                            title="MAINBOARD"
+                            products={products}
+                            viewAllLink="/category/mainboard"
+                        />
+                        <ProductCardSlider
+                            title="VGA"
+                            products={products}
+                            viewAllLink="/category/vga"
+                        />
+                        <ProductCardSlider
+                            title="RAM"
+                            products={products}
+                            viewAllLink="/category/ram"
+                        />
+                        <ProductCardSlider
+                            title="HDD"
+                            products={products}
+                            viewAllLink="/category/hdd"
+                        />
+                        <ProductCardSlider
+                            title="SSD"
+                            products={products}
+                            viewAllLink="/category/ssd"
+                        />
+                        <ProductCardSlider
+                            title="PSU"
+                            products={products}
+                            viewAllLink="/category/psu"
+                        />
+                        <ProductCardSlider
+                            title="CASE"
+                            products={products}
+                            viewAllLink="/category/case"
+                        />  
+                        <ProductCardSlider
+                            title="FAN"
+                            products={products}
+                            viewAllLink="/category/fan"
+                        />  
+                        <ProductCardSlider
+                            title="PHU KIEN MÁY TÍNH"
+                            products={products}
+                            viewAllLink="/category/phukien"
+                        />
                     </>
                 )}
             </div>

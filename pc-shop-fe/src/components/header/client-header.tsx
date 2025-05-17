@@ -50,12 +50,16 @@ function Header() {
                             <div className="flex-[2] flex items-center bg-white px-4 py-2 rounded-full shadow-sm border text-black">
                                 <select className="outline-none border-r pr-2 text-gray-600">
                                     <option>Tất cả danh mục</option>
-                                    <option>PC GAMING</option>
-                                    <option>PC WORKSTATION</option>
-                                    <option>PC AMD GAMING</option>
-                                    <option>PC VĂN PHÒNG</option>
-                                    <option>PC GIẢ LẬP ẢO HÓA</option>
-                                    <option>LINH KIỆN MÁY TÍNH</option>
+                                    <option>CPU GAMING</option>
+                                    <option>MAINBOARD</option>
+                                    <option>VGA GAMING</option>
+                                    <option>RAM</option>
+                                    <option>HDD</option>
+                                    <option>SSD</option>
+                                    <option>PSU</option>
+                                    <option>CASE</option>
+                                    <option>FAN</option>
+                                    <option>PHU KIEN MÁY TÍNH</option>
                                 </select>
                                 <input
                                     type="text"
@@ -159,9 +163,9 @@ function Header() {
                                     </button>
 
                                     {/* Mega Menu */}
-                                    <div className="absolute mt-5 left-0 w-[800px] bg-white shadow-lg z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-y-2 group-hover:translate-y-0">
+                                    <div className="absolute mt-5 left-0 w-[1200px] bg-white shadow-lg z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-y-2 group-hover:translate-y-0">
                                         <div className="p-6">
-                                            <div className="grid grid-cols-4 gap-6">
+                                            <div className="grid grid-cols-6 gap-6">
                                                 <div className="space-y-4">
                                                     <h3 className="font-bold text-[#0088D1] border-b pb-2">CPU</h3>
                                                     <ul className="space-y-2 text-gray-700">
@@ -199,16 +203,72 @@ function Header() {
                                                         <li className="hover:text-[#0088D1] cursor-pointer transition-colors">GIGABYTE</li>
                                                     </ul>
                                                 </div>
+                                                <div className="space-y-4">
+                                                    <h3 className="font-bold text-[#0088D1] border-b pb-2">HDD</h3>
+                                                    <ul className="space-y-2 text-gray-700">
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Seagate</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">WD</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Samsung</li>
+                                                    </ul>
+                                                </div>
+                                                <div className="space-y-4">
+                                                    <h3 className="font-bold text-[#0088D1] border-b pb-2">SSD</h3>
+                                                    <ul className="space-y-2 text-gray-700">
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Samsung</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">WD</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Kingston</li>
+                                                    </ul>
+                                                </div>
+                                                <div className="space-y-4">
+                                                    <h3 className="font-bold text-[#0088D1] border-b pb-2">PSU</h3>
+                                                    <ul className="space-y-2 text-gray-700">
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">MSI</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Cooler Master</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Corsair</li>
+                                                    </ul>
+                                                </div>
+                                                <div className="space-y-4">
+                                                    <h3 className="font-bold text-[#0088D1] border-b pb-2">CASE</h3>
+                                                    <ul className="space-y-2 text-gray-700">
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Edra</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Fractal Design</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Phanteks</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">NZXT</li>
+                                                    </ul>
+                                                </div>
+                                                <div className="space-y-4">
+                                                    <h3 className="font-bold text-[#0088D1] border-b pb-2">FAN</h3>
+                                                    <ul className="space-y-2 text-gray-700">
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Leopard</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Phanteks</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">NZXT</li>
+                                                    </ul>
+                                                </div>
+                                                <div className="space-y-4">
+                                                    <h3 className="font-bold text-[#0088D1] border-b pb-2">PHU KIEN MÁY TÍNH</h3>
+                                                    <ul className="space-y-2 text-gray-700">
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Headphone</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Mouse</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Keyboard</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Mousepad</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Webcam</li>
+                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Microphone</li>
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <Link href="#" className="hover:text-gray-200 transition-colors">PC GAMING, STREAMING</Link>
-                                <Link href="#" className="hover:text-gray-200 transition-colors">PC WORKSTATION</Link>
-                                <Link href="#" className="hover:text-gray-200 transition-colors">PC AMD GAMING</Link>
-                                <Link href="#" className="hover:text-gray-200 transition-colors">PC VĂN PHÒNG</Link>
-                                <Link href="#" className="hover:text-gray-200 transition-colors">PC GIẢ LẬP ẢO HÓA</Link>
-                                <Link href="#" className="hover:text-gray-200 transition-colors">LINH KIỆN MÁY TÍNH</Link>
+                                <Link href="#" className="hover:text-gray-200 transition-colors">CPU</Link>
+                                <Link href="#" className="hover:text-gray-200 transition-colors">MAINBOARD</Link>
+                                <Link href="#" className="hover:text-gray-200 transition-colors">VGA GAMING</Link>
+                                <Link href="#" className="hover:text-gray-200 transition-colors">RAM</Link>
+                                <Link href="#" className="hover:text-gray-200 transition-colors">HDD</Link>
+                                <Link href="#" className="hover:text-gray-200 transition-colors">SSD</Link>
+                                <Link href="#" className="hover:text-gray-200 transition-colors">PSU</Link>
+                                <Link href="#" className="hover:text-gray-200 transition-colors">CASE</Link>
+                                <Link href="#" className="hover:text-gray-200 transition-colors">FAN</Link>
+                                <Link href="#" className="hover:text-gray-200 transition-colors">PHU KIEN MÁY TÍNH</Link>
                             </div>
                         </div>
                     </nav>
