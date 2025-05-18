@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, Query } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Public } from 'src/auth/decorator/customize-guard';
+import { ProductType } from './schemas/product.schema';
 
 @Controller('products')
 export class ProductsController {
@@ -27,7 +28,12 @@ export class ProductsController {
 
   @Public()
   @Get()
-  async findAll() {
+  async findAll(@Query('type') type?: ProductType) {
+    if (type) {
+      console.log("type: ", type);
+      const cleanType = type.replace(/\?$/, '');
+      return await this.productsService.findByType(cleanType as ProductType);
+    }
     return await this.productsService.findAll();
   }
 

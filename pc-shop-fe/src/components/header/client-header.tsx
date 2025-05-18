@@ -259,16 +259,16 @@ function Header() {
                                         </div>
                                     </div>
                                 </div>
-                                <Link href="#" className="hover:text-gray-200 transition-colors">CPU</Link>
-                                <Link href="#" className="hover:text-gray-200 transition-colors">MAINBOARD</Link>
-                                <Link href="#" className="hover:text-gray-200 transition-colors">VGA GAMING</Link>
-                                <Link href="#" className="hover:text-gray-200 transition-colors">RAM</Link>
-                                <Link href="#" className="hover:text-gray-200 transition-colors">HDD</Link>
-                                <Link href="#" className="hover:text-gray-200 transition-colors">SSD</Link>
-                                <Link href="#" className="hover:text-gray-200 transition-colors">PSU</Link>
-                                <Link href="#" className="hover:text-gray-200 transition-colors">CASE</Link>
-                                <Link href="#" className="hover:text-gray-200 transition-colors">FAN</Link>
-                                <Link href="#" className="hover:text-gray-200 transition-colors">PHU KIEN MÁY TÍNH</Link>
+                                <Link href="/category/cpu" className="hover:text-gray-200 transition-colors">CPU</Link>
+                                <Link href="/category/mainboard" className="hover:text-gray-200 transition-colors">MAINBOARD</Link>
+                                <Link href="/category/vga" className="hover:text-gray-200 transition-colors">VGA GAMING</Link>
+                                <Link href="/category/ram" className="hover:text-gray-200 transition-colors">RAM</Link>
+                                <Link href="/category/hdd" className="hover:text-gray-200 transition-colors">HDD</Link>
+                                <Link href="/category/ssd" className="hover:text-gray-200 transition-colors">SSD</Link>
+                                <Link href="/category/psu" className="hover:text-gray-200 transition-colors">PSU</Link>
+                                <Link href="/category/case" className="hover:text-gray-200 transition-colors">CASE</Link>
+                                <Link href="/category/fan" className="hover:text-gray-200 transition-colors">FAN</Link>
+                                <Link href="/category/other" className="hover:text-gray-200 transition-colors">PHU KIEN MÁY TÍNH</Link>
                             </div>
                         </div>
                     </nav>

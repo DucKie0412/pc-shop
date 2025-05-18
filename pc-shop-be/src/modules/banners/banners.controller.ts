@@ -3,6 +3,7 @@ import { BannersService } from './banners.service';
 import { CreateBannerDto } from './dto/create-banner.dto';
 import { UpdateBannerDto } from './dto/update-banner.dto';
 import { BannerType } from './schemas/banner.schema';
+import { Public } from 'src/auth/decorator/customize-guard';
 
 @Controller('banners')
 export class BannersController {
@@ -13,16 +14,17 @@ export class BannersController {
         return this.bannersService.create(createBannerDto);
     }
 
+    @Public()
     @Get()
     findAll(@Query('type') type?: BannerType) {
         if (type) {
             const cleanType = type.replace(/\?$/, '');
-            console.log('Banner type query received:', cleanType);
             return this.bannersService.findByType(cleanType as BannerType);
         }
         return this.bannersService.findAll();
     }
 
+    @Public()
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this.bannersService.findOne(id);

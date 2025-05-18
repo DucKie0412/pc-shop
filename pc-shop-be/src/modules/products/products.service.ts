@@ -174,4 +174,12 @@ export class ProductsService {
             throw new NotFoundException(`Product with slug ${slug} not found`);
         }
     }
+
+    async findByType(type: string): Promise<Product[]> {
+        const result = await this.productModel.find({ type })
+            .populate('categoryId')
+            .populate('manufacturerId')
+            .exec();
+        return result;
+    }
 }

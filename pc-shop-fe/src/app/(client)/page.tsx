@@ -89,56 +89,55 @@ function Homepage() {
                         <ProductCardSlider
                             title="BEST SELLER"
                             products={products}
-                            viewAllLink="/"
                         />
                         <ProductCardSlider
                             title="CPU"
-                            products={products}
+                            products={products.filter(p => p.type === "cpu")}
                             viewAllLink="/category/cpu"
                         />
                         <ProductCardSlider
                             title="MAINBOARD"
-                            products={products}
+                            products={products.filter(p => p.type === "mainboard")}
                             viewAllLink="/category/mainboard"
                         />
                         <ProductCardSlider
                             title="VGA"
-                            products={products}
+                            products={products.filter(p => p.type === "vga")}
                             viewAllLink="/category/vga"
                         />
                         <ProductCardSlider
                             title="RAM"
-                            products={products}
+                            products={products.filter(p => p.type === "ram")}
                             viewAllLink="/category/ram"
                         />
                         <ProductCardSlider
                             title="HDD"
-                            products={products}
+                            products={products.filter(p => p.type === "hdd")}
                             viewAllLink="/category/hdd"
                         />
                         <ProductCardSlider
                             title="SSD"
-                            products={products}
+                            products={products.filter(p => p.type === "ssd")}
                             viewAllLink="/category/ssd"
                         />
                         <ProductCardSlider
                             title="PSU"
-                            products={products}
+                            products={products.filter(p => p.type === "psu")}
                             viewAllLink="/category/psu"
                         />
                         <ProductCardSlider
                             title="CASE"
-                            products={products}
+                            products={products.filter(p => p.type === "case")}
                             viewAllLink="/category/case"
                         />  
                         <ProductCardSlider
                             title="FAN"
-                            products={products}
+                            products={products.filter(p => p.type === "fan")}
                             viewAllLink="/category/fan"
                         />  
                         <ProductCardSlider
                             title="PHU KIEN MÁY TÍNH"
-                            products={products}
+                            products={products.filter(p => p.type === "other")}
                             viewAllLink="/category/phukien"
                         />
                     </>
