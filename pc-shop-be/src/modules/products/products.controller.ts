@@ -28,9 +28,11 @@ export class ProductsController {
 
   @Public()
   @Get()
-  async findAll(@Query('type') type?: ProductType) {
+  async findAll(@Query('type') type?: string, @Query('name') name?: string) {
+    if (name) {
+      return await this.productsService.findByName(name);
+    }
     if (type) {
-      console.log("type: ", type);
       const cleanType = type.replace(/\?$/, '');
       return await this.productsService.findByType(cleanType as ProductType);
     }

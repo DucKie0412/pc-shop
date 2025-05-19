@@ -10,7 +10,7 @@ interface IProduct {
     originalPrice: number;
     discount: number;
     images: string[];
-    detail: string;
+    description: string;
     finalPrice: number;
     // add other fields as needed
 }
@@ -87,12 +87,15 @@ function ProductPage() {
                         })()}
                     </div>
                     <div className="mb-4">
-                        <h2 className="text-lg font-semibold mb-1">Chi tiết cấu hình:</h2>
+                        <h2 className="text-lg font-semibold mb-1">Chi tiết sản phẩm:</h2>
                         <div className="bg-gray-100 p-4 rounded whitespace-pre-line">
-                            {product.detail}
+                            {product.description}
                         </div>
                     </div>
-                    <button className="bg-blue-600 text-white px-6 py-3 rounded font-semibold hover:bg-blue-700 transition">Đặt hàng</button>
+                    <div className="flex gap-4">
+                        <button className="bg-blue-600 text-white px-6 py-3 rounded font-semibold hover:bg-blue-700 transition">Thêm vào giỏ hàng</button>
+                        <button className="bg-blue-600 text-white px-6 py-3 rounded font-semibold hover:bg-blue-700 transition">Mua ngay</button>
+                    </div>
                 </div>
             </div>
         </div>

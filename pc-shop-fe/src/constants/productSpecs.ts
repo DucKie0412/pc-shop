@@ -2,7 +2,7 @@ export const PRODUCT_TYPE_SPECS = {
   cpu: [
     { name: 'cores', label: 'Cores', type: 'number', options: ['1', '2', '4', '6', '8', '12', '16', '24', '32', '64'] },
     { name: 'threads', label: 'Threads', type: 'number', options: ['1', '2', '4', '6', '8', '12', '16', '24', '32', '64'] },
-    { name: 'socket', label: 'Socket', type: 'text', options: ['AM4', 'AM5', 'LGA 1200', 'LGA 1700'] }, 
+    { name: 'socket', label: 'Socket', type: 'text', options: ['AM4', 'AM5', 'LGA1200', 'LGA1700'] }, 
   ],
   vga: [
     { name: 'vram', label: 'VRAM (GB)', type: 'number' },

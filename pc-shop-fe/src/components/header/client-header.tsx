@@ -3,12 +3,16 @@ import { useEffect, useState, useRef } from "react";
 import { Menu, Search, ShoppingCart, User, LogOut, UserCircle, Settings, History } from "lucide-react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 function Header() {
     const [open, setOpen] = useState(false);
     const [showUserMenu, setShowUserMenu] = useState(false);
     const { data: session, status } = useSession();
     const userMenuRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
+    const [searchInput, setSearchInput] = useState("");
+    const [searchCategory, setSearchCategory] = useState("all");
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -33,7 +37,6 @@ function Header() {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    console.log(session?.user?.name);
     return (
         <header className="relative">
             <div className="bg-[#0088D1] text-white shadow-md">
@@ -47,29 +50,49 @@ function Header() {
                         </div>
 
                         <div className="hidden md:flex gap-4 flex-[2]">
-                            <div className="flex-[2] flex items-center bg-white px-4 py-2 rounded-full shadow-sm border text-black">
-                                <select className="outline-none border-r pr-2 text-gray-600">
-                                    <option>Tất cả danh mục</option>
-                                    <option>CPU GAMING</option>
-                                    <option>MAINBOARD</option>
-                                    <option>VGA GAMING</option>
-                                    <option>RAM</option>
-                                    <option>HDD</option>
-                                    <option>SSD</option>
-                                    <option>PSU</option>
-                                    <option>CASE</option>
-                                    <option>FAN</option>
-                                    <option>PHU KIEN MÁY TÍNH</option>
+                            <form
+                                className="flex-[2] flex items-center bg-white px-4 py-2 rounded-full shadow-sm border text-black"
+                                onSubmit={e => {
+                                    e.preventDefault();
+                                    if (!searchInput.trim()) return;
+                                    if (searchCategory === "all") {
+                                        router.push(`/search?query=${encodeURIComponent(searchInput)}`);
+                                    } else {
+                                        router.push(`/search?query=${encodeURIComponent(searchInput)}&type=${searchCategory}`);
+                                    }
+                                }}
+                            >
+                                <select
+                                    className="outline-none border-r pr-2 text-gray-600"
+                                    value={searchCategory}
+                                    onChange={e => setSearchCategory(e.target.value)}
+                                >
+                                    <option value="all">Tất cả danh mục</option>
+                                    <option value="cpu">CPU</option>
+                                    <option value="mainboard">MAINBOARD</option>
+                                    <option value="vga">VGA</option>
+                                    <option value="ram">RAM</option>
+                                    <option value="hdd">HDD</option>
+                                    <option value="ssd">SSD</option>
+                                    <option value="psu">PSU</option>
+                                    <option value="case">CASE</option>
+                                    <option value="fan">FAN</option>
+                                    <option value="other">PHU KIEN MÁY TÍNH</option>
                                 </select>
                                 <input
                                     type="text"
+                                    value={searchInput}
+                                    onChange={e => setSearchInput(e.target.value)}
                                     placeholder="Tìm kiếm sản phẩm..."
                                     className="w-full outline-none text-gray-600 placeholder-gray-400 px-2"
                                 />
-                                <button className="bg-[#0088D1] text-white p-2 rounded-md ml-2 hover:bg-[#0077B8]">
+                                <button
+                                    type="submit"
+                                    className="bg-[#0088D1] text-white p-2 rounded-md ml-2 hover:bg-[#0077B8]"
+                                >
                                     <Search size={15} />
                                 </button>
-                            </div>
+                            </form>
                             <div className="flex flex-1 justify-end gap-6 items-center">
                                 {status === "authenticated" ? (
                                     <div className="relative group" ref={userMenuRef}>
@@ -169,90 +192,190 @@ function Header() {
                                                 <div className="space-y-4">
                                                     <h3 className="font-bold text-[#0088D1] border-b pb-2">CPU</h3>
                                                     <ul className="space-y-2 text-gray-700">
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Intel Core</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">AMD Ryzen</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Intel Xeon</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">AMD Threadripper</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Celeron</li>
+                                                        {[
+                                                            "Intel Core",
+                                                            "AMD Ryzen",
+                                                            "Intel Xeon",
+                                                            "AMD Threadripper",
+                                                            "Celeron"
+                                                        ].map(item => (
+                                                            <li
+                                                                key={item}
+                                                                className="hover:text-[#0088D1] cursor-pointer transition-colors"
+                                                                onClick={() => router.push(`/search?query=${encodeURIComponent(item)}`)}
+                                                            >
+                                                                {item}
+                                                            </li>
+                                                        ))}
                                                     </ul>
                                                 </div>
                                                 <div className="space-y-4">
                                                     <h3 className="font-bold text-[#0088D1] border-b pb-2">MAINBOARD</h3>
                                                     <ul className="space-y-2 text-gray-700">
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">ASROCK</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">GIGABYTE</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">MSI</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">ASUS</li>
+                                                        {[
+                                                            "ASROCK",
+                                                            "GIGABYTE",
+                                                            "MSI",
+                                                            "ASUS"
+                                                        ].map(item => (
+                                                            <li
+                                                                key={item}
+                                                                className="hover:text-[#0088D1] cursor-pointer transition-colors"
+                                                                onClick={() => router.push(`/search?query=${encodeURIComponent(item)}`)}
+                                                            >
+                                                                {item}
+                                                            </li>
+                                                        ))}
                                                     </ul>
                                                 </div>
                                                 <div className="space-y-4">
                                                     <h3 className="font-bold text-[#0088D1] border-b pb-2">RAM</h3>
                                                     <ul className="space-y-2 text-gray-700">
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Corsair</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">G.SKILL</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Kingston</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Crucial</li>
+                                                        {[
+                                                            "Corsair",
+                                                            "G.SKILL",
+                                                            "Kingston",
+                                                            "Crucial"
+                                                        ].map(item => (
+                                                            <li
+                                                                key={item}
+                                                                className="hover:text-[#0088D1] cursor-pointer transition-colors"
+                                                                onClick={() => router.push(`/search?query=${encodeURIComponent(item)}`)}
+                                                            >
+                                                                {item}
+                                                            </li>
+                                                        ))}
                                                     </ul>
                                                 </div>
                                                 <div className="space-y-4">
                                                     <h3 className="font-bold text-[#0088D1] border-b pb-2">VGA</h3>
                                                     <ul className="space-y-2 text-gray-700">
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">NVIDIA</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">ZOTAC</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">ASUS</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">GIGABYTE</li>
+                                                        {[
+                                                            "NVIDIA",
+                                                            "ZOTAC",
+                                                            "ASUS",
+                                                            "GIGABYTE"
+                                                        ].map(item => (
+                                                            <li
+                                                                key={item}
+                                                                className="hover:text-[#0088D1] cursor-pointer transition-colors"
+                                                                onClick={() => router.push(`/search?query=${encodeURIComponent(item)}`)}
+                                                            >
+                                                                {item}
+                                                            </li>
+                                                        ))}
                                                     </ul>
                                                 </div>
                                                 <div className="space-y-4">
                                                     <h3 className="font-bold text-[#0088D1] border-b pb-2">HDD</h3>
                                                     <ul className="space-y-2 text-gray-700">
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Seagate</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">WD</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Samsung</li>
+                                                        {[
+                                                            "Seagate",
+                                                            "WD",
+                                                            "Samsung"
+                                                        ].map(item => (
+                                                            <li
+                                                                key={item}
+                                                                className="hover:text-[#0088D1] cursor-pointer transition-colors"
+                                                                onClick={() => router.push(`/search?query=${encodeURIComponent(item)}`)}
+                                                            >
+                                                                {item}
+                                                            </li>
+                                                        ))}
                                                     </ul>
                                                 </div>
                                                 <div className="space-y-4">
                                                     <h3 className="font-bold text-[#0088D1] border-b pb-2">SSD</h3>
                                                     <ul className="space-y-2 text-gray-700">
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Samsung</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">WD</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Kingston</li>
+                                                        {[
+                                                            "Samsung",
+                                                            "WD",
+                                                            "Kingston"
+                                                        ].map(item => (
+                                                            <li
+                                                                key={item}
+                                                                className="hover:text-[#0088D1] cursor-pointer transition-colors"
+                                                                onClick={() => router.push(`/search?query=${encodeURIComponent(item)}`)}
+                                                            >
+                                                                {item}
+                                                            </li>
+                                                        ))}
                                                     </ul>
                                                 </div>
                                                 <div className="space-y-4">
                                                     <h3 className="font-bold text-[#0088D1] border-b pb-2">PSU</h3>
                                                     <ul className="space-y-2 text-gray-700">
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">MSI</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Cooler Master</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Corsair</li>
+                                                        {[
+                                                            "MSI",
+                                                            "Cooler Master",
+                                                            "Corsair"
+                                                        ].map(item => (
+                                                            <li
+                                                                key={item}
+                                                                className="hover:text-[#0088D1] cursor-pointer transition-colors"
+                                                                onClick={() => router.push(`/search?query=${encodeURIComponent(item)}`)}
+                                                            >
+                                                                {item}
+                                                            </li>
+                                                        ))}
                                                     </ul>
                                                 </div>
                                                 <div className="space-y-4">
                                                     <h3 className="font-bold text-[#0088D1] border-b pb-2">CASE</h3>
                                                     <ul className="space-y-2 text-gray-700">
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Edra</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Fractal Design</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Phanteks</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">NZXT</li>
+                                                        {[
+                                                            "Edra",
+                                                            "Fractal Design",
+                                                            "Phanteks",
+                                                            "NZXT"
+                                                        ].map(item => (
+                                                            <li
+                                                                key={item}
+                                                                className="hover:text-[#0088D1] cursor-pointer transition-colors"
+                                                                onClick={() => router.push(`/search?query=${encodeURIComponent(item)}`)}
+                                                            >
+                                                                {item}
+                                                            </li>
+                                                        ))}
                                                     </ul>
                                                 </div>
                                                 <div className="space-y-4">
                                                     <h3 className="font-bold text-[#0088D1] border-b pb-2">FAN</h3>
                                                     <ul className="space-y-2 text-gray-700">
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Leopard</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Phanteks</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">NZXT</li>
+                                                        {[
+                                                            "Leopard",
+                                                            "Phanteks",
+                                                            "NZXT"
+                                                        ].map(item => (
+                                                            <li
+                                                                key={item}
+                                                                className="hover:text-[#0088D1] cursor-pointer transition-colors"
+                                                                onClick={() => router.push(`/search?query=${encodeURIComponent(item)}`)}
+                                                            >
+                                                                {item}
+                                                            </li>
+                                                        ))}
                                                     </ul>
                                                 </div>
                                                 <div className="space-y-4">
                                                     <h3 className="font-bold text-[#0088D1] border-b pb-2">PHU KIEN MÁY TÍNH</h3>
                                                     <ul className="space-y-2 text-gray-700">
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Headphone</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Mouse</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Keyboard</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Mousepad</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Webcam</li>
-                                                        <li className="hover:text-[#0088D1] cursor-pointer transition-colors">Microphone</li>
+                                                        {[
+                                                            "Headphone",
+                                                            "Mouse",
+                                                            "Keyboard",
+                                                            "Mousepad",
+                                                            "Webcam",
+                                                            "Microphone"
+                                                        ].map(item => (
+                                                            <li
+                                                                key={item}
+                                                                className="hover:text-[#0088D1] cursor-pointer transition-colors"
+                                                                onClick={() => router.push(`/search?query=${encodeURIComponent(item)}`)}
+                                                            >
+                                                                {item}
+                                                            </li>
+                                                        ))}
                                                     </ul>
                                                 </div>
                                             </div>

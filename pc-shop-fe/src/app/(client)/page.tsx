@@ -17,8 +17,6 @@ function Homepage() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (status !== "authenticated") return; // Wait for authentication
-
         const fetchData = async () => {
             try {
                 setLoading(true);

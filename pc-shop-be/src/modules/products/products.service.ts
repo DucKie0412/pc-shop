@@ -182,4 +182,11 @@ export class ProductsService {
             .exec();
         return result;
     }
+
+    async findByName(name: string): Promise<Product[]> {
+        return this.productModel.find({ name: { $regex: name, $options: 'i' } })
+            .populate('categoryId')
+            .populate('manufacturerId')
+            .exec();
+    }
 }

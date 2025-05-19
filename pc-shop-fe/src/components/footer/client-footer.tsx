@@ -7,13 +7,12 @@ function ClientFooter() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {/* Column 1 */}
           <div>
-            <h3 className="font-bold mb-2 text-[#0088D1]">GIỚI THIỆU PC MARKET</h3>
+            <h3 className="font-bold mb-2 text-[#0088D1]">GIỚI THIỆU</h3>
             <ul className="space-y-1">
               <li><a href="#" className="hover:underline">Giới thiệu công ty</a></li>
               <li><a href="#" className="hover:underline">Thông tin liên hệ</a></li>
               <li><a href="#" className="hover:underline">Tin tức</a></li>
             </ul>
-            <button className="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition">Xem giao diện bản mobile</button>
           </div>
           {/* Column 2 */}
           <div>
@@ -34,9 +33,6 @@ function ClientFooter() {
               <li><a href="#" className="hover:underline">Chính sách đổi trả</a></li>
               <li><a href="#" className="hover:underline">Bảo mật thông tin khách hàng</a></li>
             </ul>
-            <div className="mt-3">
-              <img src="/images/bo-cong-thuong.png" alt="Bộ Công Thương" className="h-8" />
-            </div>
           </div>
         </div>
 
@@ -69,13 +65,12 @@ function ClientFooter() {
         {/* Company info */}
         <div className="mt-6 text-center text-xs text-gray-500">
           <div>
-            CÔNG TY TNHH ĐẦU TƯ VÀ THƯƠNG MẠI PCM<br />
-            Giấy phép ĐKKD số 0110441021 do Sở Kế hoạch và Đầu tư thành phố Hà Nội cấp lần đầu ngày: 23/09/2024<br />
-            Trụ sở: Số 83-85 Thái Hà, Phường Trung Liệt, Quận Đống Đa, Thành phố Hà Nội, Việt Nam<br />
-            Email: phamxuanduong123@gmail.com &nbsp;|&nbsp; Tel: 0901 722 636
+            Duckie Store<br />
+            Trụ sở: Quận Đống Đa, Thành phố Hà Nội, Việt Nam<br />
+            Email: duckie.store@gmail.com &nbsp;|&nbsp; Tel: 012 345 2351
           </div>
           <div className="mt-2">
-            Copyright ©2021 PC Market - Hi-End Computer | Gaming Gear
+            Copyright ©2025 Duckie Store
           </div>
         </div>
       </div>
