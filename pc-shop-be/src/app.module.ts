@@ -18,7 +18,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { join } from 'path';
 import { ResponseInterceptor } from './core/response.interceptor';
 import { UploadModule } from './modules/upload/upload.module';
-
+import { OrderModule } from './modules/orders/order.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -62,7 +62,8 @@ import { UploadModule } from './modules/upload/upload.module';
     UsersModule,
     UploadModule,
     AuthModule,
-    BannersModule
+    BannersModule,
+    OrderModule
   ],
   controllers: [AppController],
   providers: [AppService,

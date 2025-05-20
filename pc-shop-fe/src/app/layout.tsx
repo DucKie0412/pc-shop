@@ -4,6 +4,7 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { CartProvider } from '@/contexts/CartContext';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,9 +31,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SessionProvider>
-          {children}
-        </SessionProvider>
+        <CartProvider>
+          <SessionProvider>
+            {children}
+          </SessionProvider>
+        </CartProvider>
         <ToastContainer position="top-right" autoClose={3000} />
       </body>
     </html>

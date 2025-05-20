@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { sendRequest } from '@/utils/api';
+import { useCart } from '@/contexts/CartContext';
 
 interface IProduct {
     _id: string;
@@ -20,6 +21,7 @@ function ProductPage() {
     const [product, setProduct] = useState<IProduct | null>(null);
     const [mainImage, setMainImage] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const { addItem } = useCart();
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -42,6 +44,18 @@ function ProductPage() {
         };
         fetchProduct();
     }, [slug]);
+
+    const handleAddToCart = () => {
+        if (product) {
+            addItem({
+                id: product._id,
+                name: product.name,
+                price: product.finalPrice,
+                image: product.images[0],
+                quantity: 1,
+            });
+        }
+    };
 
     if (loading) return <div className="container mx-auto py-10">Loading...</div>;
     if (!product) return <div className="container mx-auto py-10">Product not found.</div>;
@@ -93,7 +107,7 @@ function ProductPage() {
                         </div>
                     </div>
                     <div className="flex gap-4">
-                        <button className="bg-blue-600 text-white px-6 py-3 rounded font-semibold hover:bg-blue-700 transition">Thêm vào giỏ hàng</button>
+                        <button onClick={handleAddToCart} className="bg-blue-600 text-white px-6 py-3 rounded font-semibold hover:bg-blue-700 transition">Thêm vào giỏ hàng</button>
                         <button className="bg-blue-600 text-white px-6 py-3 rounded font-semibold hover:bg-blue-700 transition">Mua ngay</button>
                     </div>
                 </div>

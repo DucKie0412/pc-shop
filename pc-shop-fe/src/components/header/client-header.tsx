@@ -4,6 +4,10 @@ import { Menu, Search, ShoppingCart, User, LogOut, UserCircle, Settings, History
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useCart } from '@/contexts/CartContext';
+
+import CartSidebar from '@/components/cart/CartSidebar';
+import OrderLookupModal from './OrderLookupModal';
 
 function Header() {
     const [open, setOpen] = useState(false);
@@ -13,6 +17,10 @@ function Header() {
     const router = useRouter();
     const [searchInput, setSearchInput] = useState("");
     const [searchCategory, setSearchCategory] = useState("all");
+    const { items } = useCart();
+    const cartCount = items.reduce((total, item) => total + item.quantity, 0);
+    const [isCartOpen, setIsCartOpen] = useState(false);
+    const [isOrderLookupOpen, setIsOrderLookupOpen] = useState(false);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -93,7 +101,7 @@ function Header() {
                                     <Search size={15} />
                                 </button>
                             </form>
-                            <div className="flex flex-1 justify-end gap-6 items-center">
+                            <div className="flex flex-2 justify-end gap-6 items-center">
                                 {status === "authenticated" ? (
                                     <div className="relative group" ref={userMenuRef}>
                                         <div 
@@ -146,6 +154,14 @@ function Header() {
                                     </div>
                                 ) : (
                                     <div className="flex items-center gap-2 ">
+                                        <div>
+                                        <button
+                                            className="ml-2 text-sm underline text-white hover:text-yellow-200"
+                                            onClick={() => setIsOrderLookupOpen(true)}
+                                        >
+                                            Tra cứu đơn hàng
+                                        </button>
+                                    </div>
                                         <div className="rounded-full bg-white p-2">
                                             <User size={20} className="text-[#0088D1]" />
                                         </div>
@@ -157,10 +173,10 @@ function Header() {
                                     </div>
                                 )}
                                 <div className="relative">
-                                    <div className="flex items-center gap-2 cursor-pointer">
+                                    <div className="flex items-center gap-2 cursor-pointer" onClick={() => setIsCartOpen(true)}>
                                         <div className="rounded-full bg-white p-2 relative">
                                             <ShoppingCart size={20} className="text-[#0088D1]" />
-                                            <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">0</span>
+                                            <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">{cartCount}</span>
                                         </div>
                                         <span>Giỏ hàng</span>
                                     </div>
@@ -480,6 +496,8 @@ function Header() {
                     </div>
                 </div>
             )}
+            <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+            <OrderLookupModal isOpen={isOrderLookupOpen} onClose={() => setIsOrderLookupOpen(false)} />
         </header>
     );
 }
