@@ -1,9 +1,9 @@
-import { Controller, Post, Body, Get, Query, Req, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, Req, HttpException, HttpStatus, Param, Patch } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { Request } from 'express';
 import { Public } from 'src/auth/decorator/customize-guard';
-import { log } from 'node:console';
+import { UpdateOrderDto } from './dto/update-order.dto';
 
 @Controller('orders')
 export class OrderController {
@@ -22,13 +22,24 @@ export class OrderController {
         }
     }
 
-
     @Get('my')
     async getMyOrders(@Req() req: Request) {
         try {
             const userId = (req.user as any)?._id;
             if (!userId) throw new Error('Bạn chưa đăng nhập');
             return await this.orderService.findByUser(userId);
+        } catch (error) {
+            throw new HttpException(
+                { success: false, message: 'Không thể lấy đơn hàng', error: error.message },
+                HttpStatus.BAD_REQUEST
+            );
+        }
+    }
+
+    @Get(':id')
+    async getOrderById(@Param('id') id: string) {
+        try {
+            return await this.orderService.findById(id);
         } catch (error) {
             throw new HttpException(
                 { success: false, message: 'Không thể lấy đơn hàng', error: error.message },
@@ -61,6 +72,22 @@ export class OrderController {
         } catch (error) {
             throw new HttpException(
                 { success: false, message: 'Không thể lấy danh sách đơn hàng', error: error.message },
+                HttpStatus.BAD_REQUEST
+            );
+        }
+    }
+
+    @Patch(':id')
+    async updateOrder(
+        @Param('id') id: string,
+        @Body() updateOrderDto: UpdateOrderDto
+    ) {
+        try {
+            const updated = await this.orderService.updateOrder(id, updateOrderDto);
+            return { success: true, order: updated };
+        } catch (error) {
+            throw new HttpException(
+                { success: false, message: 'Không thể cập nhật đơn hàng', error: error.message },
                 HttpStatus.BAD_REQUEST
             );
         }

@@ -17,4 +17,5 @@ export class CreateOrderDto {
   @IsOptional() @IsString() note?: string;
   @IsArray() items: CreateOrderItemDto[];
   @IsNumber() total: number;
+  @IsOptional() @IsString() status?: string;
 } 

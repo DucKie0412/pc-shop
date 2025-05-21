@@ -12,6 +12,10 @@ export class OrderService {
     return this.orderModel.create(createOrderDto);
   }
 
+  async findById(id: string) {
+    return this.orderModel.findById(id);
+  }
+
   async findByUser(userId: string) {
     return this.orderModel.find({ userId }).sort({ createdAt: -1 });
   }
@@ -22,5 +26,9 @@ export class OrderService {
 
   async findAll() {
     return this.orderModel.find().sort({ createdAt: -1 });
+  }
+
+  async updateOrder(id: string, update: any) {
+    return this.orderModel.findByIdAndUpdate(id, update, { new: true });
   }
 } 
