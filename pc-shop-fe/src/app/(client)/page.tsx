@@ -134,6 +134,11 @@ function Homepage() {
                             viewAllLink="/category/fan"
                         />  
                         <ProductCardSlider
+                            title="MONITOR"
+                            products={products.filter(p => p.type === "monitor")}
+                            viewAllLink="/category/monitor"
+                        />
+                        <ProductCardSlider
                             title="PHU KIEN MÁY TÍNH"
                             products={products.filter(p => p.type === "other")}
                             viewAllLink="/category/phukien"

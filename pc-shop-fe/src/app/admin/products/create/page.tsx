@@ -11,12 +11,13 @@ import AddPSUForm from "./forms/AddPSUForm";
 import AddCaseForm from "./forms/AddCaseForm";
 import AddMonitorForm from "./forms/AddMonitorForm";
 import AddOtherForm from "./forms/AddOtherForm";
-
+import AddHDDForm from "./forms/AddHDDForm";
 const typeToForm: Record<string, React.FC<{ onBack: () => void }>> = {
   cpu: AddCPUForm,
   vga: AddVGAForm,
   ram: AddRAMForm,
   ssd: AddSSDForm,
+  hdd: AddHDDForm,
   mainboard: AddMainboardForm,
   psu: AddPSUForm,
   case: AddCaseForm,

@@ -31,16 +31,34 @@ import {
 
 const vgaSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  description: z.string().min(1, "Description is required"),
   categoryId: z.string().min(1, "Category is required"),
   manufacturerId: z.string().min(1, "Manufacturer is required"),
   stock: z.coerce.number().min(0, "Stock must be at least 0"),
   originalPrice: z.coerce.number().min(0, "Price must be at least 0"),
   discount: z.coerce.number().min(0).max(100),
-  vram: z.string().min(1, "VRAM must be at least 1"),
-  vramType: z.string().min(1, "VRAM type is required"),
+  vgaVram: z.string().min(1, "VRAM must be at least 1"),
+  vgaVramType: z.string().min(1, "VRAM type is required"),
+  vgaBoostSpeed: z.string().min(1, "Boost speed is required"),
+  vgaPCIExpress: z.string().min(1, "PCI Express version is required"),
+  vgaDisplayPorts: z.coerce.number().min(0).default(0),
+  vgaHdmiPorts: z.coerce.number().min(0).default(0),
+  vgaVgaPorts: z.coerce.number().min(0).default(0),
+  vgaDviPorts: z.coerce.number().min(0).default(0),
+  vga6PinConnectors: z.coerce.number().min(0).default(0),
+  vga6Plus2PinConnectors: z.coerce.number().min(0).default(0),
+  vga8PinConnectors: z.coerce.number().min(0).default(0),
+  vga12PinConnectors: z.coerce.number().min(0).default(0),
+  vgaMaxTDP: z.string().min(1, "Max TDP is required"),
+  vgaSizeWidth: z.string().min(1, "Width is required"),
+  vgaSizeLength: z.string().min(1, "Length is required"),
+  vgaSizeHeight: z.string().min(1, "Height is required"),
   images: z.array(z.string()).optional(),
   imagePublicIds: z.array(z.string()).optional(),
+  details: z.array(z.object({
+    title: z.string().min(1, "Title is required"),
+    content: z.string().optional(),
+    image: z.string().optional()
+  })).optional()
 });
 
 export default function AddVGAForm({ onBack }: { onBack: () => void }) {
@@ -50,6 +68,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
   const [categoryLocked, setCategoryLocked] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [imagePublicIds, setImagePublicIds] = useState<string[]>([]);
+  const [details, setDetails] = useState<{ title: string; content: string; image?: string }[]>([]);
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -59,14 +78,28 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
       stock: 0, 
       originalPrice: 0, 
       discount: 0,
-      vram: "",
-      vramType: "",
+      vgaVram: "",
+      vgaVramType: "",
+      vgaBoostSpeed: "",
+      vgaPCIExpress: "",
+      vgaDisplayPorts: 0,
+      vgaHdmiPorts: 0,
+      vgaVgaPorts: 0,
+      vgaDviPorts: 0,
+      vga6PinConnectors: 0,
+      vga6Plus2PinConnectors: 0,
+      vga8PinConnectors: 0,
+      vga12PinConnectors: 0,
+      vgaMaxTDP: "",
+      vgaSizeWidth: "",
+      vgaSizeLength: "",
+      vgaSizeHeight: "",
       name: "",
-      description: "",
       categoryId: "",
       manufacturerId: "",
       images: [],
-      imagePublicIds: []
+      imagePublicIds: [],
+      details: []
     },
   });
 
@@ -131,11 +164,24 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
         categoryId: values.categoryId,
         manufacturerId: values.manufacturerId,
         specs: {
-          vram: values.vram,
-          vramType: values.vramType,
+          vgaVram: values.vgaVram,
+          vgaVramType: values.vgaVramType,
+          vgaBoostSpeed: values.vgaBoostSpeed.startsWith("custom_") ? values.vgaBoostSpeed.replace("custom_", "") : values.vgaBoostSpeed,
+          vgaPCIExpress: values.vgaPCIExpress,
+          vgaDisplayPorts: values.vgaDisplayPorts,
+          vgaHdmiPorts: values.vgaHdmiPorts,
+          vgaVgaPorts: values.vgaVgaPorts,
+          vgaDviPorts: values.vgaDviPorts,
+          vga6PinConnectors: values.vga6PinConnectors,
+          vga6Plus2PinConnectors: values.vga6Plus2PinConnectors,
+          vga8PinConnectors: values.vga8PinConnectors,
+          vga12PinConnectors: values.vga12PinConnectors,
+          vgaMaxTDP: values.vgaMaxTDP.startsWith("custom_") ? values.vgaMaxTDP.replace("custom_", "") : values.vgaMaxTDP,
+          vgaSize: `${values.vgaSizeWidth} x ${values.vgaSizeLength} x ${values.vgaSizeHeight}`,
         },
-        images: values.images,
-        imagePublicIds: values.imagePublicIds
+        images,
+        imagePublicIds,
+        details
       };
       const response = await sendRequest<IBackendRes<any>>({
         url: "/api/products",
@@ -178,19 +224,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea placeholder="VGA description" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -295,7 +329,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="vram"
+                name="vgaVram"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>VRAM (GB)</FormLabel>
@@ -329,7 +363,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
               />
               <FormField
                 control={form.control}
-                name="vramType"
+                name="vgaVramType"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>VRAM Type</FormLabel>
@@ -356,6 +390,373 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="vgaBoostSpeed"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Boost Speed (MHz)</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value.startsWith("custom_") ? "custom" : field.value}
+                        onValueChange={value => {
+                          if (value === "custom") {
+                            field.onChange("custom_");
+                          } else {
+                            field.onChange(value);
+                          }
+                        }}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select boost speed" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="1500">1500 MHz</SelectItem>
+                          <SelectItem value="1600">1600 MHz</SelectItem>
+                          <SelectItem value="1700">1700 MHz</SelectItem>
+                          <SelectItem value="1800">1800 MHz</SelectItem>
+                          <SelectItem value="1900">1900 MHz</SelectItem>
+                          <SelectItem value="2000">2000 MHz</SelectItem>
+                          <SelectItem value="2100">2100 MHz</SelectItem>
+                          <SelectItem value="2200">2200 MHz</SelectItem>
+                          <SelectItem value="2300">2300 MHz</SelectItem>
+                          <SelectItem value="2400">2400 MHz</SelectItem>
+                          <SelectItem value="2500">2500 MHz</SelectItem>
+                          <SelectItem value="2600">2600 MHz</SelectItem>
+                          <SelectItem value="2700">2700 MHz</SelectItem>
+                          <SelectItem value="2800">2800 MHz</SelectItem>
+                          <SelectItem value="2900">2900 MHz</SelectItem>
+                          <SelectItem value="3000">3000 MHz</SelectItem>
+                          <SelectItem value="custom">Custom...</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    {field.value.startsWith("custom_") && (
+                      <Input
+                        className="mt-2"
+                        placeholder="Enter custom boost speed (e.g., 2750 MHz)"
+                        value={field.value.replace("custom_", "")}
+                        onChange={e => field.onChange("custom_" + e.target.value)}
+                      />
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="vgaPCIExpress"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>PCI Express</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value.startsWith("custom_") ? "custom" : field.value}
+                        onValueChange={value => {
+                          if (value === "custom") {
+                            field.onChange("custom_");
+                          } else {
+                            field.onChange(value);
+                          }
+                        }}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select PCI Express version" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="PCIe 2.0 x8">PCIe 2.0 x8</SelectItem>
+                          <SelectItem value="PCIe 2.0 x16">PCIe 2.0 x16</SelectItem>
+                          <SelectItem value="PCIe 3.0 x8">PCIe 3.0 x8</SelectItem>
+                          <SelectItem value="PCIe 3.0 x16">PCIe 3.0 x16</SelectItem>
+                          <SelectItem value="PCIe 4.0 x8">PCIe 4.0 x8</SelectItem>
+                          <SelectItem value="PCIe 4.0 x16">PCIe 4.0 x16</SelectItem>
+                          <SelectItem value="PCIe 5.0 x16">PCIe 5.0 x16</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="vgaMaxTDP"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Max TDP (W)</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value.startsWith("custom_") ? "custom" : field.value}
+                        onValueChange={value => {
+                          if (value === "custom") {
+                            field.onChange("custom_");
+                          } else {
+                            field.onChange(value);
+                          }
+                        }}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select max TDP" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="75">75W</SelectItem>
+                          <SelectItem value="100">100W</SelectItem>
+                          <SelectItem value="125">125W</SelectItem>
+                          <SelectItem value="150">150W</SelectItem>
+                          <SelectItem value="175">175W</SelectItem>
+                          <SelectItem value="200">200W</SelectItem>
+                          <SelectItem value="225">225W</SelectItem>
+                          <SelectItem value="250">250W</SelectItem>
+                          <SelectItem value="275">275W</SelectItem>
+                          <SelectItem value="300">300W</SelectItem>
+                          <SelectItem value="325">325W</SelectItem>
+                          <SelectItem value="350">350W</SelectItem>
+                          <SelectItem value="375">375W</SelectItem>
+                          <SelectItem value="400">400W</SelectItem>
+                          <SelectItem value="450">450W</SelectItem>
+                          <SelectItem value="500">500W</SelectItem>
+                          <SelectItem value="600">600W</SelectItem>
+                          <SelectItem value="custom">Custom...</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    {field.value.startsWith("custom_") && (
+                      <Input
+                        className="mt-2"
+                        placeholder="Enter custom max TDP (e.g., 425W)"
+                        value={field.value.replace("custom_", "")}
+                        onChange={e => field.onChange("custom_" + e.target.value)}
+                      />
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Display Ports Section */}
+            <div className="mt-6">
+              <h5 className="font-semibold mb-3 text-gray-700">Display Ports</h5>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <FormField
+                  control={form.control}
+                  name="vgaDisplayPorts"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>DisplayPort</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          placeholder="Count"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="vgaHdmiPorts"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>HDMI</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          placeholder="Count"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="vgaVgaPorts"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>VGA</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          placeholder="Count"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="vgaDviPorts"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>DVI</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          placeholder="Count"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Power Connectors Section */}
+            <div className="mt-6">
+              <h5 className="font-semibold mb-3 text-gray-700">Power Connectors</h5>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <FormField
+                  control={form.control}
+                  name="vga6PinConnectors"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>6-pin</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          placeholder="Count"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="vga6Plus2PinConnectors"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>6+2-pin</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          placeholder="Count"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="vga8PinConnectors"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>8-pin</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          placeholder="Count"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="vga12PinConnectors"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>12-pin</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          placeholder="Count"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Dimensions Section */}
+            <div className="mt-6">
+              <h5 className="font-semibold mb-3 text-gray-700">Dimensions</h5>
+              <div className="grid grid-cols-3 gap-4">
+                <FormField
+                  control={form.control}
+                  name="vgaSizeWidth"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Width (mm)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          placeholder="Enter width"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="vgaSizeLength"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Length (mm)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          placeholder="Enter length"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="vgaSizeHeight"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Height (mm)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="0"
+                          placeholder="Enter height"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
           </div>
           <div className="space-y-4">
@@ -434,6 +835,77 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                 )}
               </CldUploadWidget>
             </div>
+          </div>
+          {/* Product Details Section */}
+          <div className="bg-gray-50 rounded p-4 mt-4">
+            <h4 className="font-semibold mb-2 text-gray-700">Product Details Sections</h4>
+            {details.map((detail, idx) => (
+              <div key={idx} className="mb-4 border rounded p-3 bg-white">
+                <input
+                  className="mb-2 w-full border rounded px-2 py-1"
+                  placeholder="Section Title"
+                  value={detail.title}
+                  onChange={e => {
+                    const newDetails = [...details];
+                    newDetails[idx].title = e.target.value;
+                    setDetails(newDetails);
+                  }}
+                />
+                <textarea
+                  className="mb-2 w-full border rounded px-2 py-1"
+                  placeholder="Section Content"
+                  value={detail.content}
+                  onChange={e => {
+                    const newDetails = [...details];
+                    newDetails[idx].content = e.target.value;
+                    setDetails(newDetails);
+                  }}
+                />
+                {/* Image selection from uploaded images as thumbnails */}
+                <div className="mb-2">
+                  <div className="font-medium mb-1">Select Image</div>
+                  <div className="flex gap-2 flex-wrap">
+                    <div
+                      className={`border rounded cursor-pointer p-1 ${!detail.image ? 'ring-2 ring-blue-500' : ''}`}
+                      onClick={() => {
+                        const newDetails = [...details];
+                        newDetails[idx].image = "";
+                        setDetails(newDetails);
+                      }}
+                    >
+                      <div className="w-24 h-16 flex items-center justify-center text-xs text-gray-400">No image</div>
+                    </div>
+                    {images.map((img, i) => (
+                      <div
+                        key={i}
+                        className={`border rounded cursor-pointer p-1 ${detail.image === img ? 'ring-2 ring-blue-500' : ''}`}
+                        onClick={() => {
+                          const newDetails = [...details];
+                          newDetails[idx].image = img;
+                          setDetails(newDetails);
+                        }}
+                      >
+                        <img src={img} alt="Detail" className="w-24 h-16 object-cover rounded" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="text-red-500 text-sm"
+                  onClick={() => setDetails(details.filter((_, i) => i !== idx))}
+                >
+                  Remove Section
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              className="bg-blue-500 text-white px-3 py-1 rounded"
+              onClick={() => setDetails([...details, { title: "", content: "", image: "" }])}
+            >
+              Add Section
+            </button>
           </div>
           <Button type="submit" className="w-full">Add VGA</Button>
         </form>

@@ -10,6 +10,7 @@ export enum ProductType {
     VGA = 'vga',
     RAM = 'ram',
     SSD = 'ssd',
+    HDD = 'hdd',
     MAINBOARD = 'mainboard',
     PSU = 'psu',
     CASE = 'case',
@@ -22,9 +23,6 @@ export class Product extends Document {
 
     @Prop({ required: true })
     name: string;               // tên sản phẩm
-
-    @Prop({ required: true })
-    description: string;        // mô tả sản phẩm
 
     @Prop({
         required: true,
@@ -46,10 +44,10 @@ export class Product extends Document {
 
     @Prop({ default: 0, min: 0, max: 100 })
     discount: number;           // giảm giá sản phẩm
-
+    
     @Prop({ required: true, min: 0 })
     finalPrice: number;
-
+    
     @Prop({ type: Object, required: true })
     specs: Record<string, any>;
 
@@ -61,6 +59,23 @@ export class Product extends Document {
 
     @Prop({ unique: true })
     slug: string;               // đường dẫn tên sản phẩm
+
+    @Prop({
+      type: [
+        {
+          title: { type: String, required: true },
+          content: { type: String, required: false },
+          image: { type: String, required: false },
+        }
+      ],
+      default: [],
+    })
+    details?: {
+      title?: string;
+      content?: string;
+      image?: string;
+    }[];
+
 
 }
 

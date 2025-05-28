@@ -27,7 +27,6 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { CldUploadWidget } from 'next-cloudinary';
-import { sendRequestClient } from "@/utils/api.client";
 import { IManufacturer } from "@/types/manufacturer";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -35,17 +34,25 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/web
 
 const cpuSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  description: z.string().min(1, "Description is required"),
-  categoryId: z.string().min(1, "Category is required"),
+  categoryId: z.string().min(1, "Category is required"),  
+  manufacturerId: z.string().min(1, "Manufacturer is required"),
   stock: z.coerce.number().min(0, "Stock must be at least 0"),
   originalPrice: z.coerce.number().min(0, "Price must be at least 0"),
   discount: z.coerce.number().min(0).max(100),
-  manufacturerId: z.string().min(1, "CPU Brand is required"),
-  cores: z.coerce.number().min(1, "Cores must be at least 1"),
-  threads: z.coerce.number().min(1, "Threads must be at least 1"),
-  socket: z.string().min(1, "Socket is required"),
+  cpuSocket: z.string().min(1, "Socket is required"),
+  cpuCores: z.string().min(1, "Cores is required"),
+  cpuThreads: z.string().min(1, "Threads is required"),
+  cpuBaseSpeed: z.string().min(1, "Base speed is required"),
+  cpuBoostSpeed: z.string().min(1, "Boost speed is required"),
+  cpuCache: z.string().min(1, "Cache is required"),
+  cpuTdp: z.string().min(1, "TDP is required"),
   images: z.array(z.string()).optional(),
   imagePublicIds: z.array(z.string()).optional(),
+  details: z.array(z.object({
+    title: z.string().min(1, "Title is required"),
+    content: z.string().optional(),
+    image: z.string().optional()
+  })).optional()
 });
 
 const AMD_SOCKETS = ["AM4", "AM5"];
@@ -60,6 +67,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
   const [categoryLocked, setCategoryLocked] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [imagePublicIds, setImagePublicIds] = useState<string[]>([]);
+  const [details, setDetails] = useState<{ title: string; content: string; image?: string }[]>([]);
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -114,13 +122,21 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
 
   const form = useForm({
     resolver: zodResolver(cpuSchema),
-    defaultValues: {
-      stock: 0,
-      originalPrice: 0,
+    defaultValues: { 
+      stock: 0, 
+      originalPrice: 0, 
       discount: 0,
+      cpuSocket: "",
+      cpuCores: "",
+      cpuThreads: "",
+      cpuBaseSpeed: "",
+      cpuBoostSpeed: "",
+      cpuCache: "",
+      cpuTdp: "",
+      name: "",
+      categoryId: "",
       manufacturerId: "",
-      images: [],
-      imagePublicIds: []
+      details: []
     },
   });
 
@@ -135,29 +151,39 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
         type: "cpu",
         categoryId: values.categoryId,
         manufacturerId: values.manufacturerId,
+        warranty: parseInt(values.warranty),
+        specs: {
+          cpuSocket: values.cpuSocket,
+          cpuCores: values.cpuCores,
+          cpuThreads: values.cpuThreads,
+          cpuBaseSpeed: values.cpuBaseSpeed.startsWith("custom_") ? values.cpuBaseSpeed.replace("custom_", "") : values.cpuBaseSpeed,
+          cpuBoostSpeed: values.cpuBoostSpeed.startsWith("custom_") ? values.cpuBoostSpeed.replace("custom_", "") : values.cpuBoostSpeed,
+          cpuCache: values.cpuCache.startsWith("custom_") ? values.cpuCache.replace("custom_", "") : values.cpuCache,
+          cpuTdp: values.cpuTdp.startsWith("custom_") ? values.cpuTdp.replace("custom_", "") : values.cpuTdp,
+        },
         images,
         imagePublicIds,
-        specs: {
-          cores: values.cores,
-          threads: values.threads,
-          socket: values.socket,
-        },
+        details
       };
-      const response = await sendRequestClient<IBackendRes<any>>({
+      console.log(payload);
+      
+      const response = await sendRequest<IBackendRes<any>>({
         url: "/api/products",
         method: "POST",
         body: payload,
-        headers: { Authorization: `Bearer ${session.user.accessToken}`, 
-        'Content-Type': 'application/json' },
+        headers: {
+          Authorization: `Bearer ${session.user.accessToken}`,
+          'Content-Type': 'application/json'
+        },
       });
       if (response.error) {
         toast.error(response.error);
       } else {
-        toast.success("CPU added successfully");        
-        
+        toast.success("CPU added successfully");
         form.reset();
         setImages([]);
         setImagePublicIds([]);
+        setDetails([]);
         setTimeout(() => { router.push("/admin/products"); }, 2000);
       }
     } catch (error) {
@@ -192,19 +218,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea placeholder="CPU description" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -306,55 +320,282 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
           </div>
           <div className="bg-gray-50 rounded p-4 mt-4">
             <h4 className="font-semibold mb-2 text-gray-700">CPU Specs</h4>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="cores"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Cores</FormLabel>
-                    <FormControl>
-                      <Input type="number" placeholder="Number of cores" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="threads"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Threads</FormLabel>
-                    <FormControl>
-                      <Input type="number" placeholder="Number of threads" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="socket"
+                name="cpuSocket"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Socket</FormLabel>
                     <FormControl>
                       <Select
-                        value={field.value}
+                        value={field.value}   
                         onValueChange={field.onChange}
-                        disabled={!form.watch("manufacturerId")}
                       >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a socket" />
-                        </SelectTrigger>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select socket" />
+                          </SelectTrigger>
+                        </FormControl>
                         <SelectContent>
-                          {sockets.map(socket => (
-                            <SelectItem key={socket} value={socket}>{socket}</SelectItem>
+                          {sockets.map((socket) => (
+                            <SelectItem key={socket} value={socket}>
+                              {socket}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </FormControl>
+                    <FormMessage /> 
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="cpuCores"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cores</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select cores" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="2">2 Cores</SelectItem>
+                          <SelectItem value="4">4 Cores</SelectItem>
+                          <SelectItem value="6">6 Cores</SelectItem>
+                          <SelectItem value="8">8 Cores</SelectItem>
+                          <SelectItem value="10">10 Cores</SelectItem>
+                          <SelectItem value="12">12 Cores</SelectItem>
+                          <SelectItem value="16">16 Cores</SelectItem>
+                          <SelectItem value="24">24 Cores</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="cpuThreads"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Threads</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select threads" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="4">4 Threads</SelectItem>
+                          <SelectItem value="8">8 Threads</SelectItem>
+                          <SelectItem value="12">12 Threads</SelectItem>
+                          <SelectItem value="16">16 Threads</SelectItem>
+                          <SelectItem value="20">20 Threads</SelectItem>
+                          <SelectItem value="24">24 Threads</SelectItem>
+                          <SelectItem value="32">32 Threads</SelectItem>
+                          <SelectItem value="48">48 Threads</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="cpuBaseSpeed"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Base Speed</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value.startsWith("custom_") ? "custom" : field.value}
+                        onValueChange={value => {
+                          if (value === "custom") {
+                            field.onChange("custom_");
+                          } else {
+                            field.onChange(value);
+                          }
+                        }}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select base speed" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="2.0">2.0 GHz</SelectItem>
+                          <SelectItem value="2.5">2.5 GHz</SelectItem>
+                          <SelectItem value="3.0">3.0 GHz</SelectItem>
+                          <SelectItem value="3.5">3.5 GHz</SelectItem>
+                          <SelectItem value="4.0">4.0 GHz</SelectItem>
+                          <SelectItem value="4.5">4.5 GHz</SelectItem>
+                          <SelectItem value="5.0">5.0 GHz</SelectItem>
+                          <SelectItem value="custom">Custom...</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    {field.value.startsWith("custom_") && (
+                      <Input
+                        className="mt-2"
+                        placeholder="Enter custom base speed (e.g., 3.8 GHz)"
+                        value={field.value.replace("custom_", "")}
+                        onChange={e => field.onChange("custom_" + e.target.value)}
+                      />
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="cpuBoostSpeed"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Boost Speed</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value.startsWith("custom_") ? "custom" : field.value}
+                        onValueChange={value => {
+                          if (value === "custom") {
+                            field.onChange("custom_");
+                          } else {
+                            field.onChange(value);
+                          }
+                        }}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select boost speed" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="3.0">3.0 GHz</SelectItem>
+                          <SelectItem value="3.5">3.5 GHz</SelectItem>
+                          <SelectItem value="4.0">4.0 GHz</SelectItem>
+                          <SelectItem value="4.5">4.5 GHz</SelectItem>
+                          <SelectItem value="5.0">5.0 GHz</SelectItem>
+                          <SelectItem value="5.5">5.5 GHz</SelectItem>
+                          <SelectItem value="6.0">6.0 GHz</SelectItem>
+                          <SelectItem value="custom">Custom...</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    {field.value.startsWith("custom_") && (
+                      <Input
+                        className="mt-2"
+                        placeholder="Enter custom boost speed (e.g., 5.2 GHz)"
+                        value={field.value.replace("custom_", "")}
+                        onChange={e => field.onChange("custom_" + e.target.value)}
+                      />
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="cpuCache"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cache</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value.startsWith("custom_") ? "custom" : field.value}
+                        onValueChange={value => {
+                          if (value === "custom") {
+                            field.onChange("custom_");
+                          } else {
+                            field.onChange(value);
+                          }
+                        }}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select cache" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="4">4 MB</SelectItem>
+                          <SelectItem value="6">6 MB</SelectItem>
+                          <SelectItem value="8">8 MB</SelectItem>
+                          <SelectItem value="12">12 MB</SelectItem>
+                          <SelectItem value="16">16 MB</SelectItem>
+                          <SelectItem value="24">24 MB</SelectItem>
+                          <SelectItem value="32">32 MB</SelectItem>
+                          <SelectItem value="64">64 MB</SelectItem>
+                          <SelectItem value="custom">Custom...</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    {field.value.startsWith("custom_") && (
+                      <Input
+                        className="mt-2"
+                        placeholder="Enter custom cache (e.g., 18 MB)"
+                        value={field.value.replace("custom_", "")}
+                        onChange={e => field.onChange("custom_" + e.target.value)}
+                      />
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="cpuTdp"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>TDP</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value.startsWith("custom_") ? "custom" : field.value}
+                        onValueChange={value => {
+                          if (value === "custom") {
+                            field.onChange("custom_");
+                          } else {
+                            field.onChange(value);
+                          }
+                        }}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select TDP" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="35">35W</SelectItem>
+                          <SelectItem value="65">65W</SelectItem>
+                          <SelectItem value="95">95W</SelectItem>
+                          <SelectItem value="105">105W</SelectItem>
+                          <SelectItem value="125">125W</SelectItem>
+                          <SelectItem value="150">150W</SelectItem>
+                          <SelectItem value="170">170W</SelectItem>
+                          <SelectItem value="200">200W</SelectItem>
+                          <SelectItem value="custom">Custom...</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    {field.value.startsWith("custom_") && (
+                      <Input
+                        className="mt-2"
+                        placeholder="Enter custom TDP (e.g., 180W)"
+                        value={field.value.replace("custom_", "")}
+                        onChange={e => field.onChange("custom_" + e.target.value)}
+                      />
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
@@ -437,9 +678,80 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                 </CldUploadWidget>
               </div>
             </div>
-            
-            <Button type="submit" className="w-full">Add CPU</Button>
+
           </div>
+          {/* Product Details Section */}
+          <div className="bg-gray-50 rounded p-4 mt-4">
+            <h4 className="font-semibold mb-2 text-gray-700">Product Details Sections</h4>
+            {details.map((detail, idx) => (
+              <div key={idx} className="mb-4 border rounded p-3 bg-white">
+                <input
+                  className="mb-2 w-full border rounded px-2 py-1"
+                  placeholder="Section Title"
+                  value={detail.title}
+                  onChange={e => {
+                    const newDetails = [...details];
+                    newDetails[idx].title = e.target.value;
+                    setDetails(newDetails);
+                  }}
+                />
+                <textarea
+                  className="mb-2 w-full border rounded px-2 py-1"
+                  placeholder="Section Content"
+                  value={detail.content}
+                  onChange={e => {
+                    const newDetails = [...details];
+                    newDetails[idx].content = e.target.value;
+                    setDetails(newDetails);
+                  }}
+                />
+                {/* Image selection from uploaded images as thumbnails */}
+                <div className="mb-2">
+                  <div className="font-medium mb-1">Select Image</div>
+                  <div className="flex gap-2 flex-wrap">
+                    <div
+                      className={`border rounded cursor-pointer p-1 ${!detail.image ? 'ring-2 ring-blue-500' : ''}`}
+                      onClick={() => {
+                        const newDetails = [...details];
+                        newDetails[idx].image = "";
+                        setDetails(newDetails);
+                      }}
+                    >
+                      <div className="w-24 h-16 flex items-center justify-center text-xs text-gray-400">No image</div>
+                    </div>
+                    {images.map((img, i) => (
+                      <div
+                        key={i}
+                        className={`border rounded cursor-pointer p-1 ${detail.image === img ? 'ring-2 ring-blue-500' : ''}`}
+                        onClick={() => {
+                          const newDetails = [...details];
+                          newDetails[idx].image = img;
+                          setDetails(newDetails);
+                        }}
+                      >
+                        <img src={img} alt="Detail" className="w-24 h-16 object-cover rounded" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="text-red-500 text-sm"
+                  onClick={() => setDetails(details.filter((_, i) => i !== idx))}
+                >
+                  Remove Section
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              className="bg-blue-500 text-white px-3 py-1 rounded"
+              onClick={() => setDetails([...details, { title: "", content: "", image: "" }])}
+            >
+              Add Section
+            </button>
+          </div>
+          <Button type="submit" className="w-full">Add CPU</Button>
         </form>
       </Form>
     </div>

@@ -155,6 +155,7 @@ export function ManufacturerForm({ initialData }: ManufacturerFormProps) {
                                     <SelectItem value="ram">RAM</SelectItem>
                                     <SelectItem value="vga">VGA</SelectItem>
                                     <SelectItem value="ssd">SSD</SelectItem>
+                                    <SelectItem value="hdd">HDD</SelectItem>
                                     <SelectItem value="psu">PSU</SelectItem>
                                     <SelectItem value="case">Case</SelectItem>
                                     <SelectItem value="monitor">Monitor</SelectItem>

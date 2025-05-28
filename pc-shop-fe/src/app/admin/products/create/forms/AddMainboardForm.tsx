@@ -28,10 +28,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const mainboardSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  description: z.string().min(1, "Description is required"),
   categoryId: z.string().min(1, "Category is required"),
   manufacturerId: z.string().min(1, "Manufacturer is required"),
   stock: z.coerce.number().min(0, "Stock must be at least 0"),
@@ -42,17 +42,23 @@ const mainboardSchema = z.object({
   chipset: z.string().min(1, "Chipset is required"),
   formFactor: z.string().min(1, "Form factor is required"),
   memoryType: z.string().min(1, "Memory type is required"),
+  maxRamSlots: z.string().min(1, "Max RAM slots is required"),
   maxMemory: z.string().min(1, "Max memory is required"),
+  supportXMP: z.boolean().optional(),
+  supportEXPO: z.boolean().optional(),
   images: z.array(z.string()).optional(),
   imagePublicIds: z.array(z.string()).optional(),
+  details: z.array(z.object({
+    title: z.string().min(1, "Title is required"),
+    content: z.string().optional(),
+    image: z.string().optional()
+  })).optional()
 });
 
 const AMD_SOCKETS = [
   { value: "AM4", label: "AM4" },
   { value: "AM5", label: "AM5" },
   { value: "TR4", label: "TR4" },
-  { value: "sTRX4", label: "sTRX4" },
-  { value: "sWRX8", label: "sWRX8" },
 ];
 
 const INTEL_SOCKETS = [
@@ -81,6 +87,7 @@ export default function AddMainboardForm({ onBack }: { onBack: () => void }) {
   const [categoryLocked, setCategoryLocked] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [imagePublicIds, setImagePublicIds] = useState<string[]>([]);
+  const [details, setDetails] = useState<{ title: string; content: string; image?: string }[]>([]);
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -95,13 +102,16 @@ export default function AddMainboardForm({ onBack }: { onBack: () => void }) {
       chipset: "",
       formFactor: "",
       memoryType: "",
+      maxRamSlots: "",
       maxMemory: "",
+      supportXMP: false,
+      supportEXPO: false,
       name: "",
-      description: "",
       categoryId: "",
       manufacturerId: "",
       images: [],
-      imagePublicIds: []
+      imagePublicIds: [],
+      details: []
     },
   });
 
@@ -172,15 +182,19 @@ export default function AddMainboardForm({ onBack }: { onBack: () => void }) {
         categoryId: values.categoryId,
         manufacturerId: values.manufacturerId,
         specs: {
-          brand: values.brand,
-          socket: values.socket,
-          chipset: values.chipset,
-          formFactor: values.formFactor,
-          memoryType: values.memoryType,
-          maxMemory: values.maxMemory,
+          mainboardBrand: values.brand,
+          mainboardSocket: values.socket,
+          mainboardChipset: values.chipset,
+          mainboardFormFactor: values.formFactor,
+          mainboardMemoryType: values.memoryType,
+          mainboardMaxRamSlots: values.maxRamSlots,
+          mainboardMaxMemory: values.maxMemory,
+          mainboardSupportXMP: values.supportXMP,
+          mainboardSupportEXPO: values.supportEXPO,
         },
-        images: values.images,
-        imagePublicIds: values.imagePublicIds
+        images,
+        imagePublicIds,
+        details
       };
       const response = await sendRequest<IBackendRes<any>>({
         url: "/api/products",
@@ -218,19 +232,6 @@ export default function AddMainboardForm({ onBack }: { onBack: () => void }) {
                 <FormLabel>Name</FormLabel>
                 <FormControl>
                   <Input placeholder="Mainboard name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea placeholder="Mainboard description" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -343,7 +344,7 @@ export default function AddMainboardForm({ onBack }: { onBack: () => void }) {
                 name="brand"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>CPU Brand</FormLabel>
+                    <FormLabel>CPU Support</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -351,7 +352,7 @@ export default function AddMainboardForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select CPU brand" />
+                            <SelectValue placeholder="Select CPU support" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -490,6 +491,34 @@ export default function AddMainboardForm({ onBack }: { onBack: () => void }) {
               />
               <FormField
                 control={form.control}
+                name="maxRamSlots"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Max RAM Slots</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select max RAM slots" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="2">2</SelectItem>
+                          <SelectItem value="4">4</SelectItem>
+                          <SelectItem value="6">6</SelectItem>
+                          <SelectItem value="8">8</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name="maxMemory"
                 render={({ field }) => (
                   <FormItem>
@@ -516,6 +545,58 @@ export default function AddMainboardForm({ onBack }: { onBack: () => void }) {
                   </FormItem>
                 )}
               />
+              <div className="col-span-2 bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-medium mb-2">Memory Overclocking Support</h4>
+                {selectedBrand === "Intel" && (
+                  <FormField
+                    control={form.control}
+                    name="supportXMP"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="font-medium">Intel XMP Support</FormLabel>
+                          <p className="text-sm text-gray-500">
+                            Intel Extreme Memory Profile - Memory overclocking for Intel platforms
+                          </p>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                )}
+                {selectedBrand === "AMD" && (
+                  <FormField
+                    control={form.control}
+                    name="supportEXPO"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel className="font-medium">AMD EXPO Support</FormLabel>
+                          <p className="text-sm text-gray-500">
+                            AMD Extended Profiles for Overclocking - Memory overclocking for AMD platforms
+                          </p>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                )}
+                {!selectedBrand && (
+                  <p className="text-sm text-gray-500">
+                    Please select CPU support to configure memory overclocking options
+                  </p>
+                )}
+              </div>
             </div>
           </div>
           <div className="space-y-4">
@@ -594,6 +675,77 @@ export default function AddMainboardForm({ onBack }: { onBack: () => void }) {
                 )}
               </CldUploadWidget>
             </div>
+          </div>
+          {/* Product Details Section */}
+          <div className="bg-gray-50 rounded p-4 mt-4">
+            <h4 className="font-semibold mb-2 text-gray-700">Product Details Sections</h4>
+            {details.map((detail, idx) => (
+              <div key={idx} className="mb-4 border rounded p-3 bg-white">
+                <input
+                  className="mb-2 w-full border rounded px-2 py-1"
+                  placeholder="Section Title"
+                  value={detail.title}
+                  onChange={e => {
+                    const newDetails = [...details];
+                    newDetails[idx].title = e.target.value;
+                    setDetails(newDetails);
+                  }}
+                />
+                <textarea
+                  className="mb-2 w-full border rounded px-2 py-1"
+                  placeholder="Section Content"
+                  value={detail.content}
+                  onChange={e => {
+                    const newDetails = [...details];
+                    newDetails[idx].content = e.target.value;
+                    setDetails(newDetails);
+                  }}
+                />
+                {/* Image selection from uploaded images as thumbnails */}
+                <div className="mb-2">
+                  <div className="font-medium mb-1">Select Image</div>
+                  <div className="flex gap-2 flex-wrap">
+                    <div
+                      className={`border rounded cursor-pointer p-1 ${!detail.image ? 'ring-2 ring-blue-500' : ''}`}
+                      onClick={() => {
+                        const newDetails = [...details];
+                        newDetails[idx].image = "";
+                        setDetails(newDetails);
+                      }}
+                    >
+                      <div className="w-24 h-16 flex items-center justify-center text-xs text-gray-400">No image</div>
+                    </div>
+                    {images.map((img, i) => (
+                      <div
+                        key={i}
+                        className={`border rounded cursor-pointer p-1 ${detail.image === img ? 'ring-2 ring-blue-500' : ''}`}
+                        onClick={() => {
+                          const newDetails = [...details];
+                          newDetails[idx].image = img;
+                          setDetails(newDetails);
+                        }}
+                      >
+                        <img src={img} alt="Detail" className="w-24 h-16 object-cover rounded" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="text-red-500 text-sm"
+                  onClick={() => setDetails(details.filter((_, i) => i !== idx))}
+                >
+                  Remove Section
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              className="bg-blue-500 text-white px-3 py-1 rounded"
+              onClick={() => setDetails([...details, { title: "", content: "", image: "" }])}
+            >
+              Add Section
+            </button>
           </div>
           <Button type="submit" className="w-full">Add Mainboard</Button>
         </form>

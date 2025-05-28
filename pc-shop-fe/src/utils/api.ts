@@ -39,7 +39,6 @@ export const sendRequest = async <T>(props: IRequest) => { //type
         url = `${url}?${queryStr}`;
     }
 
-    console.log("url", url);
     return fetch(url, options).then(res => {
         if (res.ok) {
             return res.json() as T; //generic

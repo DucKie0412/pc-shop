@@ -1,9 +1,50 @@
+import { CreditCardIcon, PhoneCallIcon, ShoppingBagIcon, Truck, WalletCardsIcon } from "lucide-react";
 import React from "react";
 
 function ClientFooter() {
   return (
     <footer className="bg-[#f7f7f7] border-t mt-10 text-sm text-gray-700">
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Feature Row */}
+        <div className="w-full flex flex-col md:flex-row justify-between items-center gap-6 px-4 py-6 mb-8">
+          {/* Feature 1 */}
+          <div className="flex items-center gap-3 min-w-[200px]">
+            {/* Delivery Icon */}
+            <Truck className="h-12 w-12" />
+            <div>
+              <div className="font-bold text-gray-900">GIAO HÀNG TOÀN QUỐC</div>
+              <div className="text-gray-500 text-sm">Giao hàng trước, trả tiền sau với COD</div>
+            </div>
+          </div>
+          {/* Feature 2 */}
+          <div className="flex items-center gap-3 min-w-[200px]">
+            {/* Return Icon */}
+            <ShoppingBagIcon className="h-12 w-12" />
+            <div>
+              <div className="font-bold text-gray-900">ĐỔI TRẢ DỄ DÀNG</div>
+              <div className="text-gray-500 text-sm">Đổi mới trong 7 ngày đầu</div>
+            </div>
+          </div>
+          {/* Feature 3 */}
+          <div className="flex items-center gap-3 min-w-[200px]">
+            {/* Payment Icon */}
+            <WalletCardsIcon className="h-12 w-12" />
+            <div>
+              <div className="font-bold text-gray-900">THANH TOÁN TIỆN LỢI</div>
+              <div className="text-gray-500 text-sm">Đầy đủ các hình thức thanh toán</div>
+            </div>
+          </div>
+          {/* Feature 4 */}
+          <div className="flex items-center gap-3 min-w-[200px]">
+            {/* Support Icon */}
+            <PhoneCallIcon className="h-12 w-12" />
+            <div>
+              <div className="font-bold text-gray-900">HỖ TRỢ NHIỆT TÌNH</div>
+              <div className="text-gray-500 text-sm">Tư vấn miễn phí 24/7</div>
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {/* Column 1 */}
           <div>

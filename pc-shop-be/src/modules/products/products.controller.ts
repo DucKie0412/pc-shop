@@ -4,6 +4,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Public } from 'src/auth/decorator/customize-guard';
 import { ProductType } from './schemas/product.schema';
+import { validateSync } from 'class-validator';
 
 @Controller('products')
 export class ProductsController {
@@ -11,7 +12,8 @@ export class ProductsController {
 
   @Post()
   async create(@Body() createProductDto: CreateProductDto) {
-    try {
+      try {
+      console.log('Received DTO:', JSON.stringify(createProductDto, null, 2)); // Log incoming data
       const product = await this.productsService.create(createProductDto);
       return {
         statusCode: HttpStatus.CREATED,

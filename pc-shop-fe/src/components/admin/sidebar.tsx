@@ -46,11 +46,11 @@ const menuItems = [
         icon: Package,
     },
     {
-        title: "Settings",
-        href: "/admin/settings",
+        title: "Banners",
+        href: "/admin/banners",
         icon: Settings,
     },
-    {
+    {   
         title: "Back to Home",
         href: "/",
         icon: ArrowLeftCircle,

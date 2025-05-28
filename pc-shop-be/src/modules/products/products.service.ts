@@ -14,6 +14,8 @@ export class ProductsService {
     ) { }
 
     async create(createProductDto: CreateProductDto): Promise<Product> {
+        // Debug log to check received DTO
+        console.log('Creating product with DTO:', JSON.stringify(createProductDto, null, 2));
         // Calculate final price
         const discountAmount = (createProductDto.originalPrice * createProductDto.discount) / 100;
         const finalPrice = createProductDto.originalPrice - discountAmount;

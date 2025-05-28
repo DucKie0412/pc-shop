@@ -31,17 +31,24 @@ import {
 
 const ssdSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  description: z.string().min(1, "Description is required"),
   categoryId: z.string().min(1, "Category is required"),
   manufacturerId: z.string().min(1, "Manufacturer is required"),
   stock: z.coerce.number().min(0, "Stock must be at least 0"),
   originalPrice: z.coerce.number().min(0, "Price must be at least 0"),
   discount: z.coerce.number().min(0).max(100),
-  capacity: z.string().min(1, "Capacity is required"),
-  type: z.string().min(1, "Type is required"),
-  interface: z.string().min(1, "Interface is required"),
+  ssdCapacity: z.string().min(1, "Capacity is required"),
+  ssdType: z.string().min(1, "Type is required"),
+  ssdInterface: z.string().min(1, "Interface is required"),
+  ssdFormFactor: z.string().min(1, "Form factor is required"),
+  ssdReadSpeed: z.string().min(1, "Read speed is required"),
+  ssdWriteSpeed: z.string().min(1, "Write speed is required"),
   images: z.array(z.string()).optional(),
   imagePublicIds: z.array(z.string()).optional(),
+  details: z.array(z.object({
+    title: z.string().min(1, "Title is required"),
+    content: z.string().optional(),
+    image: z.string().optional()
+  })).optional()
 });
 
 export default function AddSSDForm({ onBack }: { onBack: () => void }) {
@@ -51,6 +58,7 @@ export default function AddSSDForm({ onBack }: { onBack: () => void }) {
   const [categoryLocked, setCategoryLocked] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [imagePublicIds, setImagePublicIds] = useState<string[]>([]);
+  const [details, setDetails] = useState<{ title: string; content: string; image?: string }[]>([]);
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -60,15 +68,18 @@ export default function AddSSDForm({ onBack }: { onBack: () => void }) {
       stock: 0, 
       originalPrice: 0, 
       discount: 0,
-      capacity: "",
-      type: "",
-      interface: "",
+      ssdCapacity: "",
+      ssdType: "",
+      ssdInterface: "",
+      ssdFormFactor: "",
+      ssdReadSpeed: "",
+      ssdWriteSpeed: "",
       name: "",
-      description: "",
       categoryId: "",
       manufacturerId: "",
       images: [],
-      imagePublicIds: []
+      imagePublicIds: [],
+      details: []
     },
   });
 
@@ -131,12 +142,16 @@ export default function AddSSDForm({ onBack }: { onBack: () => void }) {
         categoryId: values.categoryId,
         manufacturerId: values.manufacturerId,
         specs: {
-          capacity: values.capacity,
-          type: values.type,
-          interface: values.interface,
+          ssdCapacity: values.ssdCapacity,
+          ssdType: values.ssdType,
+          ssdInterface: values.ssdInterface,
+          ssdFormFactor: values.ssdFormFactor,
+          ssdReadSpeed: values.ssdReadSpeed,
+          ssdWriteSpeed: values.ssdWriteSpeed,
         },
-        images: values.images,
-        imagePublicIds: values.imagePublicIds
+        images,
+        imagePublicIds,
+        details
       };
       const response = await sendRequest<IBackendRes<any>>({
         url: "/api/products",
@@ -179,19 +194,7 @@ export default function AddSSDForm({ onBack }: { onBack: () => void }) {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea placeholder="SSD description" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -293,10 +296,10 @@ export default function AddSSDForm({ onBack }: { onBack: () => void }) {
           </div>
           <div className="bg-gray-50 rounded p-4 mt-4">
             <h4 className="font-semibold mb-2 text-gray-700">SSD Specs</h4>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="capacity"
+                name="ssdCapacity"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Capacity</FormLabel>
@@ -328,7 +331,7 @@ export default function AddSSDForm({ onBack }: { onBack: () => void }) {
               />
               <FormField
                 control={form.control}
-                name="type"
+                name="ssdType"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Type</FormLabel>
@@ -343,8 +346,9 @@ export default function AddSSDForm({ onBack }: { onBack: () => void }) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="SATA">SATA</SelectItem>
-                          <SelectItem value="NVMe">NVMe</SelectItem>
+                          <SelectItem value="SATA">SATA (Serial ATA)</SelectItem>
+                          <SelectItem value="M.2 SATA">M.2 SATA</SelectItem>
+                          <SelectItem value="M.2 NVMe (PCIe)">M.2 NVMe (PCIe)</SelectItem>
                           <SelectItem value="PCIe">PCIe</SelectItem>
                         </SelectContent>
                       </Select>
@@ -355,7 +359,7 @@ export default function AddSSDForm({ onBack }: { onBack: () => void }) {
               />
               <FormField
                 control={form.control}
-                name="interface"
+                name="ssdInterface"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Interface</FormLabel>
@@ -370,12 +374,78 @@ export default function AddSSDForm({ onBack }: { onBack: () => void }) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="SATA III">SATA III</SelectItem>
+                          <SelectItem value="SATA">SATA</SelectItem>
                           <SelectItem value="PCIe 3.0">PCIe 3.0</SelectItem>
                           <SelectItem value="PCIe 4.0">PCIe 4.0</SelectItem>
                           <SelectItem value="PCIe 5.0">PCIe 5.0</SelectItem>
+                          <SelectItem value="mSATA">mSATA</SelectItem>
                         </SelectContent>
                       </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="ssdFormFactor"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Form Factor</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select form factor" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="2.5-inch">2.5-inch</SelectItem>
+                          <SelectItem value="22x80">M.2 2280 (22x80)</SelectItem>
+                          <SelectItem value="22x42">M.2 2242 (22x42)</SelectItem>
+                          <SelectItem value="22x30">M.2 2230 (22x30)</SelectItem>
+                          <SelectItem value="22x110">M.2 22110 (22x110)</SelectItem>
+                          <SelectItem value="mSATA">mSATA</SelectItem>
+                          <SelectItem value="Add-in Card">Add-in Card</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="ssdReadSpeed"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Read Speed (MB/s)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Enter read speed"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="ssdWriteSpeed"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Write Speed (MB/s)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Enter write speed"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -459,6 +529,77 @@ export default function AddSSDForm({ onBack }: { onBack: () => void }) {
                 )}
               </CldUploadWidget>
             </div>
+          </div>
+          {/* Product Details Section */}
+          <div className="bg-gray-50 rounded p-4 mt-4">
+            <h4 className="font-semibold mb-2 text-gray-700">Product Details Sections</h4>
+            {details.map((detail, idx) => (
+              <div key={idx} className="mb-4 border rounded p-3 bg-white">
+                <input
+                  className="mb-2 w-full border rounded px-2 py-1"
+                  placeholder="Section Title"
+                  value={detail.title}
+                  onChange={e => {
+                    const newDetails = [...details];
+                    newDetails[idx].title = e.target.value;
+                    setDetails(newDetails);
+                  }}
+                />
+                <textarea
+                  className="mb-2 w-full border rounded px-2 py-1"
+                  placeholder="Section Content"
+                  value={detail.content}
+                  onChange={e => {
+                    const newDetails = [...details];
+                    newDetails[idx].content = e.target.value;
+                    setDetails(newDetails);
+                  }}
+                />
+                {/* Image selection from uploaded images as thumbnails */}
+                <div className="mb-2">
+                  <div className="font-medium mb-1">Select Image</div>
+                  <div className="flex gap-2 flex-wrap">
+                    <div
+                      className={`border rounded cursor-pointer p-1 ${!detail.image ? 'ring-2 ring-blue-500' : ''}`}
+                      onClick={() => {
+                        const newDetails = [...details];
+                        newDetails[idx].image = "";
+                        setDetails(newDetails);
+                      }}
+                    >
+                      <div className="w-24 h-16 flex items-center justify-center text-xs text-gray-400">No image</div>
+                    </div>
+                    {images.map((img, i) => (
+                      <div
+                        key={i}
+                        className={`border rounded cursor-pointer p-1 ${detail.image === img ? 'ring-2 ring-blue-500' : ''}`}
+                        onClick={() => {
+                          const newDetails = [...details];
+                          newDetails[idx].image = img;
+                          setDetails(newDetails);
+                        }}
+                      >
+                        <img src={img} alt="Detail" className="w-24 h-16 object-cover rounded" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="text-red-500 text-sm"
+                  onClick={() => setDetails(details.filter((_, i) => i !== idx))}
+                >
+                  Remove Section
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              className="bg-blue-500 text-white px-3 py-1 rounded"
+              onClick={() => setDetails([...details, { title: "", content: "", image: "" }])}
+            >
+              Add Section
+            </button>
           </div>
           <Button type="submit" className="w-full">Add SSD</Button>
         </form>

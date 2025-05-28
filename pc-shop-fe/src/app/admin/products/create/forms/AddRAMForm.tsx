@@ -31,17 +31,23 @@ import {
 
 const ramSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  description: z.string().min(1, "Description is required"),
   categoryId: z.string().min(1, "Category is required"),
   manufacturerId: z.string().min(1, "Manufacturer is required"),
   stock: z.coerce.number().min(0, "Stock must be at least 0"),
   originalPrice: z.coerce.number().min(0, "Price must be at least 0"),
   discount: z.coerce.number().min(0).max(100),
-  size: z.string().min(1, "Size is required"),
-  bus: z.string().min(1, "Bus speed is required"),
-  type: z.string().min(1, "Type is required"),
+  ramCapacity: z.string().min(1, "Capacity is required"),
+  ramType: z.string().min(1, "Type is required"),
+  ramSpeed: z.string().min(1, "Speed is required"),
+  ramLatency: z.string().min(1, "Latency is required"),
+  ramKit: z.string().min(1, "Kit is required"),
   images: z.array(z.string()).optional(),
   imagePublicIds: z.array(z.string()).optional(),
+  details: z.array(z.object({
+    title: z.string().min(1, "Title is required"),
+    content: z.string().optional(),
+    image: z.string().optional()
+  })).optional()
 });
 
 export default function AddRAMForm({ onBack }: { onBack: () => void }) {
@@ -51,6 +57,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
   const [categoryLocked, setCategoryLocked] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [imagePublicIds, setImagePublicIds] = useState<string[]>([]);
+  const [details, setDetails] = useState<{ title: string; content: string; image?: string }[]>([]);
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -60,15 +67,17 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
       stock: 0, 
       originalPrice: 0, 
       discount: 0,
-      size: "",
-      bus: "",
-      type: "",
+      ramCapacity: "",
+      ramType: "",
+      ramSpeed: "",
+      ramLatency: "",
+      ramKit: "",
       name: "",
-      description: "",
       categoryId: "",
       manufacturerId: "",
       images: [],
-      imagePublicIds: []
+      imagePublicIds: [],
+      details: []
     },
   });
 
@@ -131,13 +140,17 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
         categoryId: values.categoryId,
         manufacturerId: values.manufacturerId,
         specs: {
-          size: values.size,
-          bus: values.bus,
-          type: values.type,
+          ramCapacity: values.ramCapacity,
+          ramType: values.ramType,
+          ramSpeed: values.ramSpeed,
+          ramLatency: values.ramLatency,
+          ramKit: values.ramKit,
         },
-        images: values.images,
-        imagePublicIds: values.imagePublicIds
+        images,
+        imagePublicIds,
+        details
       };
+      console.log(payload);
       const response = await sendRequest<IBackendRes<any>>({
         url: "/api/products",
         method: "POST",
@@ -179,19 +192,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea placeholder="RAM description" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -293,13 +294,13 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
           </div>
           <div className="bg-gray-50 rounded p-4 mt-4">
             <h4 className="font-semibold mb-2 text-gray-700">RAM Specs</h4>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="size"
+                name="ramCapacity"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Size (GB)</FormLabel>
+                    <FormLabel>Capacity</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -307,16 +308,15 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select size" />
+                            <SelectValue placeholder="Select capacity" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="2">2GB</SelectItem>
-                          <SelectItem value="4">4GB</SelectItem>
-                          <SelectItem value="8">8GB</SelectItem>
-                          <SelectItem value="16">16GB</SelectItem>
-                          <SelectItem value="32">32GB</SelectItem>
-                          <SelectItem value="64">64GB</SelectItem>
+                          <SelectItem value="4">4 GB</SelectItem>
+                          <SelectItem value="8">8 GB</SelectItem>
+                          <SelectItem value="16">16 GB</SelectItem>
+                          <SelectItem value="32">32 GB</SelectItem>
+                          <SelectItem value="64">64 GB</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -326,10 +326,10 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
               />
               <FormField
                 control={form.control}
-                name="bus"
+                name="ramKit"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Bus Speed</FormLabel>
+                    <FormLabel>Ram Kit</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -337,23 +337,20 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select bus speed" />
+                            <SelectValue placeholder="Select ram kit" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="1600">1600 MHz</SelectItem>
-                          <SelectItem value="2400">2400 MHz</SelectItem>
-                          <SelectItem value="2666">2666 MHz</SelectItem>
-                          <SelectItem value="3000">3000 MHz</SelectItem>
-                          <SelectItem value="3200">3200 MHz</SelectItem>
-                          <SelectItem value="3600">3600 MHz</SelectItem>
-                          <SelectItem value="4000">4000 MHz</SelectItem>
-                          <SelectItem value="4400">4400 MHz</SelectItem>
-                          <SelectItem value="4800">4800 MHz</SelectItem>
-                          <SelectItem value="5200">5200 MHz</SelectItem>
-                          <SelectItem value="5600">5600 MHz</SelectItem>
-                          <SelectItem value="6000">6000 MHz</SelectItem>
-                          <SelectItem value="6400">6400 MHz</SelectItem>
+                          <SelectItem value="4x1">4x1</SelectItem>
+                          <SelectItem value="4x2">4x2</SelectItem>
+                          <SelectItem value="8x1">8x1</SelectItem>
+                          <SelectItem value="8x2">8x2</SelectItem>
+                          <SelectItem value="16x1">16x1</SelectItem>
+                          <SelectItem value="16x2">16x2</SelectItem>
+                          <SelectItem value="32x1">32x1</SelectItem>
+                          <SelectItem value="32x2">32x2</SelectItem>
+                          <SelectItem value="64x1">64x1</SelectItem>
+                          <SelectItem value="64x2">64x2</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -363,7 +360,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
               />
               <FormField
                 control={form.control}
-                name="type"
+                name="ramType"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Type</FormLabel>
@@ -378,9 +375,79 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="DDR3">DDR3</SelectItem>
                           <SelectItem value="DDR4">DDR4</SelectItem>
                           <SelectItem value="DDR5">DDR5</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="ramSpeed"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Speed</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select speed" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="2400">2400 MHz</SelectItem>
+                          <SelectItem value="2666">2666 MHz</SelectItem>
+                          <SelectItem value="3000">3000 MHz</SelectItem>
+                          <SelectItem value="3200">3200 MHz</SelectItem>
+                          <SelectItem value="3600">3600 MHz</SelectItem>
+                          <SelectItem value="4000">4000 MHz</SelectItem>
+                          <SelectItem value="4800">4800 MHz</SelectItem>
+                          <SelectItem value="5200">5200 MHz</SelectItem>
+                          <SelectItem value="5600">5600 MHz</SelectItem>
+                          <SelectItem value="6000">6000 MHz</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="ramLatency"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Latency</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select latency" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="CL14">CL14</SelectItem>
+                          <SelectItem value="CL16">CL16</SelectItem>
+                          <SelectItem value="CL18">CL18</SelectItem>
+                          <SelectItem value="CL20">CL20</SelectItem>
+                          <SelectItem value="CL22">CL22</SelectItem>
+                          <SelectItem value="CL24">CL24</SelectItem>
+                          <SelectItem value="CL28">CL28</SelectItem>
+                          <SelectItem value="CL30">CL30</SelectItem>
+                          <SelectItem value="CL32">CL32</SelectItem>
+                          <SelectItem value="CL34">CL34</SelectItem>
+                          <SelectItem value="CL36">CL36</SelectItem>
+                          <SelectItem value="CL38">CL38</SelectItem>
+                          <SelectItem value="CL40">CL40</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -466,6 +533,77 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                 )}
               </CldUploadWidget>
             </div>
+          </div>
+          {/* Product Details Section */}
+          <div className="bg-gray-50 rounded p-4 mt-4">
+            <h4 className="font-semibold mb-2 text-gray-700">Product Details Sections</h4>
+            {details.map((detail, idx) => (
+              <div key={idx} className="mb-4 border rounded p-3 bg-white">
+                <input
+                  className="mb-2 w-full border rounded px-2 py-1"
+                  placeholder="Section Title"
+                  value={detail.title}
+                  onChange={e => {
+                    const newDetails = [...details];
+                    newDetails[idx].title = e.target.value;
+                    setDetails(newDetails);
+                  }}
+                />
+                <textarea
+                  className="mb-2 w-full border rounded px-2 py-1"
+                  placeholder="Section Content"
+                  value={detail.content}
+                  onChange={e => {
+                    const newDetails = [...details];
+                    newDetails[idx].content = e.target.value;
+                    setDetails(newDetails);
+                  }}
+                />
+                {/* Image selection from uploaded images as thumbnails */}
+                <div className="mb-2">
+                  <div className="font-medium mb-1">Select Image</div>
+                  <div className="flex gap-2 flex-wrap">
+                    <div
+                      className={`border rounded cursor-pointer p-1 ${!detail.image ? 'ring-2 ring-blue-500' : ''}`}
+                      onClick={() => {
+                        const newDetails = [...details];
+                        newDetails[idx].image = "";
+                        setDetails(newDetails);
+                      }}
+                    >
+                      <div className="w-24 h-16 flex items-center justify-center text-xs text-gray-400">No image</div>
+                    </div>
+                    {images.map((img, i) => (
+                      <div
+                        key={i}
+                        className={`border rounded cursor-pointer p-1 ${detail.image === img ? 'ring-2 ring-blue-500' : ''}`}
+                        onClick={() => {
+                          const newDetails = [...details];
+                          newDetails[idx].image = img;
+                          setDetails(newDetails);
+                        }}
+                      >
+                        <img src={img} alt="Detail" className="w-24 h-16 object-cover rounded" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="text-red-500 text-sm"
+                  onClick={() => setDetails(details.filter((_, i) => i !== idx))}
+                >
+                  Remove Section
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              className="bg-blue-500 text-white px-3 py-1 rounded"
+              onClick={() => setDetails([...details, { title: "", content: "", image: "" }])}
+            >
+              Add Section
+            </button>
           </div>
           <Button type="submit" className="w-full">Add RAM</Button>
         </form>

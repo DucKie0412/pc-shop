@@ -34,7 +34,6 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/web
 
 const caseSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  description: z.string().min(1, "Description is required"),
   categoryId: z.string().min(1, "Category is required"),
   manufacturerId: z.string().min(1, "Manufacturer is required"),
   stock: z.coerce.number().min(0, "Stock must be at least 0"),
@@ -49,6 +48,11 @@ const caseSchema = z.object({
   fans: z.coerce.number().min(0, "Number of fans must be at least 0"),
   images: z.array(z.string()).optional(),
   imagePublicIds: z.array(z.string()).optional(),
+  details: z.array(z.object({
+    title: z.string().min(1, "Title is required"),
+    content: z.string().optional(),
+    image: z.string().optional()
+  })).optional()
 });
 
 export default function AddCaseForm({ onBack }: { onBack: () => void }) {
@@ -58,6 +62,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
   const [categoryLocked, setCategoryLocked] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [imagePublicIds, setImagePublicIds] = useState<string[]>([]);
+  const [details, setDetails] = useState<{ title: string; content: string; image?: string }[]>([]);
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -75,11 +80,11 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
       height: 0,
       fans: 0,
       name: "",
-      description: "",
       categoryId: "",
       manufacturerId: "",
       images: [],
-      imagePublicIds: []
+      imagePublicIds: [],
+      details: []
     },
   });
 
@@ -97,12 +102,13 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
         images,
         imagePublicIds,
         specs: {
-          formFactor: values.formFactor,
-          material: values.material,
-          color: values.color,
-          dimensions: `${values.length} x ${values.width} x ${values.height} mm`,
-          fans: values.fans,
+          caseFormFactor: values.formFactor,
+          caseMaterial: values.material,
+          caseColor: values.color,
+          caseDimensions: `${values.length} x ${values.width} x ${values.height} mm`,
+          caseFans: values.fans,
         },
+        details,
       };
 
       const response = await sendRequest<IBackendRes<any>>({
@@ -190,19 +196,6 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                 <FormLabel>Name</FormLabel>
                 <FormControl>
                   <Input placeholder="Case name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea placeholder="Case description" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -385,9 +378,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                         <SelectContent>
                           <SelectItem value="Black">Black</SelectItem>
                           <SelectItem value="White">White</SelectItem>
-                          <SelectItem value="Silver">Silver</SelectItem>
-                          <SelectItem value="Red">Red</SelectItem>
-                          <SelectItem value="Blue">Blue</SelectItem>
+                          <SelectItem value="Gray">Gray</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -532,7 +523,77 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
               </CldUploadWidget>
             </div>
           </div>
-
+            {/* Product Details Section */}
+          <div className="bg-gray-50 rounded p-4 mt-4">
+            <h4 className="font-semibold mb-2 text-gray-700">Product Details Sections</h4>
+            {details.map((detail, idx) => (
+              <div key={idx} className="mb-4 border rounded p-3 bg-white">
+                <input
+                  className="mb-2 w-full border rounded px-2 py-1"
+                  placeholder="Section Title"
+                  value={detail.title}
+                  onChange={e => {
+                    const newDetails = [...details];
+                    newDetails[idx].title = e.target.value;
+                    setDetails(newDetails);
+                  }}
+                />
+                <textarea
+                  className="mb-2 w-full border rounded px-2 py-1"
+                  placeholder="Section Content"
+                  value={detail.content}
+                  onChange={e => {
+                    const newDetails = [...details];
+                    newDetails[idx].content = e.target.value;
+                    setDetails(newDetails);
+                  }}
+                />
+                {/* Image selection from uploaded images as thumbnails */}
+                <div className="mb-2">
+                  <div className="font-medium mb-1">Select Image</div>
+                  <div className="flex gap-2 flex-wrap">
+                    <div
+                      className={`border rounded cursor-pointer p-1 ${!detail.image ? 'ring-2 ring-blue-500' : ''}`}
+                      onClick={() => {
+                        const newDetails = [...details];
+                        newDetails[idx].image = "";
+                        setDetails(newDetails);
+                      }}
+                    >
+                      <div className="w-24 h-16 flex items-center justify-center text-xs text-gray-400">No image</div>
+                    </div>
+                    {images.map((img, i) => (
+                      <div
+                        key={i}
+                        className={`border rounded cursor-pointer p-1 ${detail.image === img ? 'ring-2 ring-blue-500' : ''}`}
+                        onClick={() => {
+                          const newDetails = [...details];
+                          newDetails[idx].image = img;
+                          setDetails(newDetails);
+                        }}
+                      >
+                        <img src={img} alt="Detail" className="w-24 h-16 object-cover rounded" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="text-red-500 text-sm"
+                  onClick={() => setDetails(details.filter((_, i) => i !== idx))}
+                >
+                  Remove Section
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              className="bg-blue-500 text-white px-3 py-1 rounded"
+              onClick={() => setDetails([...details, { title: "", content: "", image: "" }])}
+            >
+              Add Section
+            </button>
+          </div>
           <Button type="submit" className="w-full">Add Case</Button>
         </form>
       </Form>

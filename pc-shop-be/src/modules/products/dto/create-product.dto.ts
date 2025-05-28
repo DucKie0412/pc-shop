@@ -1,15 +1,25 @@
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Min, IsEnum, IsObject } from 'class-validator';
-import { Transform } from 'class-transformer';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Min, IsEnum, IsObject, ValidateNested } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
 import { ProductType } from '../schemas/product.schema';
+
+export class ProductDetailDto {
+    @IsString()
+    @IsOptional()
+    title?: string;
+
+    @IsString()
+    @IsOptional()
+    content?: string;
+
+    @IsOptional()
+    @IsString()
+    image?: string;
+}
 
 export class CreateProductDto {
     @IsString()
     @IsNotEmpty()
     name: string;
-
-    @IsString()
-    @IsOptional()
-    description?: string;
 
     @IsEnum(ProductType)
     @IsNotEmpty({ message: "Product type is required" })
@@ -55,4 +65,12 @@ export class CreateProductDto {
     @IsArray()
     @IsOptional()
     imagePublicIds: string[];
+
+
+    @IsArray()
+    @IsOptional()
+    @ValidateNested({ each: true })
+    @Type(() => ProductDetailDto)
+    details?: ProductDetailDto[];
+
 }

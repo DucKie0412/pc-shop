@@ -19,9 +19,8 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1', { exclude: ['/'] }); //eg: homepage url don't need /api/v1/homepage
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
       transform: true,
+      whitelist: true,
     }),
   );
 
