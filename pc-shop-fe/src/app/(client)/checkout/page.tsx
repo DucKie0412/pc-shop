@@ -4,6 +4,7 @@ import { useCart, CartItem } from '@/contexts/CartContext';
 import { useSession } from 'next-auth/react';
 import { Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 const CheckoutPage = () => {
   const { items, updateItemQuantity, removeItem, clearCart } = useCart();
@@ -15,7 +16,10 @@ const CheckoutPage = () => {
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const [note, setNote] = useState('');
+
+  const isValidPhone = (phone: string) => /^0[0-9]{9}$/.test(phone.replace(/-/g, ''));
 
   // Prefill for logged-in user
   useEffect(() => {
@@ -28,8 +32,19 @@ const CheckoutPage = () => {
 
   const total = items.reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0);
 
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPhone(value);
+    if (!isValidPhone(value)) {
+      setPhoneError('Số điện thoại không hợp lệ');
+    } else {
+      setPhoneError('');
+    }
+  };
+
   const handleOrder = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const orderData = {
       fullName,
       email,
@@ -54,17 +69,19 @@ const CheckoutPage = () => {
     });
 
     if (res.ok) {
-      alert('Đặt hàng thành công!');
+      toast.success('Đặt hàng thành công!');
       setFullName('');
       setEmail('');
       setAddress('');
       setPhone('');
       setNote('');
       clearCart();
-      router.push('/');
+      setTimeout(() => {
+        router.push('/');
+      }, 2000);
     } else {
       const data = await res.json();
-      alert(data.message || 'Có lỗi xảy ra khi đặt hàng.');
+      toast.error(data.message || 'Có lỗi xảy ra khi đặt hàng.');
     }
   };
 
@@ -78,8 +95,7 @@ const CheckoutPage = () => {
           <table className="w-full border mb-4">
             <thead>
               <tr className="bg-gray-100">
-                <th></th>
-                <th>Sản phẩm</th>
+                <th className='w-1/2'>Sản phẩm</th>
                 <th>Đơn giá</th>
                 <th>Số lượng</th>
                 <th>Thành tiền</th>
@@ -89,10 +105,10 @@ const CheckoutPage = () => {
             <tbody>
               {items.map(item => (
                 <tr key={item.id} className="border-b">
-                  <td>
-                    {item.image && <img src={item.image} alt={item.name} className="w-16 h-16 object-cover" />}
+                  <td className='flex items-center gap-2'>
+                    <img src={item.image} alt={item.name} className="w-16 h-16 object-cover" />
+                    {item.name}
                   </td>
-                  <td>{item.name}</td>
                   <td>{item.price.toLocaleString('vi-VN')} đ</td>
                   <td>
                     <div className="flex items-center gap-2">
@@ -125,7 +141,7 @@ const CheckoutPage = () => {
               ))}
             </tbody>
           </table>
-          <div className="text-right font-bold text-red-600">
+          <div className="text-right font-bold text-red-600 text-xl">
             Tổng tiền: {total.toLocaleString('vi-VN')} đ
           </div>
         </div>
@@ -140,6 +156,7 @@ const CheckoutPage = () => {
                 className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition"
                 value={fullName}
                 onChange={e => setFullName(e.target.value)}
+                disabled={!!session?.user?.name}
                 required
               />
             </div>
@@ -150,6 +167,7 @@ const CheckoutPage = () => {
                 className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
+                disabled={!!session?.user?.email}
                 required
               />
             </div>
@@ -167,9 +185,10 @@ const CheckoutPage = () => {
               <input
                 className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition"
                 value={phone}
-                onChange={e => setPhone(e.target.value)}
+                onChange={handlePhoneChange}
                 required
               />
+              {phoneError && <p className="text-red-500 text-sm">{phoneError}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Ghi chú</label>

@@ -18,6 +18,14 @@ interface Order {
     status?: string;
 }
 
+const OrderStatus = {
+    pending: 'Chờ xác nhận',
+    confirmed: 'Đã xác nhận',
+    shipped: 'Đang giao hàng',
+    delivered: 'Đã giao hàng',
+    cancelled: 'Đã hủy',
+}
+
 const OrdersPage = () => {
     const { data: session, status } = useSession();
     const [orders, setOrders] = useState<Order[]>([]);
@@ -104,14 +112,14 @@ const OrdersPage = () => {
                             <div className="flex justify-between items-center mb-2">
                                 <div><span className="font-bold">Mã đơn:</span> {order._id}</div>
                                 <div><span className="font-bold">Ngày đặt:</span> {new Date(order.createdAt).toLocaleString('vi-VN')}</div>
-                                {order.status && <div><span className="font-bold">Trạng thái:</span> {order.status}</div>}
+                                {order.status && <div><span className="font-bold">Trạng thái:</span> {OrderStatus[order.status as keyof typeof OrderStatus]}</div>}
                             </div>
                             <div>
                                 <table className="w-full text-sm mb-2">
                                     <thead>
                                         <tr className="bg-gray-100">
                                             <th></th>
-                                            <th>Sản phẩm</th>
+                                            <th className='w-1/3'>Sản phẩm</th>
                                             <th>Đơn giá</th>
                                             <th>Số lượng</th>
                                             <th>Thành tiền</th>

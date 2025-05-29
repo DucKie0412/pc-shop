@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import { sendRequest } from '@/utils/api';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/navigation';
 
 interface IProduct {
     _id: string;
@@ -110,6 +111,7 @@ function ProductPage() {
     const [loading, setLoading] = useState(true);
     const { addItem } = useCart();
     const [modalImageIdx, setModalImageIdx] = useState<number | null>(null);
+    const router = useRouter();
 
     const openModal = (idx: number) => {
         setModalImageIdx(idx);
@@ -188,6 +190,22 @@ function ProductPage() {
                 quantity: 1,
             });
             toast.success('Đã thêm sản phẩm vào giỏ hàng', { autoClose: 1200 });
+        }
+    };
+
+    const handleBuyNow = () => {
+        if (product) {
+            addItem({
+                id: product._id,
+                name: product.name,
+                price: product.finalPrice,
+                image: product.images[0],
+                quantity: 1,
+            });
+            toast.success('Chuyển hướng đến trang thanh toán...', { autoClose: 2000 });
+            setTimeout(() => {
+                router.push('/checkout');
+            }, 2000);
         }
     };
 
@@ -298,7 +316,7 @@ function ProductPage() {
                     </div>
                     <div className="flex gap-4">
                         <button onClick={handleAddToCart} className="bg-blue-600 text-white px-6 py-3 rounded font-semibold hover:bg-blue-700 transition">Thêm vào giỏ hàng</button>
-                        <button className="bg-blue-600 text-white px-6 py-3 rounded font-semibold hover:bg-blue-700 transition">Mua ngay</button>
+                        <button onClick={handleBuyNow} className="bg-blue-600 text-white px-6 py-3 rounded font-semibold hover:bg-blue-700 transition">Mua ngay</button>
                     </div>
                 </div>
             </div>
