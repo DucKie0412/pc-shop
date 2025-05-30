@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { IProduct } from "@/types/product";
 import { sendRequest } from "@/utils/api";
 import { PRODUCT_TYPE_SPECS } from "@/constants/productSpecs";
+import Link from 'next/link';
 
 type ProductType = keyof typeof PRODUCT_TYPE_SPECS;
 type SpecConfig = { name: string; label: string; type: string; options?: string[] };
@@ -167,12 +168,9 @@ export default function CategoryPage() {
                                         {product.originalPrice?.toLocaleString('vi-VN')} ₫
                                     </div>
                                 )}
-                                <a
-                                    href={`/product/${product.slug}`}
-                                    className="mt-auto inline-block bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-center"
-                                >
+                                <Link href={`/product/${product.slug}`} className="mt-auto inline-block bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 text-center">
                                     Xem chi tiết
-                                </a>
+                                </Link>
                             </div>
                         ))}
                     </div>

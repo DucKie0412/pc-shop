@@ -1,13 +1,13 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { useCart, CartItem } from '@/contexts/CartContext';
+import { useCart } from '@/lib/hooks/useCart';
 import { useSession } from 'next-auth/react';
 import { Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 
 const CheckoutPage = () => {
-  const { items, updateItemQuantity, removeItem, clearCart } = useCart();
+  const { items, updateQuantity, removeFromCart, clearCartItems } = useCart();
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -30,7 +30,7 @@ const CheckoutPage = () => {
     }
   }, [session]);
 
-  const total = items.reduce((sum: number, item: CartItem) => sum + item.price * item.quantity, 0);
+  const total = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -52,7 +52,7 @@ const CheckoutPage = () => {
       phone,
       note,
       items: items.map(i => ({
-        productId: i.id,
+        productId: i.productId,
         name: i.name,
         price: i.price,
         quantity: i.quantity,
@@ -75,7 +75,7 @@ const CheckoutPage = () => {
       setAddress('');
       setPhone('');
       setNote('');
-      clearCart();
+      clearCartItems();
       setTimeout(() => {
         router.push('/');
       }, 2000);
@@ -104,7 +104,7 @@ const CheckoutPage = () => {
             </thead>
             <tbody>
               {items.map(item => (
-                <tr key={item.id} className="border-b">
+                <tr key={item.productId} className="border-b">
                   <td className='flex items-center gap-2'>
                     <img src={item.image} alt={item.name} className="w-16 h-16 object-cover" />
                     {item.name}
@@ -115,14 +115,14 @@ const CheckoutPage = () => {
                       <button
                         type="button"
                         className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                        onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
+                        onClick={() => updateQuantity(item.productId, item.quantity - 1)}
                         disabled={item.quantity <= 1}
                       >-</button>
                       <span>{item.quantity}</span>
                       <button
                         type="button"
                         className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                        onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
+                        onClick={() => updateQuantity(item.productId, item.quantity + 1)}
                       >+</button>
                     </div>
                   </td>
@@ -131,7 +131,7 @@ const CheckoutPage = () => {
                     <button
                       type="button"
                       className="text-red-500 hover:text-red-700"
-                      onClick={() => removeItem(item.id)}
+                      onClick={() => removeFromCart(item.productId)}
                       title="Xóa sản phẩm"
                     >
                       <Trash size={20} />

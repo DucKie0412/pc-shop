@@ -2,7 +2,6 @@ export interface IProduct {
     _id: string;
     name: string;
     slug: string;
-    description: string;
     images: string[];
     imagePublicIds: string[];
     categoryId: {

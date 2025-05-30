@@ -4,7 +4,7 @@ import { Menu, Search, ShoppingCart, User, LogOut, UserCircle, Settings, History
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useCart } from '@/contexts/CartContext';
+import { useCart } from '@/lib/hooks/useCart';
 
 import CartSidebar from '@/components/cart/CartSidebar';
 import OrderLookupModal from './OrderLookupModal';

@@ -2,9 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { sendRequest } from '@/utils/api';
-import { useCart } from '@/contexts/CartContext';
+import { useCart } from '@/lib/hooks/useCart';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 
 interface IProduct {
     _id: string;
@@ -13,8 +14,8 @@ interface IProduct {
     originalPrice: number;
     discount: number;
     images: string[];
-    description: string;
     finalPrice: number;
+    categoryId: { name: string };
     specs: Record<string, string>;
     details: Array<{ title: string; content: string; image?: string }>;
 }
@@ -109,7 +110,7 @@ function ProductPage() {
     const [mainImage, setMainImage] = useState<string | null>(null);
     const [mainImageIdx, setMainImageIdx] = useState<number>(0);
     const [loading, setLoading] = useState(true);
-    const { addItem } = useCart();
+    const { addToCart, status } = useCart();
     const [modalImageIdx, setModalImageIdx] = useState<number | null>(null);
     const router = useRouter();
 
@@ -156,6 +157,9 @@ function ProductPage() {
 
                 if (res?.data) {
                     setProduct(res.data);
+                    console.log(res.data);
+                    console.log(product);
+                    
                     setMainImage(res.data.images[0] || null);
                     setMainImageIdx(0);
                 }
@@ -182,25 +186,27 @@ function ProductPage() {
 
     const handleAddToCart = () => {
         if (product) {
-            addItem({
-                id: product._id,
+            addToCart({
+                productId: product._id,
                 name: product.name,
                 price: product.finalPrice,
-                image: product.images[0],
                 quantity: 1,
+                image: product.images[0],
             });
+            console.log('adding to cart', product._id, product.name);
+            
             toast.success('Đã thêm sản phẩm vào giỏ hàng', { autoClose: 1200 });
         }
     };
 
     const handleBuyNow = () => {
         if (product) {
-            addItem({
-                id: product._id,
+            addToCart({
+                productId: product._id,
                 name: product.name,
                 price: product.finalPrice,
-                image: product.images[0],
                 quantity: 1,
+                image: product.images[0],
             });
             toast.success('Chuyển hướng đến trang thanh toán...', { autoClose: 2000 });
             setTimeout(() => {
@@ -212,8 +218,17 @@ function ProductPage() {
     if (loading) return <div className="container mx-auto py-10">Loading...</div>;
     if (!product) return <div className="container mx-auto py-10">Product not found.</div>;
 
+    const breadcrumbItems = [
+        { label: "Home", href: "/" },
+        { label: product.categoryId.name, href: `/category/${product.categoryId.name}` },
+        { label: product.name }
+    ];
+
     return (
         <div className="container mx-auto py-10">
+            <div className="mb-6">
+                <Breadcrumb items={breadcrumbItems} />
+            </div>
             <div className="flex flex-col md:flex-row gap-8">
                 {/* Image Gallery */}
                 <div className="flex flex-col items-center md:w-1/2 relative group">
