@@ -5,6 +5,7 @@ import { SessionProvider } from "next-auth/react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { CartProvider } from '@/contexts/CartContext';
+import { Provider } from 'react-redux';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,11 +32,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <CartProvider>
-          <SessionProvider>
-            {children}
-          </SessionProvider>
-        </CartProvider>
+            <CartProvider>
+              <SessionProvider>
+                {children}
+              </SessionProvider>
+            </CartProvider>
         <ToastContainer position="top-right" autoClose={3000} />
       </body>
     </html>

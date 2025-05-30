@@ -19,6 +19,7 @@ import { join } from 'path';
 import { ResponseInterceptor } from './core/response.interceptor';
 import { UploadModule } from './modules/upload/upload.module';
 import { OrderModule } from './modules/orders/order.module';
+import { CartModule } from './modules/cart/cart.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -63,7 +64,8 @@ import { OrderModule } from './modules/orders/order.module';
     UploadModule,
     AuthModule,
     BannersModule,
-    OrderModule
+    OrderModule,
+    CartModule
   ],
   controllers: [AppController],
   providers: [AppService,
