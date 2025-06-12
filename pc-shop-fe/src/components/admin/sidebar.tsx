@@ -11,7 +11,8 @@ import {
     ArrowLeftCircle,
     Package,
     Building2,
-    Tag
+    Tag,
+    SquareArrowLeft
 } from "lucide-react";
 
 const menuItems = [
@@ -44,6 +45,11 @@ const menuItems = [
         title: "Orders",
         href: "/admin/orders",
         icon: Package,
+    },
+    {
+        title: "Refund",
+        href: "/admin/refund",
+        icon: SquareArrowLeft
     },
     {
         title: "Banners",

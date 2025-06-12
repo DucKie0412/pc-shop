@@ -20,6 +20,7 @@ import { ResponseInterceptor } from './core/response.interceptor';
 import { UploadModule } from './modules/upload/upload.module';
 import { OrderModule } from './modules/orders/order.module';
 import { CartModule } from './modules/cart/cart.module';
+import { RefundsModule } from './modules/refunds/refunds.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -44,7 +45,7 @@ import { CartModule } from './modules/cart/cart.module';
           },
         },
         defaults: {
-          from: 'dinhtranduc0412@gmail.com',
+          from: configService.get<string>('EMAIL_USER'),
         },
         //preview: true,
         template: {
@@ -65,7 +66,8 @@ import { CartModule } from './modules/cart/cart.module';
     AuthModule,
     BannersModule,
     OrderModule,
-    CartModule
+    CartModule,
+    RefundsModule
   ],
   controllers: [AppController],
   providers: [AppService,

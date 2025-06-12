@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 interface OrderItem {
     productId: string;
@@ -33,11 +34,11 @@ const OrdersPage = () => {
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [error, setError] = useState('');
+    const router = useRouter();
 
     useEffect(() => {
         if (status === 'authenticated' && session?.user?.accessToken) {
             setLoading(true);
-            console.log('Session user:', session?.user);
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/my`, {
                 headers: {
                     Authorization: `Bearer ${session.user.accessToken}`,
@@ -45,7 +46,6 @@ const OrdersPage = () => {
             })
                 .then(res => res.json())
                 .then(data => {
-                    console.log('Fetched orders:', data);
                     if (Array.isArray(data.data)) {
                         setOrders(data.data);
                     } else if (Array.isArray(data)) {
@@ -74,6 +74,10 @@ const OrdersPage = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleRefundClick = (orderId: string) => {
+        router.push(`/refund/${orderId}`);
     };
 
     return (
@@ -137,7 +141,15 @@ const OrdersPage = () => {
                                         ))}
                                     </tbody>
                                 </table>
-                                <div className="text-right font-bold text-red-600">Tổng tiền: {order.total.toLocaleString('vi-VN')} đ</div>
+                                <div className="flex flex-col items-end">
+                                    <div className="font-bold text-red-600">Tổng tiền: {order.total.toLocaleString('vi-VN')} đ</div>
+                                    <button
+                                        onClick={() => handleRefundClick(order._id)}
+                                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition mt-2"
+                                    >
+                                        Refund
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}
