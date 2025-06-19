@@ -8,6 +8,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { IProduct } from "@/types/product";
 import { ProductForm } from "@/app/admin/products/product-form"
 import { toast } from "react-toastify";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 export default function EditProductPage() {
     const { slug } = useParams();
@@ -65,10 +67,20 @@ export default function EditProductPage() {
     }
 
     return (
-        <div className="container mx-auto py-10">
+        <div className="container mx-auto py-10 min-h-fit">
             <Card>
                 <CardHeader>
-                    <CardTitle>Edit Product</CardTitle>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => router.push("/admin/products")}
+                            className="h-8 w-8"
+                        >
+                            <ArrowLeft className="h-4 w-4" />
+                        </Button>
+                        <CardTitle>Edit Product</CardTitle>
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <ProductForm initialData={product} />

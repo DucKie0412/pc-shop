@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { sendRequestClient } from "@/utils/api.client";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 const OrderStatus = {
     pending: "Chờ xử lý",
@@ -10,6 +12,8 @@ const OrderStatus = {
     shipped: "Đang giao hàng",
     delivered: "Đã giao hàng",
     cancelled: "Đã hủy",
+    refunded: "Đã hoàn tiền",
+    rejected: "Từ chối hoàn tiền"
 };
 
 const OrderDetailPage = () => {
@@ -52,13 +56,11 @@ const OrderDetailPage = () => {
         setSaving(true);
         setError("");
         try {
-            console.log("PATCH body:", form);
             const response = await sendRequestClient<any>({
                 url: `${process.env.NEXT_PUBLIC_API_URL}/orders/${orderId}`,
                 method: 'PATCH',
                 body: form,
             });
-            console.log("PATCH response:", response);
             router.push("/admin/orders");
         } catch (err: any) {
             console.error("PATCH error:", err);
@@ -73,6 +75,14 @@ const OrderDetailPage = () => {
 
     return (
         <div className="max-w-2xl mx-auto p-4">
+            <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => router.push("/admin/orders")}
+                className="h-8 w-8"
+            >
+                <ArrowLeft className="h-8 w-8" />
+            </Button>
             <h1 className="text-3xl font-bold mb-6 text-center">Chi tiết đơn hàng</h1>
             <div className="bg-white rounded-lg shadow-lg p-6 mb-8 border border-gray-200">
                 <h2 className="text-xl font-semibold mb-4 text-blue-700">Thông tin khách hàng</h2>

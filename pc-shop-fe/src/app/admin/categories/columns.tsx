@@ -19,6 +19,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import { SortableHeader } from "@/components/ui/sortable-header";
 import Image from "next/image";
+import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 
 export const columns = (refreshTable: () => void): ColumnDef<ICategory>[] => [
     {
@@ -50,22 +51,6 @@ export const columns = (refreshTable: () => void): ColumnDef<ICategory>[] => [
             const router = useRouter()
             const session = useSession();
 
-            async function handleDelete() {
-                const res = await sendRequest<IBackendRes<any>>({
-                    method: "DELETE",
-                    url: `${process.env.NEXT_PUBLIC_API_URL}/categories/${category._id}`,
-                    headers: { Authorization: `Bearer ${session?.data?.user.accessToken}` },
-                });
-                if (res?.statusCode === 200) {
-                    toast.success("Category deleted successfully!", { autoClose: 2300 });
-                    refreshTable();
-                }
-
-                if (res?.statusCode === 400) {
-                    toast.warning("Server error!", { autoClose: 2000 });
-                }
-            }
-
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -86,7 +71,21 @@ export const columns = (refreshTable: () => void): ColumnDef<ICategory>[] => [
                             router.push(`/admin/categories/${category._id}/edit`)
                         }}>Edit category</DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleDelete}>Delete category</DropdownMenuItem>
+                        <DeleteConfirmationModal
+                            title="Are you sure?"
+                            description="This action cannot be undone. This will permanently delete the category:"
+                            itemName={category.name}
+                            itemId={category._id}
+                            apiEndpoint="/categories"
+                            successMessage="Category deleted successfully!"
+                            errorMessage="An error occurred while deleting the category"
+                            onSuccess={refreshTable}
+                            trigger={
+                                <DropdownMenuItem onSelect={e => e.preventDefault()}>
+                                    Delete category
+                                </DropdownMenuItem>
+                            }
+                        />
                     </DropdownMenuContent>
                 </DropdownMenu>
             )

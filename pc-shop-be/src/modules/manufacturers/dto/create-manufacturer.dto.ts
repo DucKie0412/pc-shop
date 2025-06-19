@@ -5,9 +5,6 @@ export class CreateManufacturerDto {
   @IsNotEmpty()
   name: string;
 
-  @IsString()
-  @IsOptional()
-  description?: string;
 
   @IsString()
   @IsOptional()

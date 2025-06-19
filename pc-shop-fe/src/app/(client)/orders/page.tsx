@@ -30,6 +30,7 @@ const OrderStatus = {
 const OrdersPage = () => {
     const { data: session, status } = useSession();
     const [orders, setOrders] = useState<Order[]>([]);
+    const [refunds, setRefunds] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
@@ -56,6 +57,28 @@ const OrdersPage = () => {
                     setLoading(false);
                 })
                 .catch(() => setLoading(false));
+        }
+    }, [status, session]);
+
+    // Fetch refunds for the user
+    useEffect(() => {
+        if (status === 'authenticated' && session?.user?.accessToken) {
+            fetch(`${process.env.NEXT_PUBLIC_API_URL}/refunds`, {
+                headers: {
+                    Authorization: `Bearer ${session.user.accessToken}`,
+                },
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (Array.isArray(data.data)) {
+                        setRefunds(data.data);
+                    } else if (Array.isArray(data)) {
+                        setRefunds(data);
+                    } else {
+                        setRefunds([]);
+                    }
+                })
+                .catch(() => setRefunds([]));
         }
     }, [status, session]);
 
@@ -111,48 +134,63 @@ const OrdersPage = () => {
                 <div>Không có đơn hàng nào.</div>
             ) : (
                 <div className="space-y-6">
-                    {orders.map(order => (
-                        <div key={order._id} className="border rounded p-4 bg-white shadow">
-                            <div className="flex justify-between items-center mb-2">
-                                <div><span className="font-bold">Mã đơn:</span> {order._id}</div>
-                                <div><span className="font-bold">Ngày đặt:</span> {new Date(order.createdAt).toLocaleString('vi-VN')}</div>
-                                {order.status && <div><span className="font-bold">Trạng thái:</span> {OrderStatus[order.status as keyof typeof OrderStatus]}</div>}
-                            </div>
-                            <div>
-                                <table className="w-full text-sm mb-2">
-                                    <thead>
-                                        <tr className="bg-gray-100">
-                                            <th></th>
-                                            <th className='w-1/3'>Sản phẩm</th>
-                                            <th>Đơn giá</th>
-                                            <th>Số lượng</th>
-                                            <th>Thành tiền</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {order.items.map(item => (
-                                            <tr key={item.productId}>
-                                                <td>{item.image && <img src={item.image} alt={item.name} className="w-12 h-12 object-cover" />}</td>
-                                                <td>{item.name}</td>
-                                                <td>{item.price.toLocaleString('vi-VN')} đ</td>
-                                                <td>{item.quantity}</td>
-                                                <td>{(item.price * item.quantity).toLocaleString('vi-VN')} đ</td>
+                    {orders.map(order => {
+                        const hasPendingRefund = refunds.some(
+                            (refund) => refund.order === order._id && refund.status === 'pending'
+                        );
+                        return (
+                            <div key={order._id} className="border rounded p-4 bg-white shadow">
+                                <div className="flex justify-between items-center mb-2">
+                                    <div><span className="font-bold">Mã đơn:</span> {order._id}</div>
+                                    <div><span className="font-bold">Ngày đặt:</span> {new Date(order.createdAt).toLocaleString('vi-VN')}</div>
+                                    {order.status && <div><span className="font-bold">Trạng thái:</span> {OrderStatus[order.status as keyof typeof OrderStatus]}</div>}
+                                </div>
+                                <div>
+                                    <table className="w-full text-sm mb-2">
+                                        <thead>
+                                            <tr className="bg-gray-100">
+                                                <th></th>
+                                                <th className='w-1/3'>Sản phẩm</th>
+                                                <th>Đơn giá</th>
+                                                <th>Số lượng</th>
+                                                <th>Thành tiền</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                                <div className="flex flex-col items-end">
-                                    <div className="font-bold text-red-600">Tổng tiền: {order.total.toLocaleString('vi-VN')} đ</div>
-                                    <button
-                                        onClick={() => handleRefundClick(order._id)}
-                                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition mt-2"
-                                    >
-                                        Refund
-                                    </button>
+                                        </thead>
+                                        <tbody>
+                                            {order.items.map(item => (
+                                                <tr key={item.productId}>
+                                                    <td>{item.image && <img src={item.image} alt={item.name} className="w-12 h-12 object-cover" />}</td>
+                                                    <td>{item.name}</td>
+                                                    <td>{item.price.toLocaleString('vi-VN')} đ</td>
+                                                    <td>{item.quantity}</td>
+                                                    <td>{(item.price * item.quantity).toLocaleString('vi-VN')} đ</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                    <div className="flex flex-col items-end">
+                                        <div className="font-bold text-red-600">Tổng tiền: {order.total.toLocaleString('vi-VN')} đ</div>
+                                        <button
+                                            onClick={() => handleRefundClick(order._id)}
+                                            className={`px-4 py-2 rounded-md transition mt-2 ${
+                                                hasPendingRefund
+                                                    ? 'bg-gray-400 cursor-not-allowed'
+                                                    : 'bg-red-500 hover:bg-red-600 text-white'
+                                            }`}
+                                            disabled={hasPendingRefund}
+                                        >
+                                            Refund
+                                        </button>
+                                        {hasPendingRefund && (
+                                            <div className="text-xs text-red-500 mt-1">
+                                                Đã có yêu cầu hoàn tiền đang chờ xử lý cho đơn hàng này.
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
         </div>

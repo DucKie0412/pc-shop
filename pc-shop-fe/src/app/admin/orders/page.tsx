@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
+import { Trash } from 'lucide-react';
 
 interface OrderItem {
     productId: string;
@@ -38,7 +40,9 @@ const OrderStatus = {
     processing: 'Đang xử lý',
     shipped: 'Đang giao hàng',
     delivered: 'Đã giao hàng',
-    cancelled: 'Đã hủy'
+    cancelled: 'Đã hủy',
+    refunded: 'Đã hoàn tiền',
+    rejected: 'Từ chối hoàn tiền'
 };
 
 const OrderManagementPage = () => {
@@ -112,7 +116,7 @@ const OrderManagementPage = () => {
                 
                 <input
                     type="text"
-                    placeholder="Tìm theo mã đơn, email hoặc số điện thoại..."
+                    placeholder="Tìm theo mã đơn, tên, email hoặc số điện thoại..."
                     className="border rounded p-2 flex-grow"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -144,9 +148,9 @@ const OrderManagementPage = () => {
                                         <div>
                                             {order.fullName || 'N/A'}
                                             {order.userId ? (
-                                                <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded">User</span>
+                                                <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded">Người dùng</span>
                                             ) : (
-                                                <span className="ml-2 px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">Guest</span>
+                                                <span className="ml-2 px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">Khách</span>
                                             )}
                                         </div>
                                         <div className="text-sm text-gray-600">{order.email || 'N/A'}</div>
@@ -168,13 +172,30 @@ const OrderManagementPage = () => {
                                         {OrderStatus[order.status] || order.status}
                                     </span>
                                 </td>
-                                <td className="border p-2">
+                                <td className="border p-2 flex gap-2">
                                     <button
                                         onClick={() => router.push(`/admin/orders/${order._id}`)}
                                         className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
                                     >
                                         Chi tiết
                                     </button>
+                                    <DeleteConfirmationModal
+                                        title="Are you sure?"
+                                        description="This action cannot be undone. This will permanently delete the order:"
+                                        itemName={`Order #${order._id} of user ${order.fullName}`}
+                                        itemId={order._id}
+                                        apiEndpoint="/orders"
+                                        successMessage="Order deleted successfully!"
+                                        errorMessage="An error occurred while deleting the order"
+                                        onSuccess={() => router.refresh()}
+                                        trigger={
+                                            <button
+                                                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                                            >
+                                                <Trash className='w-4 h-4'/>
+                                            </button>
+                                        }
+                                    />
                                 </td>
                             </tr>
                         ))}

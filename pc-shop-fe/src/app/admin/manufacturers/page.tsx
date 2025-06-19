@@ -13,7 +13,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 interface Manufacturer {
     _id: string;
     name: string;
-    description?: string;
     logo?: string;
     website?: string;
     type: string;

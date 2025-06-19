@@ -19,10 +19,10 @@ import { toast } from "react-toastify";
 import { sendRequest } from "@/utils/api";
 import { useSession } from "next-auth/react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowLeft } from "lucide-react";
 
 const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
-    description: z.string().optional(),
     logo: z.string().url().optional(),
     website: z.string().url().optional(),
     type: z.string().min(1, "Type is required"),
@@ -32,7 +32,6 @@ interface ManufacturerFormProps {
     initialData?: {
         _id: string;
         name: string;
-        description?: string;
         logo?: string;
         website?: string;
         type: string;
@@ -47,7 +46,6 @@ export function ManufacturerForm({ initialData }: ManufacturerFormProps) {
         resolver: zodResolver(formSchema),
         defaultValues: initialData || {
             name: "",
-            description: "",
             logo: "",
             website: "",
             type: "",
@@ -93,19 +91,6 @@ export function ManufacturerForm({ initialData }: ManufacturerFormProps) {
                             <FormLabel>Name</FormLabel>
                             <FormControl>
                                 <Input placeholder="Manufacturer name" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Description</FormLabel>
-                            <FormControl>
-                                <Textarea placeholder="Manufacturer description" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

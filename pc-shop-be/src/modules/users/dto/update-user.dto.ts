@@ -18,4 +18,7 @@ export class UpdateUserDto {
     @IsOptional()
     address: string;
 
+    @IsOptional()
+    isActive: boolean;
+
 }

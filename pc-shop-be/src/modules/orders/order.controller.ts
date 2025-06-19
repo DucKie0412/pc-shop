@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Query, Req, HttpException, HttpStatus, Param, Patch } from '@nestjs/common';
+import { Controller, Post, Body, Get, Query, Req, HttpException, HttpStatus, Param, Patch, Delete } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { Request } from 'express';
@@ -46,6 +46,15 @@ export class OrderController {
                 HttpStatus.BAD_REQUEST
             );
         }
+    }
+
+    @Delete(':id')
+    async remove(@Param('id') id: string) {
+        const deletedOrder = await this.orderService.remove(id);
+        if (!deletedOrder) {
+            return { statusCode: 404, message: 'Order not found' };
+        }
+        return { statusCode: 200, message: 'Order deleted', data: deletedOrder };
     }
 
     @Public()

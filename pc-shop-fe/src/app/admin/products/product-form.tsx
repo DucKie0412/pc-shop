@@ -28,7 +28,6 @@ import { PRODUCT_TYPE_SPECS, PRODUCT_TYPES } from "@/constants/productSpecs";
 
 const baseSchema = z.object({
     name: z.string().min(1, "Name is required"),
-    description: z.string().min(1, "Description is required"),
     type: z.enum(PRODUCT_TYPES as [string, ...string[]]),
     categoryId: z.string().min(1, "Category is required"),
     manufacturerId: z.string().min(1, "Manufacturer is required"),
@@ -53,6 +52,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
     const [imagePublicIds, setImagePublicIds] = useState<string[]>(initialData?.imagePublicIds || []);
     const { data: session } = useSession();
     const [selectedType, setSelectedType] = useState(initialData?.type || PRODUCT_TYPES[0]);
+    const [customSpecValues, setCustomSpecValues] = useState<{ [specName: string]: string }>({});
 
     useEffect(() => {
         const fetchData = async () => {
@@ -89,7 +89,6 @@ export function ProductForm({ initialData }: ProductFormProps) {
         resolver: zodResolver(baseSchema),
         defaultValues: {
             name: initialData?.name || "",
-            description: initialData?.description || "",
             type: initialData?.type || PRODUCT_TYPES[0],
             categoryId: initialData?.categoryId?._id || "",
             manufacturerId: initialData?.manufacturerId?._id || "",
@@ -102,12 +101,6 @@ export function ProductForm({ initialData }: ProductFormProps) {
         },
     });
 
-    // Update type and reset specs when type changes
-    const handleTypeChange = (value: string) => {
-        setSelectedType(value);
-        form.setValue("type", value);
-        form.setValue("specs", {});
-    };
 
     // Filter manufacturers by selectedType
     const filteredManufacturers = manufacturers.filter(
@@ -192,25 +185,12 @@ export function ProductForm({ initialData }: ProductFormProps) {
                 />
                 <FormField
                     control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Description</FormLabel>
-                            <FormControl>
-                                <Textarea placeholder="Product description" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
                     name="categoryId"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Category</FormLabel>
                             <Select
-                                value={field.value}
+                                value={field.value} 
                                 onValueChange={field.onChange}
                                 disabled={true}
                             >
@@ -379,37 +359,82 @@ export function ProductForm({ initialData }: ProductFormProps) {
                     <FormLabel>Technical Specs</FormLabel>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {Array.isArray(PRODUCT_TYPE_SPECS[selectedType as keyof typeof PRODUCT_TYPE_SPECS]) &&
-                            (PRODUCT_TYPE_SPECS[selectedType as keyof typeof PRODUCT_TYPE_SPECS] as Array<{ name: string; label: string; type: string; options?: string[] }>).map((spec) => (
-                                <div key={spec.name}>
-                                    <FormLabel>{spec.label}</FormLabel>
-                                    <FormControl>
-                                        {spec.options ? (
-                                            <Select
-                                                value={form.watch(`specs.${spec.name}`)}
-                                                onValueChange={val => form.setValue(`specs.${spec.name}`, val)}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder={`Select ${spec.label}`} />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {spec.options.map((option: string) => (
-                                                        <SelectItem key={option} value={option}>
-                                                            {option}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        ) : (
-                                            <Input
-                                                type={spec.type}
-                                                placeholder={spec.label}
-                                                {...form.register(`specs.${spec.name}`)}
-                                            />
-                                        )}
-                                    </FormControl>
-                                    <FormMessage />
-                                </div>
-                            ))}
+                            (PRODUCT_TYPE_SPECS[selectedType as keyof typeof PRODUCT_TYPE_SPECS] as Array<{ name: string; label: string; type: string; options?: string[] }>).map((spec) => {
+                                const watchedValue = form.watch(`specs.${spec.name}`);
+                                return (
+                                    <div key={spec.name}>
+                                        <FormLabel>{spec.label}</FormLabel>
+                                        <FormControl>
+                                            {spec.options ? (
+                                                <>
+                                                    <Select
+                                                        value={
+                                                            watchedValue === undefined || watchedValue === "" ? "" :
+                                                            (spec.options && spec.options.includes(watchedValue)) ? watchedValue :
+                                                            "Custom"
+                                                        }
+                                                        onValueChange={val => {
+                                                            if (val === "Custom") {
+                                                                form.setValue(`specs.${spec.name}`, customSpecValues[spec.name] || "");
+                                                            } else {
+                                                                form.setValue(`specs.${spec.name}`, val);
+                                                                setCustomSpecValues(prev => ({
+                                                                    ...prev,
+                                                                    [spec.name]: ""
+                                                                }));
+                                                            }
+                                                        }}
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder={`Select ${spec.label}`} />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {spec.options.map((option: string) => (
+                                                                <SelectItem key={option} value={option}>
+                                                                    {option}
+                                                                </SelectItem>
+                                                            ))}
+                                                            {!spec.options.includes("Custom") && (
+                                                                <SelectItem key="Custom" value="Custom">
+                                                                    Custom
+                                                                </SelectItem>
+                                                            )}
+                                                        </SelectContent>
+                                                    </Select>
+                                                    {/* Show custom input if 'Custom' is selected */}
+                                                    {(
+                                                        watchedValue !== undefined &&
+                                                        watchedValue !== "" &&
+                                                        (!spec.options.includes(watchedValue))
+                                                    ) && (
+                                                        <Input
+                                                            className="mt-2"
+                                                            type={spec.type}
+                                                            placeholder={`Enter custom ${spec.label.toLowerCase()}`}
+                                                            value={watchedValue}
+                                                            onChange={e => {
+                                                                const value = e.target.value;
+                                                                setCustomSpecValues(prev => ({
+                                                                    ...prev,
+                                                                    [spec.name]: value
+                                                                }));
+                                                                form.setValue(`specs.${spec.name}`, value);
+                                                            }}
+                                                        />
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <Input
+                                                    type={spec.type}
+                                                    placeholder={spec.label}
+                                                    {...form.register(`specs.${spec.name}`)}
+                                                />
+                                            )}
+                                        </FormControl>
+                                        <FormMessage />
+                                    </div>
+                                );
+                            })}
                     </div>
                 </div>
                 <Button type="submit" disabled={isLoading}>

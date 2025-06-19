@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Order, OrderDocument } from './schemas/order.schema';
@@ -16,6 +16,8 @@ export class OrderService {
     return this.orderModel.findById(id);
   }
 
+  
+
   async findByUser(userId: string) {
     return this.orderModel.find({ userId }).sort({ createdAt: -1 });
   }
@@ -30,5 +32,15 @@ export class OrderService {
 
   async updateOrder(id: string, update: any) {
     return this.orderModel.findByIdAndUpdate(id, update, { new: true });
+  }
+
+  async remove(id: string): Promise<Order> {
+    const deletedOrder = await this.orderModel
+      .findByIdAndDelete(id)
+      .exec();
+    if (!deletedOrder) {
+      throw new NotFoundException(`Category with ID ${id} not found`);
+    }
+    return deletedOrder;
   }
 } 

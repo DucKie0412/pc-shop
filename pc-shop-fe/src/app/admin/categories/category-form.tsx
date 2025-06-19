@@ -46,12 +46,19 @@ export function CategoryForm({ initialData }: CategoryFormProps) {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
+            // Transform the data before sending to backend
+            const transformedValues = {
+                ...values,
+                name: values.name.toUpperCase().trim(),
+                description: values.description?.trim() || "",
+            };
+
             if (initialData) {
                 // Update category
                 await sendRequest({
                     method: "PATCH",
                     url: `${process.env.NEXT_PUBLIC_API_URL}/categories/${initialData._id}`,
-                    body: values,
+                    body: transformedValues,
                     headers: { Authorization: `Bearer ${session?.user.accessToken}` },
                 });
                 toast.success("Category updated successfully");
@@ -60,7 +67,7 @@ export function CategoryForm({ initialData }: CategoryFormProps) {
                 await sendRequest({
                     method: "POST",
                     url: `${process.env.NEXT_PUBLIC_API_URL}/categories`,
-                    body: values,
+                    body: transformedValues,
                     headers: { Authorization: `Bearer ${session?.user.accessToken}` },
                 });
                 toast.success("Category created successfully");

@@ -13,10 +13,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
-import { sendRequest } from "@/utils/api";
-import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { useSession } from "next-auth/react";
+import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 import { SortableHeader } from "@/components/ui/sortable-header";
 
 export const columns = (refreshProducts?: () => void): ColumnDef<IProduct>[] => [
@@ -31,14 +28,6 @@ export const columns = (refreshProducts?: () => void): ColumnDef<IProduct>[] => 
         accessorKey: "name",
         enableResizing: true,
         size: 100,
-        minSize: 50,
-        maxSize: 200,
-    },
-    {
-        header: ({ column }) => <SortableHeader column={column} title="Description" />,
-        accessorKey: "description",
-        size: 120,
-        enableResizing: true,
         minSize: 50,
         maxSize: 200,
     },
@@ -107,27 +96,6 @@ export const columns = (refreshProducts?: () => void): ColumnDef<IProduct>[] => 
         cell: ({ row }) => {
             const product = row.original;
             const router = useRouter();
-            const session = useSession();
-
-            const handleDelete = async () => {
-                try {
-                    const res = await sendRequest<IBackendRes<any>>({
-                        method: "DELETE",
-                        url: `${process.env.NEXT_PUBLIC_API_URL}/products/${product.slug}`,
-                        headers: { Authorization: `Bearer ${session?.data?.user.accessToken}` },
-                    });
-                    if (res?.statusCode === 200) {
-                        toast.success("Product deleted successfully!", { autoClose: 2300 });
-                        if (refreshProducts) refreshProducts();
-                    }
-
-                    if (res?.statusCode === 400) {
-                        toast.warning("Server error!", { autoClose: 2000 });
-                    }
-                } catch (error) {
-                    toast.error("Failed to delete product");
-                }
-            };
 
             return (
                 <DropdownMenu>
@@ -151,12 +119,21 @@ export const columns = (refreshProducts?: () => void): ColumnDef<IProduct>[] => 
                             Edit product
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-
-                        <DropdownMenuItem
-                            onClick={handleDelete}
-                        >
-                            Delete product
-                        </DropdownMenuItem>
+                        <DeleteConfirmationModal
+                            title="Are you sure?"
+                            description="This action cannot be undone. This will permanently delete the product"
+                            itemName={product.name}
+                            itemId={product.slug}
+                            apiEndpoint="/products"
+                            successMessage="Product deleted successfully!"
+                            errorMessage="Failed to delete product"
+                            onSuccess={refreshProducts}
+                            trigger={
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                    Delete product
+                                </DropdownMenuItem>
+                            }
+                        />
                     </DropdownMenuContent>
                 </DropdownMenu>
             );

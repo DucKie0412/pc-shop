@@ -19,6 +19,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import { SortableHeader } from "@/components/ui/sortable-header";
 import Image from "next/image";
+import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 
 export const columns: ColumnDef<IManufacturer>[] = [
     {
@@ -32,14 +33,6 @@ export const columns: ColumnDef<IManufacturer>[] = [
         accessorKey: "name",
         enableResizing: true,
         size: 100,
-        minSize: 50,
-        maxSize: 200,
-    },
-    {
-        header: ({ column }) => <SortableHeader column={column} title="Description" />,
-        accessorKey: "description",
-        size: 120,
-        enableResizing: true,
         minSize: 50,
         maxSize: 200,
     },
@@ -90,23 +83,6 @@ export const columns: ColumnDef<IManufacturer>[] = [
             const router = useRouter()
             const session = useSession();
 
-            async function handleDelete() {
-                const res = await sendRequest<IBackendRes<any>>({
-                    method: "DELETE",
-                    url: `${process.env.NEXT_PUBLIC_API_URL}/manufacturers/${manufacturer._id}`,
-                    headers: { Authorization: `Bearer ${session?.data?.user.accessToken}` },
-                });
-                console.log("Manufacturer deleted:", res);
-                if (res?.statusCode === 200) {
-                    toast.success("Manufacturer deleted successfully!", { autoClose: 2300 });
-                    router.refresh();
-                }
-
-                if (res?.statusCode === 400) {
-                    toast.warning("Server error!", { autoClose: 2000 });
-                }
-            }
-
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -127,7 +103,21 @@ export const columns: ColumnDef<IManufacturer>[] = [
                             router.push(`/admin/manufacturers/${manufacturer._id}/edit`)
                         }}>Edit manufacturer</DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleDelete}>Delete manufacturer</DropdownMenuItem>
+                        <DeleteConfirmationModal
+                            title="Are you sure?"
+                            description="This action cannot be undone. This will permanently delete the manufacturer:"
+                            itemName={manufacturer.name}
+                            itemId={manufacturer._id}
+                            apiEndpoint="/manufacturers"
+                            successMessage="Manufacturer deleted successfully!"
+                            errorMessage="An error occurred while deleting the manufacturer"
+                            onSuccess={() => router.refresh()}
+                            trigger={
+                                <DropdownMenuItem onSelect={e => e.preventDefault()}>
+                                    Delete manufacturer
+                                </DropdownMenuItem>
+                            }
+                        />
                     </DropdownMenuContent>
                 </DropdownMenu>
             )

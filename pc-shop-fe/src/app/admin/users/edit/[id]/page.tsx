@@ -14,10 +14,12 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "react-toastify";
 import { IUser } from "@/types/next-auth";
+import { ArrowLeft } from "lucide-react";
 import * as z from "zod";
 
 const formSchema = z.object({
@@ -25,6 +27,7 @@ const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
     phone: z.string().optional(),
     address: z.string().optional(),
+    isActive: z.boolean(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -42,6 +45,7 @@ export default function EditUserPage() {
             name: "",
             phone: "",
             address: "",
+            isActive: false,
         },
     });
 
@@ -59,6 +63,7 @@ export default function EditUserPage() {
                     name: res.data.name || "",
                     phone: res.data.phone || "",
                     address: res.data.address || "",
+                    isActive: res.data.isActive || false,
                 });
             }
         }
@@ -94,7 +99,17 @@ export default function EditUserPage() {
         <div className="flex justify-center mt-10">
             <Card className="w-[400px] shadow-lg">
                 <CardHeader>
-                    <CardTitle>Edit User</CardTitle>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => router.push("/admin/users")}
+                            className="h-8 w-8"
+                        >
+                            <ArrowLeft className="h-4 w-4" />
+                        </Button>
+                        <CardTitle>Edit User</CardTitle>
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <Form {...form}>
@@ -148,6 +163,26 @@ export default function EditUserPage() {
                                             <Input type="text" {...field} />
                                         </FormControl>
                                         <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="isActive"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                                        <div className="space-y-0.5">
+                                            <Label>Active Status</Label>
+                                            <div className="text-sm text-muted-foreground">
+                                                Enable or disable this user account
+                                            </div>
+                                        </div>
+                                        <FormControl>
+                                            <Switch
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                            />
+                                        </FormControl>
                                     </FormItem>
                                 )}
                             />

@@ -14,9 +14,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
-import { sendRequest } from "@/utils/api";
-import { useSession } from "next-auth/react";
-import { toast } from "react-toastify";
+import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 
 export const columns: ColumnDef<IUser>[] = [
     {
@@ -113,24 +111,6 @@ export const columns: ColumnDef<IUser>[] = [
         cell: ({ row }) => {
             const user = row.original
             const router = useRouter()
-            const session = useSession();
-
-            async function handleDelete() {
-                const res = await sendRequest<IBackendRes<any>>({
-                    method: "DELETE",
-                    url: `${process.env.NEXT_PUBLIC_API_URL}/users/${user._id}`,
-                    headers: { Authorization: `Bearer ${session?.data?.user.accessToken}` },
-                });
-                console.log("User deleted:", res);
-                if (res?.statusCode === 200) {
-                    toast.success("User deleted successfully!", { autoClose: 2300 });
-                    router.refresh();
-                }
-
-                if (res?.statusCode === 400) {
-                    toast.warning("Server error!", { autoClose: 2000 });
-                }
-            }
 
             return (
                 <DropdownMenu>
@@ -152,7 +132,20 @@ export const columns: ColumnDef<IUser>[] = [
                             router.push(`/admin/users/edit/${user._id}`)
                         }}>Edit user</DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleDelete}>Delete user</DropdownMenuItem>
+                        <DeleteConfirmationModal
+                            title="Are you sure?"
+                            description="This action cannot be undone. This will permanently delete the user account for"
+                            itemName={`${user.name} (${user.email})`}
+                            itemId={user._id}
+                            apiEndpoint="/users"
+                            successMessage="User deleted successfully!"
+                            errorMessage="An error occurred while deleting the user"
+                            trigger={
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                    Delete user
+                                </DropdownMenuItem>
+                            }
+                        />
                     </DropdownMenuContent>
                 </DropdownMenu>
             )

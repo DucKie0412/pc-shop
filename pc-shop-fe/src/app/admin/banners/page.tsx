@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
 
 export default function SettingsPage() {
     const [banners, setBanners] = useState<IBanner[]>([]);
@@ -126,28 +127,6 @@ export default function SettingsPage() {
         }
     };
 
-    const handleDeleteBanner = async (id: string) => {
-        if (!confirm("Are you sure you want to delete this banner?")) return;
-
-        try {
-            const res = await sendRequest<IBackendRes<any>>({
-                url: `${process.env.NEXT_PUBLIC_API_URL}/banners/${id}`,
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${session?.user?.accessToken}`
-                }
-            });
-
-            if (res?.statusCode === 200) {
-                toast.success("Banner deleted successfully");
-                fetchBanners();
-            }
-        } catch (error) {
-            console.error("Error deleting banner:", error);
-            toast.error("Failed to delete banner");
-        }
-    };
-
     if (loading) return <div>Loading...</div>;
 
     return (
@@ -228,12 +207,17 @@ export default function SettingsPage() {
                                         />
                                         <Label>Active</Label>
                                     </div>
-                                    <Button
-                                        variant="destructive"
-                                        onClick={() => handleDeleteBanner(banner._id)}
-                                    >
-                                        Delete Banner
-                                    </Button>
+                                        <DeleteConfirmationModal
+                                            title="Delete Banner"
+                                            description="Are you sure you want to delete the banner:"
+                                            itemName={banner.title}
+                                            itemId={banner._id}
+                                            apiEndpoint="/banners"
+                                            trigger={<Button asChild className="destructive cursor-pointer"><span>Delete Banner</span></Button>}
+                                            onSuccess={fetchBanners}
+                                            successMessage="Banner deleted successfully!"
+                                            errorMessage="Failed to delete banner."
+                                        />
                                 </div>
                                 {isDirty && (
                                     <div className="mt-4 bg-yellow-100 border border-yellow-400 rounded p-2 flex justify-between items-center">
