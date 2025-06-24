@@ -39,6 +39,7 @@ const OrderDetailPage = () => {
                     address: data.data?.address || data.address || "",
                     note: data.data?.note || data.note || "",
                     status: data.data?.status || data.status || "pending",
+                    payment: data.data?.payment || data.payment || "cod",
                 });
                 setLoading(false);
             })
@@ -114,6 +115,13 @@ const OrderDetailPage = () => {
                         {Object.entries(OrderStatus).map(([value, label]) => (
                             <option key={value} value={value}>{label}</option>
                         ))}
+                    </select>
+                </div>
+                <div className="mt-4">
+                    <label className="block font-semibold mb-1 text-gray-700">Phương thức thanh toán</label>
+                    <select name="payment" value={form.payment} onChange={handleChange} className="w-full border border-gray-300 rounded px-3 py-2 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition">
+                        <option value="cod">💵 Thanh toán khi nhận hàng</option>
+                        <option value="banking">🏦 Chuyển khoản ngân hàng</option>
                     </select>
                 </div>
             </div>

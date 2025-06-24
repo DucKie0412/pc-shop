@@ -43,6 +43,12 @@ export class Order {
 
   @Prop({ default: 'pending' })
   status: string;
+
+  @Prop({ required: true })
+  payment: string;
+
+  @Prop({ type: Boolean, default: false })
+  paymentStatus: boolean;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order); 

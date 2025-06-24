@@ -36,6 +36,7 @@ export class OrderController {
         }
     }
 
+    @Public()
     @Get(':id')
     async getOrderById(@Param('id') id: string) {
         try {
@@ -97,6 +98,25 @@ export class OrderController {
         } catch (error) {
             throw new HttpException(
                 { success: false, message: 'Không thể cập nhật đơn hàng', error: error.message },
+                HttpStatus.BAD_REQUEST
+            );
+        }
+    }
+
+    // WARNING: This endpoint is public for demo. In production, payment status should only 
+    // be set by the backend after real payment verification (adding OTP for payment)
+    @Public()
+    @Patch(':id/payment-status')
+    async updatePaymentStatus(
+        @Param('id') id: string,
+        @Body('paymentStatus') paymentStatus: boolean
+    ) {
+        try {
+            const updated = await this.orderService.updateOrder(id, { paymentStatus });
+            return { success: true, order: updated };
+        } catch (error) {
+            throw new HttpException(
+                { success: false, message: 'Không thể cập nhật trạng thái thanh toán', error: error.message },
                 HttpStatus.BAD_REQUEST
             );
         }

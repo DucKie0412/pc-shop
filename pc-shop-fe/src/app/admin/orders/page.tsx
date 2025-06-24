@@ -33,6 +33,7 @@ interface Order {
     userId?: string;
     email?: string;
     phone?: string;
+    payment?: string;
 }
 
 const OrderStatus = {
@@ -133,6 +134,7 @@ const OrderManagementPage = () => {
                             <th className="border p-2">Khách hàng</th>
                             <th className="border p-2">Tổng tiền</th>
                             <th className="border p-2">Trạng thái</th>
+                            <th className="border p-2">Phương thức thanh toán</th>
                             <th className="border p-2">Thao tác</th>
                         </tr>
                     </thead>
@@ -171,6 +173,11 @@ const OrderManagementPage = () => {
                                     + ' px-2 py-1 rounded text-xs font-semibold'}>
                                         {OrderStatus[order.status] || order.status}
                                     </span>
+                                </td>
+                                <td className="border p-2">
+                                    {order.payment === 'cod' && <span title="COD">💵 Thanh toán khi nhận hàng</span>}
+                                    {order.payment === 'banking' && <span title="Banking">🏦 Chuyển khoản ngân hàng</span>}
+                                    {!order.payment && 'N/A'}
                                 </td>
                                 <td className="border p-2 flex gap-2">
                                     <button

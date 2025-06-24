@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useCart } from '@/lib/hooks/useCart';
 import { useSession } from 'next-auth/react';
-import { Trash } from 'lucide-react';
+import { CreditCard, Trash, Truck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 
@@ -18,6 +18,8 @@ const CheckoutPage = () => {
   const [phone, setPhone] = useState('');
   const [phoneError, setPhoneError] = useState('');
   const [note, setNote] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [paymentMethodError, setPaymentMethodError] = useState('');
 
   const isValidPhone = (phone: string) => /^0[0-9]{9}$/.test(phone.replace(/-/g, ''));
 
@@ -44,6 +46,12 @@ const CheckoutPage = () => {
 
   const handleOrder = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!paymentMethod) {
+      setPaymentMethodError('Vui lòng chọn phương thức thanh toán');
+      return;
+    } else {
+      setPaymentMethodError('');
+    }
 
     const orderData = {
       fullName,
@@ -60,8 +68,32 @@ const CheckoutPage = () => {
       })),
       total,
       userId: session?.user?._id || undefined,
+      payment: paymentMethod,
     };
 
+    if (paymentMethod === 'banking') {
+      // Create order first, then redirect with orderId
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...orderData, paymentStatus: false }),
+        });
+        const data = await res.json();
+        const order = data.order || (data.data && data.data.order);
+        if (res.ok && order && order._id) {
+          clearCartItems();
+          router.push(`/payment/vnpay?orderId=${order._id}`);
+        } else {
+          toast.error(data.message || 'Không thể tạo đơn hàng.');
+        }
+      } catch (err) {
+        toast.error('Có lỗi xảy ra khi tạo đơn hàng.');
+      }
+      return;
+    }
+
+    // For COD payment, create order directly
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -77,7 +109,7 @@ const CheckoutPage = () => {
       setNote('');
       clearCartItems();
       setTimeout(() => {
-        router.push('/');
+        window.location.href = '/';
       }, 2000);
     } else {
       const data = await res.json();
@@ -189,6 +221,36 @@ const CheckoutPage = () => {
                 required
               />
               {phoneError && <p className="text-red-500 text-sm">{phoneError}</p>}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Phương thức thanh toán</label>
+              <div className="mt-1 space-y-2">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="cod"
+                    checked={paymentMethod === 'cod'}
+                    onChange={() => setPaymentMethod('cod')}
+                    className="mr-2"
+                  />
+                  Thanh toán khi nhận hàng (COD)
+                  <Truck className='w-9 h-9 ml-4'/>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="banking"
+                    checked={paymentMethod === 'banking'}
+                    onChange={() => setPaymentMethod('banking')}
+                    className="mr-2"
+                  />
+                  Chuyển khoản ngân hàng
+                  <CreditCard className='w-9 h-9 ml-4' />
+                </label>
+              </div>
+              {paymentMethodError && <p className="text-red-500 text-sm">{paymentMethodError}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Ghi chú</label>

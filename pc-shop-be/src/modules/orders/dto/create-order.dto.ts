@@ -15,6 +15,8 @@ export class CreateOrderDto {
   @IsString() @IsNotEmpty() address: string;
   @IsString() @IsNotEmpty() phone: string;
   @IsOptional() @IsString() note?: string;
+  @IsString() @IsNotEmpty() payment: string;
+  @IsOptional() paymentStatus?: boolean;
   @IsArray() items: CreateOrderItemDto[];
   @IsNumber() total: number;
   @IsOptional() @IsString() status?: string;

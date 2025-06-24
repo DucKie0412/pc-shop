@@ -17,6 +17,7 @@ interface Order {
     items: OrderItem[];
     total: number;
     status?: string;
+    payment?: string;
 }
 
 const OrderStatus = {
@@ -168,15 +169,19 @@ const OrdersPage = () => {
                                             ))}
                                         </tbody>
                                     </table>
+                                    <div className="mt-10 flex items-center gap-2">
+                                        <span className="font-bold text-red-600">Phương thức thanh toán:</span>
+                                        {order.payment === 'cod' && <span title="COD">💵 Thanh toán khi nhận hàng</span>}
+                                        {order.payment === 'banking' && <span title="Banking">🏦 Chuyển khoản ngân hàng</span>}
+                                    </div>
                                     <div className="flex flex-col items-end">
                                         <div className="font-bold text-red-600">Tổng tiền: {order.total.toLocaleString('vi-VN')} đ</div>
                                         <button
                                             onClick={() => handleRefundClick(order._id)}
-                                            className={`px-4 py-2 rounded-md transition mt-2 ${
-                                                hasPendingRefund
+                                            className={`px-4 py-2 rounded-md transition mt-2 ${hasPendingRefund
                                                     ? 'bg-gray-400 cursor-not-allowed'
                                                     : 'bg-red-500 hover:bg-red-600 text-white'
-                                            }`}
+                                                }`}
                                             disabled={hasPendingRefund}
                                         >
                                             Refund
