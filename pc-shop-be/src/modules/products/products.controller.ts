@@ -82,4 +82,10 @@ export class ProductsController {
       message: "Product deleted successfully"
     };
   }
+
+  @Public()
+  @Get('best-sale')
+  async getBestSaleProducts() {
+    return await this.productsService.getBestSaleProducts();
+  }
 }

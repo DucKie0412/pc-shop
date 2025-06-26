@@ -191,4 +191,13 @@ export class ProductsService {
             .populate('manufacturerId')
             .exec();
     }
+
+    async getBestSaleProducts(): Promise<Product[]> {
+        return this.productModel.find()
+            .sort({ soldCount: -1 })
+            .limit(15)
+            .populate('categoryId')
+            .populate('manufacturerId')
+            .exec();
+    }
 }

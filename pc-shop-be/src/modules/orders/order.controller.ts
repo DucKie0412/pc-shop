@@ -37,6 +37,25 @@ export class OrderController {
     }
 
     @Public()
+    @Get('revenue')
+    async getRevenue(@Query('mode') mode: string) {
+        return await this.orderService.getRevenue(mode);
+    }
+
+    @Public()
+    @Get()
+    async getAllOrders() {
+        try {
+            return await this.orderService.findAll();
+        } catch (error) {
+            throw new HttpException(
+                { success: false, message: 'Không thể lấy danh sách đơn hàng', error: error.message },
+                HttpStatus.BAD_REQUEST
+            );
+        }
+    }
+
+    @Public()
     @Get(':id')
     async getOrderById(@Param('id') id: string) {
         try {
@@ -70,18 +89,6 @@ export class OrderController {
         } catch (error) {
             throw new HttpException(
                 { success: false, message: 'Không thể tra cứu đơn hàng', error: error.message },
-                HttpStatus.BAD_REQUEST
-            );
-        }
-    }
-
-    @Get()
-    async getAllOrders() {
-        try {
-            return await this.orderService.findAll();
-        } catch (error) {
-            throw new HttpException(
-                { success: false, message: 'Không thể lấy danh sách đơn hàng', error: error.message },
                 HttpStatus.BAD_REQUEST
             );
         }

@@ -108,4 +108,24 @@ export class OrderService {
     }
     return deletedOrder;
   }
+
+  async getRevenue(mode: string) {
+    // Default to 'day' if not specified
+    const groupFormat = mode === 'month'
+      ? '%m/%Y'
+      : '%d/%m/%Y';
+    const results = await this.orderModel.aggregate([
+      {
+        $group: {
+          _id: { $dateToString: { format: groupFormat, date: '$createdAt' } },
+          total: { $sum: '$total' }
+        }
+      },
+      { $sort: { '_id': 1 } }
+    ]);
+    return {
+      labels: results.map(r => r._id),
+      data: results.map(r => Math.round(r.total / 1000000)), // convert to millions for chart
+    };
+  }
 } 
