@@ -18,6 +18,7 @@ interface IProduct {
     categoryId: { name: string };
     specs: Record<string, string>;
     details: Array<{ title: string; content: string; image?: string }>;
+    stock: number;
 }
 
 // Add spec mapping object
@@ -295,6 +296,10 @@ function ProductPage() {
                             );
                         })()}
                     </div>
+                    {/* Out of stock message */}
+                    {product.stock === 0 && (
+                        <span className="inline-block mb-2 px-3 py-1 text-xs bg-red-100 text-red-600 rounded font-semibold">Sản phẩm tạm thời hết hàng</span>
+                    )}
                     <div className="mb-4">
                         <h2 className="text-lg font-semibold mb-1">Thông số sản phẩm:</h2>
                         <div className="bg-gray-100 p-4 rounded">

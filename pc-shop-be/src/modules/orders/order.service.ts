@@ -4,16 +4,46 @@ import { Model } from 'mongoose';
 import { Order, OrderDocument } from './schemas/order.schema';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { User, UserDocument } from '../users/schemas/user.schema';
+import { Product, ProductDocument } from '../products/schemas/product.schema';
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Product.name) private productModel: Model<ProductDocument>,
   ) {}
 
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
-    return this.orderModel.create(createOrderDto);
+    const order = await this.orderModel.create(createOrderDto);
+
+    // If payment method is COD, immediately update stock, soldCount, and user points
+    if (order.payment === 'cod') {
+      // Calculate points
+      const earnedPoints = Math.floor(order.total / 10000);
+      order.earnedPoints = earnedPoints;
+      await order.save();
+
+      // Award points to user if userId exists
+      if (order.userId) {
+        await this.userModel.findByIdAndUpdate(
+          order.userId,
+          { $inc: { points: earnedPoints } }
+        );
+      }
+
+      // Decrease stock and increase soldCount for each product in the order
+      for (const item of order.items) {
+        await this.productModel.findByIdAndUpdate(
+          item.productId,
+          {
+            $inc: { stock: -item.quantity, soldCount: item.quantity }
+          }
+        );
+      }
+    }
+
+    return order;
   }
 
   async findById(id: string) {
@@ -52,6 +82,16 @@ export class OrderService {
         await this.userModel.findByIdAndUpdate(
           order.userId,
           { $inc: { points: earnedPoints } }
+        );
+      }
+
+      // Decrease stock and increase soldCount for each product in the order
+      for (const item of order.items) {
+        await this.productModel.findByIdAndUpdate(
+          item.productId,
+          {
+            $inc: { stock: -item.quantity, soldCount: item.quantity }
+          }
         );
       }
     }

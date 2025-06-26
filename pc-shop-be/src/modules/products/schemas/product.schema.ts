@@ -76,6 +76,11 @@ export class Product extends Document {
       image?: string;
     }[];
 
+    @Prop({ default: 0, min: 0 })
+    soldCount: number;           // số lượng đã bán (dashboard)
+
+    @Prop({ default: false })
+    isRedeemable: boolean;       // sản phẩm có thể đổi điểm (redeem page)
 
 }
 
