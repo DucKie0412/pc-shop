@@ -13,6 +13,7 @@ export interface IProduct {
         name: string;
     };
     stock: number;
+    soldCount: number;
     originalPrice: number;
     discount: number;
     createdAt: string;

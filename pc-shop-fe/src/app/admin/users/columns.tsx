@@ -80,6 +80,14 @@ export const columns: ColumnDef<IUser>[] = [
         maxSize: 200,
     },
     {
+        header: "Point",
+        accessorKey: "points",
+        size: 120,
+        enableResizing: true,
+        minSize: 50,
+        maxSize: 200,
+    },
+    {
         header: ({ column }) => (
             <div
                 onClick={column.getToggleSortingHandler()}

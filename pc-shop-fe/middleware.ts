@@ -1,9 +1,7 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
-export default auth((req) => {
-    console.debug("Middleware: ", req.auth);
-    
+export default auth((req) => {    
     const { nextUrl } = req;
     const isAdminRoute = nextUrl.pathname.startsWith("/admin"); // Kiểm tra nếu vào trang admin
 

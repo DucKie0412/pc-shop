@@ -22,6 +22,7 @@ function Header() {
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isOrderLookupOpen, setIsOrderLookupOpen] = useState(false);
 
+    
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
@@ -104,7 +105,7 @@ function Header() {
                             <div className="flex flex-2 justify-end gap-6 items-center">
                                 {status === "authenticated" ? (
                                     <div className="relative group" ref={userMenuRef}>
-                                        <div 
+                                        <div
                                             className="flex items-center gap-2 cursor-pointer hover:text-yellow-200"
                                             onClick={() => setShowUserMenu(!showUserMenu)}
                                         >
@@ -120,26 +121,26 @@ function Header() {
                                         {showUserMenu && (
                                             <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
                                                 <div className="py-1">
-                                                    <Link 
-                                                        href="/profile" 
+                                                    <Link
+                                                        href="/admin/dashboard"
+                                                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#0088D1]"
+                                                    >
+                                                        <Settings className="w-4 h-4 mr-2" />
+                                                        Đổi điểm
+                                                    </Link>
+                                                    <Link
+                                                        href="/profile"
                                                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#0088D1]"
                                                     >
                                                         <UserCircle className="w-4 h-4 mr-2" />
                                                         Thông tin cá nhân
                                                     </Link>
-                                                    <Link 
-                                                        href="/orders" 
+                                                    <Link
+                                                        href="/orders"
                                                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#0088D1]"
                                                     >
                                                         <History className="w-4 h-4 mr-2" />
                                                         Đơn hàng của tôi
-                                                    </Link>
-                                                    <Link 
-                                                        href="/admin/dashboard" 
-                                                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#0088D1]"
-                                                    >
-                                                        <Settings className="w-4 h-4 mr-2" />
-                                                        Cài đặt
                                                     </Link>
                                                     <button
                                                         onClick={() => signOut()}
@@ -155,13 +156,13 @@ function Header() {
                                 ) : (
                                     <div className="flex items-center gap-2 ">
                                         <div>
-                                        <button
-                                            className="ml-2 text-sm underline text-white hover:text-yellow-200"
-                                            onClick={() => setIsOrderLookupOpen(true)}
-                                        >
-                                            Tra cứu đơn hàng
-                                        </button>
-                                    </div>
+                                            <button
+                                                className="ml-2 text-sm underline text-white hover:text-yellow-200"
+                                                onClick={() => setIsOrderLookupOpen(true)}
+                                            >
+                                                Tra cứu đơn hàng
+                                            </button>
+                                        </div>
                                         <div className="rounded-full bg-white p-2">
                                             <User size={20} className="text-[#0088D1]" />
                                         </div>
@@ -404,7 +405,7 @@ function Header() {
                                 <Link href="/category/ram" className="hover:text-gray-200 transition-colors">RAM</Link>
                                 <Link href="/category/hdd" className="hover:text-gray-200 transition-colors">HDD</Link>
                                 <Link href="/category/ssd" className="hover:text-gray-200 transition-colors">SSD</Link>
-                                <Link href="/category/psu" className="hover:text-gray-200 transition-colors">PSU</Link> 
+                                <Link href="/category/psu" className="hover:text-gray-200 transition-colors">PSU</Link>
                                 <Link href="/category/case" className="hover:text-gray-200 transition-colors">CASE</Link>
                                 <Link href="/category/fan" className="hover:text-gray-200 transition-colors">FAN</Link>
                                 <Link href="/category/other" className="hover:text-gray-200 transition-colors">PHU KIEN MÁY TÍNH</Link>
@@ -441,6 +442,10 @@ function Header() {
                                     </div>
                                 </div>
                                 <div className="mt-2 pl-8 space-y-2">
+                                    <Link href="/settings" className="flex items-center gap-2 text-gray-700 hover:text-[#0088D1]">
+                                        <Settings size={16} />
+                                        Đổi điểm
+                                    </Link>
                                     <Link href="/profile" className="flex items-center gap-2 text-gray-700 hover:text-[#0088D1]">
                                         <UserCircle size={16} />
                                         Thông tin cá nhân
@@ -448,10 +453,6 @@ function Header() {
                                     <Link href="/orders" className="flex items-center gap-2 text-gray-700 hover:text-[#0088D1]">
                                         <History size={16} />
                                         Đơn hàng của tôi
-                                    </Link>
-                                    <Link href="/settings" className="flex items-center gap-2 text-gray-700 hover:text-[#0088D1]">
-                                        <Settings size={16} />
-                                        Cài đặt
                                     </Link>
                                     <button
                                         onClick={() => signOut()}

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Order, OrderSchema } from './schemas/order.schema';
+import { User, UserSchema } from '../users/schemas/user.schema';
 import { OrderService } from './order.service';
 import { OrderController } from './order.controller';
 import { UsersService } from '../users/users.service';
@@ -9,7 +10,8 @@ import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]), 
+    MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     UsersModule
   ],
   providers: [OrderService],

@@ -31,7 +31,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         name: res.data?.user.name,
                         email: res.data?.user.email,
                         role: res.data?.user.role,
-                        accessToken: res.data?.access_token
+                        accessToken: res.data?.access_token,
+                        points: res.data?.user.points
                     }
                 }
 
@@ -70,7 +71,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         },
     },
     session: {
-        strategy: "jwt", // ✅ Bắt buộc để middleware lấy được session
+        strategy: "jwt", // Bắt buộc để middleware lấy được session
     },
     trustHost: true
 })

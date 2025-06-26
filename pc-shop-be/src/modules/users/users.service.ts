@@ -49,8 +49,16 @@ export class UsersService {
 
   }
 
-  findOne(id: string) {
+  async findOne(id: string) {
     return this.userModel.findById(id).select('-password');
+  }
+
+  async getUserPoints(id: string) {
+    const user = await this.userModel.findById(id).select('points');
+    if (!user) {
+      throw new BadRequestException('User not found!');
+    }
+    return { points: user.points };
   }
 
   async findByEmail(email: string) {

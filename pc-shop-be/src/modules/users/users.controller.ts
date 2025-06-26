@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { ResponseMessage } from 'src/auth/decorator/response_message.decorator';
+import { Public } from 'src/auth/decorator/customize-guard';
 
 @Controller('users')
 @UseGuards(AuthGuard('jwt')) // Apply the AuthGuard to the entire controller
@@ -13,6 +14,11 @@ export class UsersController {
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
+  }
+
+  @Get('points/:id')
+  getUserPoints(@Param('id') _id: string){
+    return this.usersService.getUserPoints(_id);
   }
 
   @Get(':id')

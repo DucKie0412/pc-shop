@@ -25,6 +25,7 @@ declare global {
             name: string;
             email: string;
             role: string;
+            points: number;
         },
         access_token: string;
     }

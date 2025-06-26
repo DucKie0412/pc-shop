@@ -156,10 +156,7 @@ function ProductPage() {
                 });
 
                 if (res?.data) {
-                    setProduct(res.data);
-                    console.log(res.data);
-                    console.log(product);
-                    
+                    setProduct(res.data);              
                     setMainImage(res.data.images[0] || null);
                     setMainImageIdx(0);
                 }

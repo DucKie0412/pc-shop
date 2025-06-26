@@ -34,6 +34,9 @@ export class User {
 
     @Prop()
     codeExpired: Date;
+
+    @Prop({ type: Number, default: 0 })
+    points: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -49,6 +49,9 @@ export class Order {
 
   @Prop({ type: Boolean, default: false })
   paymentStatus: boolean;
+
+  @Prop({ type: Number, default: 0 })
+  earnedPoints: number;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order); 

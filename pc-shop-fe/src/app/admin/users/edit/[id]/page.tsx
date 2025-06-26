@@ -27,6 +27,7 @@ const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
     phone: z.string().optional(),
     address: z.string().optional(),
+    point: z.number().optional(),
     isActive: z.boolean(),
 });
 
@@ -45,6 +46,7 @@ export default function EditUserPage() {
             name: "",
             phone: "",
             address: "",
+            point: 0,
             isActive: false,
         },
     });
@@ -63,6 +65,7 @@ export default function EditUserPage() {
                     name: res.data.name || "",
                     phone: res.data.phone || "",
                     address: res.data.address || "",
+                    point: res.data.points || 0,
                     isActive: res.data.isActive || false,
                 });
             }
@@ -161,6 +164,19 @@ export default function EditUserPage() {
                                         <Label>Address</Label>
                                         <FormControl>
                                             <Input type="text" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="point"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <Label>Points</Label>
+                                        <FormControl>
+                                            <Input type="number" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

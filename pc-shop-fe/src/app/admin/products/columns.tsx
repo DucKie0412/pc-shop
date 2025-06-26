@@ -56,6 +56,14 @@ export const columns = (refreshProducts?: () => void): ColumnDef<IProduct>[] => 
         maxSize: 200,
     },
     {
+        header: ({ column }) => <SortableHeader column={column} title="Sold Count" />,
+        accessorKey: "soldCount",
+        size: 80,
+        enableResizing: true,
+        minSize: 50,
+        maxSize: 200,
+    },
+    {
         header: ({ column }) => <SortableHeader column={column} title="Original Price" />,
         accessorKey: "originalPrice",
         size: 120,
