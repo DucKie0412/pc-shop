@@ -21,4 +21,6 @@ export interface IProduct {
     type: string;
     specs: Record<string, any>;
     finalPrice: number;
+    isRedeemable?: boolean;
+    requirePoint?: number;
 } 

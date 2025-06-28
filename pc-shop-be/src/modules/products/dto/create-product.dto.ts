@@ -1,4 +1,4 @@
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Min, IsEnum, IsObject, ValidateNested } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, Min, IsEnum, IsObject, ValidateNested, IsBoolean } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { ProductType } from '../schemas/product.schema';
 
@@ -66,6 +66,13 @@ export class CreateProductDto {
     @IsOptional()
     imagePublicIds: string[];
 
+    @IsBoolean()
+    @IsOptional()
+    isRedeemable?: boolean;
+
+    @IsNumber()
+    @IsOptional()
+    requirePoint?: number;
 
     @IsArray()
     @IsOptional()

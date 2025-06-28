@@ -25,6 +25,7 @@ import { useSession } from "next-auth/react";
 import { CldUploadWidget } from 'next-cloudinary';
 import Image from 'next/image';
 import { PRODUCT_TYPE_SPECS, PRODUCT_TYPES } from "@/constants/productSpecs";
+import { Switch } from "@/components/ui/switch";
 
 const baseSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -37,6 +38,8 @@ const baseSchema = z.object({
     images: z.array(z.string()).optional(),
     imagePublicIds: z.array(z.string()).optional(),
     specs: z.record(z.any()),
+    isRedeemable: z.boolean().optional(),
+    requirePoint: z.coerce.number().min(0, "Điểm cần để đổi thưởng phải >= 0").optional(),
 });
 
 interface ProductFormProps {
@@ -98,6 +101,8 @@ export function ProductForm({ initialData }: ProductFormProps) {
             images: initialData?.images || [],
             imagePublicIds: initialData?.imagePublicIds || [],
             specs: initialData?.specs || {},
+            isRedeemable: initialData?.isRedeemable ?? false,
+            requirePoint: initialData?.requirePoint ?? 0,
         },
     });
 
@@ -126,7 +131,6 @@ export function ProductForm({ initialData }: ProductFormProps) {
                         'Authorization': `Bearer ${session?.user?.accessToken}`
                     }
                 });
-                console.log('PATCH response:', response);
                 if (response?.statusCode === 200) {
                     toast.success("Product updated successfully");
                 } else {
@@ -146,7 +150,6 @@ export function ProductForm({ initialData }: ProductFormProps) {
                         'Authorization': `Bearer ${session?.user?.accessToken}`
                     }
                 });
-                console.log('POST response:', response);
                 if (response?.statusCode === 200) {
                     toast.success("Product created successfully");
                 } else {
@@ -190,7 +193,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
                         <FormItem>
                             <FormLabel>Category</FormLabel>
                             <Select
-                                value={field.value} 
+                                value={field.value}
                                 onValueChange={field.onChange}
                                 disabled={true}
                             >
@@ -272,7 +275,36 @@ export function ProductForm({ initialData }: ProductFormProps) {
                         <FormItem>
                             <FormLabel>Discount (%)</FormLabel>
                             <FormControl>
-                                <Input type="number" placeholder="Discount percentage" {...field} />
+                                <Input type="number" min={0} max={100} {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <Controller
+                    control={form.control}
+                    name="isRedeemable"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="mr-4">Cho phép đổi thưởng</FormLabel>
+                            <FormControl>
+                                <Switch
+                                    checked={!!field.value}
+                                    onCheckedChange={field.onChange}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="requirePoint"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Điểm cần để đổi thưởng</FormLabel>
+                            <FormControl>
+                                <Input type="number" min={0} {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -370,8 +402,8 @@ export function ProductForm({ initialData }: ProductFormProps) {
                                                     <Select
                                                         value={
                                                             watchedValue === undefined || watchedValue === "" ? "" :
-                                                            (spec.options && spec.options.includes(watchedValue)) ? watchedValue :
-                                                            "Custom"
+                                                                (spec.options && spec.options.includes(watchedValue)) ? watchedValue :
+                                                                    "Custom"
                                                         }
                                                         onValueChange={val => {
                                                             if (val === "Custom") {
@@ -407,21 +439,21 @@ export function ProductForm({ initialData }: ProductFormProps) {
                                                         watchedValue !== "" &&
                                                         (!spec.options.includes(watchedValue))
                                                     ) && (
-                                                        <Input
-                                                            className="mt-2"
-                                                            type={spec.type}
-                                                            placeholder={`Enter custom ${spec.label.toLowerCase()}`}
-                                                            value={watchedValue}
-                                                            onChange={e => {
-                                                                const value = e.target.value;
-                                                                setCustomSpecValues(prev => ({
-                                                                    ...prev,
-                                                                    [spec.name]: value
-                                                                }));
-                                                                form.setValue(`specs.${spec.name}`, value);
-                                                            }}
-                                                        />
-                                                    )}
+                                                            <Input
+                                                                className="mt-2"
+                                                                type={spec.type}
+                                                                placeholder={`Enter custom ${spec.label.toLowerCase()}`}
+                                                                value={watchedValue}
+                                                                onChange={e => {
+                                                                    const value = e.target.value;
+                                                                    setCustomSpecValues(prev => ({
+                                                                        ...prev,
+                                                                        [spec.name]: value
+                                                                    }));
+                                                                    form.setValue(`specs.${spec.name}`, value);
+                                                                }}
+                                                            />
+                                                        )}
                                                 </>
                                             ) : (
                                                 <Input

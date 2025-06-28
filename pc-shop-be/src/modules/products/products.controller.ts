@@ -1,18 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, Query, Req, UseGuards } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Public } from 'src/auth/decorator/customize-guard';
 import { ProductType } from './schemas/product.schema';
 import { validateSync } from 'class-validator';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(private readonly productsService: ProductsService) { }
 
   @Post()
   async create(@Body() createProductDto: CreateProductDto) {
-      try {
+    try {
       console.log('Received DTO:', JSON.stringify(createProductDto, null, 2)); // Log incoming data
       const product = await this.productsService.create(createProductDto);
       return {
@@ -26,6 +27,12 @@ export class ProductsController {
         error.status || HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
+  }
+
+  @Public()
+  @Get('redeemable')
+  async getRedeemableProducts() {
+    return await this.productsService.findRedeemable();
   }
 
   @Public()
@@ -87,5 +94,21 @@ export class ProductsController {
   @Get('best-sale')
   async getBestSaleProducts() {
     return await this.productsService.getBestSaleProducts();
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post(':id/redeem')
+  async redeemProduct(@Param('id') id: string, @Req() req) {
+    const userId = req.user._id;
+    return await this.productsService.redeemProduct(id, userId);
+  }
+
+  @Get('redeem/history/:userId')
+  async getRedeemHistory(
+    @Param('userId') userId: string,
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10'
+  ) {
+    return await this.productsService.getRedeemHistory(userId, Number(page), Number(limit));
   }
 }

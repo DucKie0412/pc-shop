@@ -1,16 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Product, ProductDocument } from './schemas/product.schema';
+import { Product, ProductDocument, RedeemHistorySchema } from './schemas/product.schema';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { CloudinaryService } from '../upload/cloudinary.service';
+import { User, UserDocument } from '../users/schemas/user.schema';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class ProductsService {
     constructor(
         @InjectModel(Product.name) private productModel: Model<ProductDocument>,
-        private readonly cloudinaryService: CloudinaryService
+        @InjectModel(User.name) private userModel: Model<UserDocument>,
+        @InjectModel('RedeemHistory') private redeemHistoryModel: Model<any>,
+        private readonly cloudinaryService: CloudinaryService,
+        private readonly mailerService: MailerService
     ) { }
 
     async create(createProductDto: CreateProductDto): Promise<Product> {
@@ -199,5 +204,66 @@ export class ProductsService {
             .populate('categoryId')
             .populate('manufacturerId')
             .exec();
+    }
+
+    async findRedeemable(): Promise<Product[]> {
+        return this.productModel.find({ isRedeemable: true })
+            .populate('categoryId')
+            .populate('manufacturerId')
+            .exec();
+    }
+
+    async redeemProduct(productId: string, userId: string) {
+        const product = await this.productModel.findById(productId);
+        if (!product || !product.isRedeemable) throw new NotFoundException('Product not redeemable');
+        const user = await this.userModel.findById(userId);
+        if (!user) throw new NotFoundException('User not found');
+        if ((user.points ?? 0) < (product.requirePoint ?? 0)) throw new Error('Not enough points');
+        user.points -= product.requirePoint;
+        await user.save();
+        // Save redeem history with logging and error handling
+        try {
+            const history = await this.redeemHistoryModel.create({
+                userId,
+                productId,
+                productName: product.name,
+                requirePoint: product.requirePoint,
+                redeemedAt: new Date()
+            });
+            console.log('Redeem history created:', history);
+        } catch (err) {
+            console.error('Error creating redeem history:', err);
+        }
+        // Send email
+        await this.mailerService.sendMail({
+            to: user.email,
+            subject: 'Đổi thưởng thành công tại DuckieStore',
+            template: 'redeem-success',
+            context: {
+                name: user.name || user.email,
+                productName: product.name,
+                requirePoint: product.requirePoint,
+                pointsLeft: user.points
+            }
+        });
+        return { message: 'Redeem successful', points: user.points };
+    }
+
+    async getRedeemHistory(userId: string, page = 1, limit = 10) {
+        const skip = (page - 1) * limit;
+        const [items, total] = await Promise.all([
+            this.redeemHistoryModel.find({ userId })
+                .sort({ redeemedAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            this.redeemHistoryModel.countDocuments({ userId })
+        ]);
+        return {
+            data: items,
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit)
+        };
     }
 }

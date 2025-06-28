@@ -77,10 +77,13 @@ export class Product extends Document {
     }[];
 
     @Prop({ default: 0, min: 0 })
-    soldCount: number;           // số lượng đã bán (dashboard)
-
+    soldCount: number;          
+    
     @Prop({ default: false })
-    isRedeemable: boolean;       // sản phẩm có thể đổi điểm (redeem page)
+    isRedeemable: boolean;       
+
+    @Prop({ type: Number, default: 0 })
+    requirePoint: number;
 
 }
 
@@ -103,6 +106,14 @@ ProductSchema.pre('save', function (next) {
     }
 
     next();
+});
+
+export const RedeemHistorySchema = new MongooseSchema({
+    userId: { type: MongooseSchema.Types.ObjectId, ref: 'User', required: true },
+    productId: { type: MongooseSchema.Types.ObjectId, ref: 'Product', required: true },
+    productName: { type: String, required: true },
+    requirePoint: { type: Number, required: true },
+    redeemedAt: { type: Date, default: Date.now }
 });
 
 export { ProductSchema };

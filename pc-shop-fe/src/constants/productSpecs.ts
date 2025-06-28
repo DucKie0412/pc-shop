@@ -1,12 +1,12 @@
 export const PRODUCT_TYPE_SPECS = {
   cpu: [
-    { name: 'cpuCores', label: 'Số nhân', type: 'number', options: ['2', '4', '6', '8', '12', '16', '24', '32', '64'] },
-    { name: 'cpuThreads', label: 'Số luồng', type: 'number', options: ['4', '6', '8', '12', '16', '24', '32', '64'] },
+    { name: 'cpuCores', label: 'Số nhân', type: 'text', options: ['2', '4', '6', '8', '12', '16', '24', '32', '64'] },
+    { name: 'cpuThreads', label: 'Số luồng', type: 'text', options: ['4', '6', '8', '12', '16', '24', '32', '64'] },
     { name: 'cpuSocket', label: 'Socket', type: 'text', options: ['AM4', 'AM5', 'LGA1200', 'LGA1700', 'Custom'] },
-    { name: 'cpuBaseSpeed', label: 'Tốc độ cơ bản (GHz)', type: 'number' },
-    { name: 'cpuBoostSpeed', label: 'Tốc độ tối đa (GHz)', type: 'number' },
-    { name: 'cpuCache', label: 'Bộ nhớ đệm (MB)', type: 'number' },
-    { name: 'cpuTdp', label: 'TDP (W)', type: 'number' },
+    { name: 'cpuBaseSpeed', label: 'Tốc độ cơ bản (GHz)', type: 'text' },
+    { name: 'cpuBoostSpeed', label: 'Tốc độ tối đa (GHz)', type: 'text' },
+    { name: 'cpuCache', label: 'Bộ nhớ đệm (MB)', type: 'text' },
+    { name: 'cpuTdp', label: 'TDP (W)', type: 'text' },
   ],
   vga: [
     { name: 'vgaVram', label: 'Bộ nhớ (GB)', type: 'number' },
