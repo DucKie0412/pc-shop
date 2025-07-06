@@ -70,24 +70,24 @@ export default function ProductsPage() {
         return matchesCategory && matchesSearch;
     });
     if (!session) {
-        return <div className="container mx-auto py-10">Please sign in to view products.</div>;
+        return <div className="container mx-auto py-10">Vui lòng đăng nhập để xem danh sách sản phẩm.</div>;
     }
 
     return (
         <div className="container mx-auto py-10">
             <div className="flex flex-col gap-4">
                 <div className="flex justify-between items-center">
-                    <h1 className="text-3xl font-bold">Products</h1>
+                    <h1 className="text-3xl font-bold">Sản phẩm</h1>
                     <Button asChild>
                         <Link href="/admin/products/create">
                             <Plus className="mr-2 h-4 w-4" />
-                            Add Product
+                            Thêm sản phẩm
                         </Link>
                     </Button>
                 </div>
                 <div className="flex items-center gap-4">
                     <Input
-                        placeholder="Search products by name..."
+                        placeholder="Tìm sản phẩm theo tên..."
                         className="max-w-sm"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -98,7 +98,7 @@ export default function ProductsPage() {
                         className={`px-3 py-1 rounded ${selectedCategory === "all" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
                         onClick={() => setSelectedCategory("all")}
                     >
-                        All
+                        Tất cả
                     </button>
                     {categories.map(cat => (
                         <button

@@ -30,21 +30,21 @@ import {
 } from "@/components/ui/select";
 
 const ramSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  categoryId: z.string().min(1, "Category is required"),
-  manufacturerId: z.string().min(1, "Manufacturer is required"),
-  stock: z.coerce.number().min(0, "Stock must be at least 0"),
-  originalPrice: z.coerce.number().min(0, "Price must be at least 0"),
+  name: z.string().min(1, "Tên là bắt buộc"),
+  categoryId: z.string().min(1, "Danh mục là bắt buộc"),
+  manufacturerId: z.string().min(1, "Nhà sản xuất là bắt buộc"),
+  stock: z.coerce.number().min(0, "Số lượng phải ít nhất 0"),
+  originalPrice: z.coerce.number().min(0, "Giá phải ít nhất 0"),
   discount: z.coerce.number().min(0).max(100),
-  ramCapacity: z.string().min(1, "Capacity is required"),
-  ramType: z.string().min(1, "Type is required"),
-  ramSpeed: z.string().min(1, "Speed is required"),
-  ramLatency: z.string().min(1, "Latency is required"),
-  ramKit: z.string().min(1, "Kit is required"),
+  ramCapacity: z.string().min(1, "Dung lượng là bắt buộc"),
+  ramType: z.string().min(1, "Loại là bắt buộc"),
+  ramSpeed: z.string().min(1, "Tốc độ là bắt buộc"),
+  ramLatency: z.string().min(1, "Độ trễ là bắt buộc"),
+  ramKit: z.string().min(1, "Kit là bắt buộc"),
   images: z.array(z.string()).optional(),
   imagePublicIds: z.array(z.string()).optional(),
   details: z.array(z.object({
-    title: z.string().min(1, "Title is required"),
+    title: z.string().min(1, "Tiêu đề là bắt buộc"),
     content: z.string().optional(),
     image: z.string().optional()
   })).optional()
@@ -84,7 +84,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
   useEffect(() => {
     const fetchData = async () => {
       if (!session?.user?.accessToken) {
-        toast.error("Please login to continue");
+        toast.error("Vui lòng đăng nhập để tiếp tục");
         return;
       }
       setIsLoading(true);
@@ -120,7 +120,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
-        toast.error("Failed to load categories and manufacturers");
+        toast.error("Không thể tải danh mục và nhà sản xuất");
       } finally {
         setIsLoading(false);
       }
@@ -130,7 +130,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
 
   const onSubmit = async (values: any) => {
     if (!session?.user?.accessToken) {
-      toast.error("Please login to continue");
+      toast.error("Vui lòng đăng nhập để tiếp tục");
       return;
     }
     try {
@@ -163,20 +163,20 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
       if (response.error) {
         toast.error(response.error);
       } else {
-        toast.success("RAM added successfully");
+        toast.success("RAM đã được thêm thành công");
         form.reset();
         setTimeout(() => { router.push("/admin/products"); }, 2000);
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error("Failed to add RAM");
+      toast.error("Không thể thêm RAM");
     }
   };
 
   return (
     <div className="max-w-xl mx-auto mt-8 bg-white rounded-xl shadow-lg p-8">
-      <Button type="button" onClick={onBack} variant="ghost" className="mb-4">&larr; Back</Button>
-      <h3 className="text-2xl font-bold mb-6 text-center">Add New RAM</h3>
+      <Button type="button" onClick={onBack} variant="ghost" className="mb-4">&larr; Quay lại</Button>
+      <h3 className="text-2xl font-bold mb-6 text-center">Thêm RAM Mới</h3>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -184,9 +184,9 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Tên</FormLabel>
                 <FormControl>
-                  <Input placeholder="RAM name" {...field} />
+                  <Input placeholder="Tên RAM" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -199,7 +199,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
               name="categoryId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>Danh mục</FormLabel>
                   <Select
                     value={form.watch("categoryId")}
                     onValueChange={val => form.setValue("categoryId", val)}
@@ -207,7 +207,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
+                        <SelectValue placeholder="Chọn danh mục" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -227,7 +227,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
               name="manufacturerId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Manufacturer</FormLabel>
+                  <FormLabel>Nhà sản xuất</FormLabel>
                   <Select
                     value={field.value}
                     onValueChange={field.onChange}
@@ -235,7 +235,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a manufacturer" />
+                        <SelectValue placeholder="Chọn nhà sản xuất" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -257,9 +257,9 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
               name="stock"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Stock</FormLabel>
+                  <FormLabel>Số lượng</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Stock quantity" {...field} />
+                    <Input type="number" placeholder="Số lượng" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -270,9 +270,9 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
               name="originalPrice"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Original Price</FormLabel>
+                  <FormLabel>Giá gốc</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Original price" {...field} />
+                    <Input type="number" placeholder="Giá gốc" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -283,9 +283,9 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
               name="discount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Discount (%)</FormLabel>
+                  <FormLabel>Chiết khấu (%)</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Discount percentage" {...field} />
+                    <Input type="number" placeholder="Tỷ lệ chiết khấu" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -293,14 +293,14 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
             />
           </div>
           <div className="bg-gray-50 rounded p-4 mt-4">
-            <h4 className="font-semibold mb-2 text-gray-700">RAM Specs</h4>
+            <h4 className="font-semibold mb-2 text-gray-700">Thông số RAM</h4>
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="ramCapacity"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Capacity</FormLabel>
+                    <FormLabel>Dung lượng</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -308,7 +308,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select capacity" />
+                            <SelectValue placeholder="Chọn dung lượng" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -329,7 +329,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                 name="ramKit"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ram Kit</FormLabel>
+                    <FormLabel>Kit RAM</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -337,7 +337,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select ram kit" />
+                            <SelectValue placeholder="Chọn kit RAM" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -363,7 +363,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                 name="ramType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Type</FormLabel>
+                    <FormLabel>Loại</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -371,7 +371,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select type" />
+                            <SelectValue placeholder="Chọn loại" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -389,7 +389,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                 name="ramSpeed"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Speed</FormLabel>
+                    <FormLabel>Tốc độ</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -397,7 +397,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select speed" />
+                            <SelectValue placeholder="Chọn tốc độ" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -423,7 +423,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                 name="ramLatency"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Latency</FormLabel>
+                    <FormLabel>Độ trễ</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -431,7 +431,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select latency" />
+                            <SelectValue placeholder="Chọn độ trễ" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -458,20 +458,20 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
             </div>
           </div>
           <div className="space-y-4">
-            <FormLabel>Product Images</FormLabel>
+            <FormLabel>Hình ảnh sản phẩm</FormLabel>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {images.map((image, index) => (
                 <div key={index} className="relative group">
                   <Image
                     src={image}
-                    alt={`Product image ${index + 1}`}
+                    alt={`Hình ảnh sản phẩm ${index + 1}`}
                     width={200}
                     height={200}
                     className={`rounded-lg object-cover ${index === 0 ? 'ring-2 ring-blue-500' : ''}`}
                   />
                   {index === 0 && (
                     <span className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
-                      Main
+                      Ảnh chính
                     </span>
                   )}
                   <button
@@ -484,7 +484,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                     className="absolute bottom-2 left-2 bg-white text-blue-600 border border-blue-500 px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                     disabled={index === 0}
                   >
-                    Set as Main
+                    Đặt làm ảnh chính
                   </button>
                   <button
                     type="button"
@@ -528,7 +528,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
-                    <span className="mt-2 text-sm text-gray-500">Upload Image</span>
+                    <span className="mt-2 text-sm text-gray-500">Tải lên hình ảnh</span>
                   </button>
                 )}
               </CldUploadWidget>
@@ -536,12 +536,12 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
           </div>
           {/* Product Details Section */}
           <div className="bg-gray-50 rounded p-4 mt-4">
-            <h4 className="font-semibold mb-2 text-gray-700">Product Details Sections</h4>
+            <h4 className="font-semibold mb-2 text-gray-700">Chi tiết sản phẩm</h4>
             {details.map((detail, idx) => (
               <div key={idx} className="mb-4 border rounded p-3 bg-white">
                 <input
                   className="mb-2 w-full border rounded px-2 py-1"
-                  placeholder="Section Title"
+                  placeholder="Tiêu đề"
                   value={detail.title}
                   onChange={e => {
                     const newDetails = [...details];
@@ -551,7 +551,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                 />
                 <textarea
                   className="mb-2 w-full border rounded px-2 py-1"
-                  placeholder="Section Content"
+                  placeholder="Nội dung"
                   value={detail.content}
                   onChange={e => {
                     const newDetails = [...details];
@@ -561,7 +561,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                 />
                 {/* Image selection from uploaded images as thumbnails */}
                 <div className="mb-2">
-                  <div className="font-medium mb-1">Select Image</div>
+                  <div className="font-medium mb-1">Chọn hình ảnh</div>
                   <div className="flex gap-2 flex-wrap">
                     <div
                       className={`border rounded cursor-pointer p-1 ${!detail.image ? 'ring-2 ring-blue-500' : ''}`}
@@ -571,7 +571,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                         setDetails(newDetails);
                       }}
                     >
-                      <div className="w-24 h-16 flex items-center justify-center text-xs text-gray-400">No image</div>
+                      <div className="w-24 h-16 flex items-center justify-center text-xs text-gray-400">Không có hình ảnh</div>
                     </div>
                     {images.map((img, i) => (
                       <div
@@ -593,7 +593,7 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
                   className="text-red-500 text-sm"
                   onClick={() => setDetails(details.filter((_, i) => i !== idx))}
                 >
-                  Remove Section
+                  Xóa
                 </button>
               </div>
             ))}
@@ -602,10 +602,10 @@ export default function AddRAMForm({ onBack }: { onBack: () => void }) {
               className="bg-blue-500 text-white px-3 py-1 rounded"
               onClick={() => setDetails([...details, { title: "", content: "", image: "" }])}
             >
-              Add Section
+              Thêm
             </button>
           </div>
-          <Button type="submit" className="w-full">Add RAM</Button>
+          <Button type="submit" className="w-full">Thêm RAM</Button>
         </form>
       </Form>
     </div>

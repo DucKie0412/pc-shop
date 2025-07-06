@@ -65,7 +65,7 @@ export const PRODUCT_TYPE_SPECS = {
     { name: 'caseFans', label: 'Quạt tản nhiệt', type: 'number' },
   ],
   monitor: [
-    { name: 'monitorSize', label: 'Kích thước màn hình (inch)', type: 'number' },
+    { name: 'monitorSize', label: 'Kích thước màn hình (inch)', type: 'text' },
     { name: 'monitorResolution', label: 'Độ phân giải', type: 'text', options: ['1920x1080', '2560x1440', '3840x2160', '5120x2880', 'Custom'] },
     { name: 'monitorRefreshRate', label: 'Tần số quét (Hz)', type: 'number', options: ['60', '75', '120', '144', '165', '240', 'Custom'] },
     { name: 'monitorPanelType', label: 'Loại tấm nền', type: 'text', options: ['IPS', 'TN', 'VA', 'OLED', 'Custom'] },

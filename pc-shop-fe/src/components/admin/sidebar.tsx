@@ -17,37 +17,37 @@ import {
 
 const menuItems = [
     {
-        title: "Dashboard",
+        title: "Tổng quan",
         href: "/admin/dashboard",
         icon: Home,
     },
     {
-        title: "Users",
+        title: "Người dùng",
         href: "/admin/users",
         icon: Users,
     },
     {
-        title: "Products",
+        title: "Sản phẩm",
         href: "/admin/products",
         icon: ShoppingBag,
     },
     {
-        title: "Categories",
+        title: "Danh mục",
         href: "/admin/categories",
         icon: Tag,
     },
     {
-        title: "Manufacturers",
+        title: "Nhà sản xuất",
         href: "/admin/manufacturers",
         icon: Building2,
     },
     {
-        title: "Orders",
+        title: "Đơn hàng",
         href: "/admin/orders",
         icon: Package,
     },
     {
-        title: "Refund",
+        title: "Hoàn tiền",
         href: "/admin/refund",
         icon: SquareArrowLeft
     },
@@ -57,7 +57,7 @@ const menuItems = [
         icon: Settings,
     },
     {   
-        title: "Back to Home",
+        title: "Quay về trang chính",
         href: "/",
         icon: ArrowLeftCircle,
     },

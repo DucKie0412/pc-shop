@@ -29,21 +29,21 @@ import {
 } from "@/components/ui/select";
 
 const monitorSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  categoryId: z.string().min(1, "Category is required"),
-  manufacturerId: z.string().min(1, "Manufacturer is required"),
-  stock: z.coerce.number().min(0, "Stock must be at least 0"),
-  originalPrice: z.coerce.number().min(0, "Price must be at least 0"),
+  name: z.string().min(1, "Tên là bắt buộc"),
+  categoryId: z.string().min(1, "Danh mục là bắt buộc"),
+  manufacturerId: z.string().min(1, "Nhà sản xuất là bắt buộc"),
+  stock: z.coerce.number().min(0, "Số lượng phải ít nhất 0"),
+  originalPrice: z.coerce.number().min(0, "Giá phải ít nhất 0"),
   discount: z.coerce.number().min(0).max(100),
-  monitorSize: z.string().min(1, "Size is required"),
-  monitorResolution: z.string().min(1, "Resolution is required"),
-  monitorRefreshRate: z.string().min(1, "Refresh rate is required"),
-  monitorPanelType: z.string().min(1, "Panel type is required"),
-  monitorResponseTime: z.string().min(1, "Response time is required"),
+  monitorSize: z.string().min(1, "Kích thước là bắt buộc"),
+  monitorResolution: z.string().min(1, "Độ phân giải là bắt buộc"),
+  monitorRefreshRate: z.string().min(1, "Tốc độ quét là bắt buộc"),
+  monitorPanelType: z.string().min(1, "Loại màn hình là bắt buộc"),
+  monitorResponseTime: z.string().min(1, "Thời gian phản hồi là bắt buộc"),
   images: z.array(z.string()).optional(),
   imagePublicIds: z.array(z.string()).optional(),
   details: z.array(z.object({
-    title: z.string().min(1, "Title is required"),
+    title: z.string().min(1, "Tiêu đề là bắt buộc"),
     content: z.string().optional(),
     image: z.string().optional()
   })).optional()
@@ -83,7 +83,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
   useEffect(() => {
     const fetchData = async () => {
       if (!session?.user?.accessToken) {
-        toast.error("Please login to continue");
+        toast.error("Vui lòng đăng nhập để tiếp tục");
         return;
       }
       setIsLoading(true);
@@ -129,7 +129,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
 
   const onSubmit = async (values: any) => {
     if (!session?.user?.accessToken) {
-      toast.error("Please login to continue");
+      toast.error("Vui lòng đăng nhập để tiếp tục");
       return;
     }
     try {
@@ -150,8 +150,6 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
         details
       };
 
-      console.log('Submitting monitor with payload:', payload);
-
       const response = await sendRequest<IBackendRes<any>>({
         url: "/api/products",
         method: "POST",
@@ -161,8 +159,6 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
           'Content-Type': 'application/json'
         },
       });
-
-      console.log('Backend response:', response);
 
       if (response.error) {
         console.error('Backend error:', response.error);
@@ -189,8 +185,8 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="max-w-xl mx-auto mt-8 bg-white rounded-xl shadow-lg p-8">
-      <Button type="button" onClick={onBack} variant="ghost" className="mb-4">&larr; Back</Button>
-      <h3 className="text-2xl font-bold mb-6 text-center">Add New Monitor</h3>
+      <Button type="button" onClick={onBack} variant="ghost" className="mb-4">&larr; Quay lại</Button>
+      <h3 className="text-2xl font-bold mb-6 text-center">Thêm màn hình mới</h3>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -198,9 +194,9 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Tên</FormLabel>
                 <FormControl>
-                  <Input placeholder="Monitor name" {...field} />
+                  <Input placeholder="Tên màn hình" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -212,7 +208,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
               name="categoryId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>Danh mục</FormLabel>
                   <Select
                     value={form.watch("categoryId")}
                     onValueChange={val => form.setValue("categoryId", val)}
@@ -220,7 +216,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
+                        <SelectValue placeholder="Chọn danh mục" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -240,7 +236,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
               name="manufacturerId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Manufacturer</FormLabel>
+                  <FormLabel>Nhà sản xuất</FormLabel>
                   <Select
                     value={field.value}
                     onValueChange={field.onChange}
@@ -248,7 +244,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a manufacturer" />
+                        <SelectValue placeholder="Chọn nhà sản xuất" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -270,9 +266,9 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
               name="stock"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Stock</FormLabel>
+                  <FormLabel>Số lượng</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Stock quantity" {...field} />
+                    <Input type="number" placeholder="Số lượng" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -283,9 +279,9 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
               name="originalPrice"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Original Price</FormLabel>
+                  <FormLabel>Giá gốc</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Original price" {...field} />
+                    <Input type="number" placeholder="Giá gốc" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -296,9 +292,9 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
               name="discount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Discount (%)</FormLabel>
+                  <FormLabel>Chiết khấu (%)</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Discount percentage" {...field} />
+                    <Input type="number" placeholder="Chiết khấu" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -306,14 +302,14 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
             />
           </div>
           <div className="bg-gray-50 rounded p-4 mt-4">
-            <h4 className="font-semibold mb-2 text-gray-700">Monitor Specs</h4>
+            <h4 className="font-semibold mb-2 text-gray-700">Thông số màn hình</h4>
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="monitorSize"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Size</FormLabel>
+                    <FormLabel>Kích thước</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value.startsWith("custom_") ? "custom" : field.value}
@@ -327,7 +323,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select size" />
+                            <SelectValue placeholder="Chọn kích thước" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -358,7 +354,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
                 name="monitorResolution"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Resolution</FormLabel>
+                    <FormLabel>Độ phân giải</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value.startsWith("custom_") ? "custom" : field.value}
@@ -372,7 +368,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select resolution" />
+                            <SelectValue placeholder="Chọn độ phân giải" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -421,7 +417,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
                 name="monitorRefreshRate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Refresh Rate</FormLabel>
+                    <FormLabel>Tần số quét</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value.startsWith("custom_") ? "custom" : field.value}
@@ -435,7 +431,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select refresh rate" />
+                            <SelectValue placeholder="Chọn tần số quét" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -466,7 +462,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
                 name="monitorPanelType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Panel Type</FormLabel>
+                    <FormLabel>Loại tấm nền</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value.startsWith("custom_") ? "custom" : field.value}
@@ -480,7 +476,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select panel type" />
+                            <SelectValue placeholder="Chọn tấm nền" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -509,7 +505,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
                 name="monitorResponseTime"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Response Time</FormLabel>
+                    <FormLabel>Thời gian phản hồi</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value.startsWith("custom_") ? "custom" : field.value}
@@ -523,7 +519,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select response time" />
+                            <SelectValue placeholder="Chọn thời gian phản hồi" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -551,7 +547,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
             </div>
           </div>
           <div className="space-y-4">
-            <FormLabel>Product Images</FormLabel>
+            <FormLabel>Hình ảnh sản phẩm</FormLabel>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {images.map((image, index) => (
                 <div key={index} className="relative group">
@@ -564,7 +560,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
                   />
                   {index === 0 && (
                     <span className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
-                      Main
+                      Chính
                     </span>
                   )}
                   <button
@@ -577,7 +573,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
                     className="absolute bottom-2 left-2 bg-white text-blue-600 border border-blue-500 px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                     disabled={index === 0}
                   >
-                    Set as Main
+                    Đặt làm ảnh chính
                   </button>
                   <button
                     type="button"
@@ -621,7 +617,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
-                    <span className="mt-2 text-sm text-gray-500">Upload Image</span>
+                    <span className="mt-2 text-sm text-gray-500">Tải ảnh lên</span>
                   </button>
                 )}
               </CldUploadWidget>
@@ -629,12 +625,12 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
           </div>
           {/* Product Details Section */}
           <div className="bg-gray-50 rounded p-4 mt-4">
-            <h4 className="font-semibold mb-2 text-gray-700">Product Details Sections</h4>
+            <h4 className="font-semibold mb-2 text-gray-700">Mô tả sản phẩm</h4>
             {details.map((detail, idx) => (
               <div key={idx} className="mb-4 border rounded p-3 bg-white">
                 <input
                   className="mb-2 w-full border rounded px-2 py-1"
-                  placeholder="Section Title"
+                  placeholder="Tiêu đề"
                   value={detail.title}
                   onChange={e => {
                     const newDetails = [...details];
@@ -644,7 +640,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
                 />
                 <textarea
                   className="mb-2 w-full border rounded px-2 py-1"
-                  placeholder="Section Content"
+                  placeholder="Nội dung"
                   value={detail.content}
                   onChange={e => {
                     const newDetails = [...details];
@@ -686,7 +682,7 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
                   className="text-red-500 text-sm"
                   onClick={() => setDetails(details.filter((_, i) => i !== idx))}
                 >
-                  Remove Section
+                  Xóa
                 </button>
               </div>
             ))}
@@ -695,10 +691,10 @@ export default function AddMonitorForm({ onBack }: { onBack: () => void }) {
               className="bg-blue-500 text-white px-3 py-1 rounded"
               onClick={() => setDetails([...details, { title: "", content: "", image: "" }])}
             >
-              Add Section
+              Thêm
             </button>
           </div>
-          <Button type="submit" className="w-full">Add Monitor</Button>
+          <Button type="submit" className="w-full">Thêm màn hình</Button>
         </form>
       </Form>
     </div>

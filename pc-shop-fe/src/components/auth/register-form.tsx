@@ -40,16 +40,16 @@ const RegisterForm = () => {
 
 
         if(res?.statusCode === 400){
-            toast.warning("Email already registered!", {autoClose: 4000})
+            toast.warning("Email đã được đăng ký!", {autoClose: 4000})
         }
         else if(res?.statusCode === 201){
-            toast.success("User registered successfully!", {autoClose: 4000})
+            toast.success("Đăng ký tài khoản thành công!", {autoClose: 4000})
             setTimeout(() => {
                 router.push(`/auth/active/${res?.data?._id}`);
             }, 2800);
         }
         else{
-            toast.error("Failed to register! Internal server error")
+            toast.error("Lỗi hệ thống! Vui lòng thử lại sau!")
         }
     };
 
@@ -66,7 +66,7 @@ const RegisterForm = () => {
                             <FormField
                                 control={form.control}
                                 name="email"
-                                rules={{ required: "Please input your email!" }}
+                                rules={{ required: "Vui lòng nhập email!" }}
                                 render={({ field }) => (
                                     <FormItem>
                                         <Label>Email</Label>
@@ -80,7 +80,7 @@ const RegisterForm = () => {
                             <FormField
                                 control={form.control}
                                 name="password"
-                                rules={{ required: "Please input your password!" }}
+                                rules={{ required: "Vui lòng nhập mật khẩu!" }}
                                 render={({ field }) => (
                                     <FormItem>
                                         <Label>Mật khẩu</Label>
@@ -94,7 +94,7 @@ const RegisterForm = () => {
                             <FormField
                                 control={form.control}
                                 name="name"
-                                rules={{ required: "Please input your name!" }}
+                                rules={{ required: "Vui lòng nhập tên!" }}
                                 render={({ field }) => (
                                     <FormItem>
                                         <Label>Tên</Label>
@@ -108,7 +108,7 @@ const RegisterForm = () => {
                             <FormField
                                 control={form.control}
                                 name="phone"
-                                rules={{ required: "Please input your phone number!" }}
+                                rules={{ required: "Vui lòng nhập số điện thoại!" }}
                                 render={({ field }) => (
                                     <FormItem>
                                         <Label>Số điện thoại</Label>
@@ -122,7 +122,7 @@ const RegisterForm = () => {
                             <FormField
                                 control={form.control}
                                 name="address"
-                                rules={{ required: "Please input your address!" }}
+                                rules={{ required: "Vui lòng nhập địa chỉ!" }}
                                 render={({ field }) => (
                                     <FormItem>
                                         <Label>Địa chỉ</Label>

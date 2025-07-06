@@ -34,16 +34,16 @@ const ActiveAccount = (props: any) => {
         })
         
         if(res?.statusCode === 400){
-            toast.warning("Wrong code or code has expired!", {autoClose: 3000})
+            toast.warning("Mã code không hợp lệ hoặc đã hết hạn!", {autoClose: 3000})
         }
         else if(res?.statusCode === 201){
-            toast.success("Active successfully!", {autoClose: 4000})
+            toast.success("Kích hoạt tài khoản thành công!", {autoClose: 4000})
             setTimeout(() => {
                 router.push(`/auth/login`);
             }, 2800);
         }
         else{
-            toast.error("Failed to active! Internal server error")
+            toast.error("Lỗi hệ thống! Vui lòng thử lại sau!")
         }
 
     };
@@ -53,8 +53,8 @@ const ActiveAccount = (props: any) => {
         <div className="flex justify-center mt-10">
             <Card className="w-full max-w-md p-6 shadow-lg">
                 <CardHeader>
-                    <CardTitle className="text-center">Active your account</CardTitle>
-                    <p>Just a step ahead</p>
+                    <CardTitle className="text-center">Kích hoạt tài khoản</CardTitle>
+                    <p>Chỉ còn một bước nữa</p>
                 </CardHeader>
                 <CardContent>
                     <Form {...form}>
@@ -87,7 +87,7 @@ const ActiveAccount = (props: any) => {
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit" className="w-full"><CheckCircle />Verify</Button>
+                            <Button type="submit" className="w-full"><CheckCircle />Xác nhận</Button>
                         </form>
                     </Form>
                 </CardContent>

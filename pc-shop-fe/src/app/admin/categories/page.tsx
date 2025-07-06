@@ -51,22 +51,22 @@ export default function CategoriesPage() {
     );
 
     if (!session) {
-        return <div className="container mx-auto py-10">Please sign in to view categories.</div>;
+        return <div className="container mx-auto py-10">Vui lòng đăng nhập để xem danh mục.</div>;
     }
 
     return (
         <div className="container mx-auto py-10">
             <div className="flex flex-col gap-4">
                 <div className="flex justify-between items-center">
-                    <h1 className="text-3xl font-bold">Categories</h1>
+                    <h1 className="text-3xl font-bold">Danh mục</h1>
                     <Button>
                         <Plus className="mr-2 h-4 w-4" />
-                        <Link href="/admin/categories/create">Add Category</Link>
+                        <Link href="/admin/categories/create">Thêm danh mục</Link>
                     </Button>
                 </div>
                 <div className="flex items-center gap-4">
                     <Input
-                        placeholder="Search categories by name..."
+                        placeholder="Tìm kiếm danh mục theo tên..."
                         className="max-w-sm"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -74,7 +74,7 @@ export default function CategoriesPage() {
                 </div>
                 <div className="rounded-md border">
                     {isLoading ? (
-                        <div className="p-4 text-center">Loading...</div>
+                        <div className="p-4 text-center">Đang tải...</div>
                     ) : (
                         <DataTable columns={columns(fetchCategories)} data={filteredCategories} />
                     )}

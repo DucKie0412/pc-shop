@@ -52,7 +52,6 @@ function ClientFooter() {
             <ul className="space-y-1">
               <li><a href="#" className="hover:underline">Giới thiệu công ty</a></li>
               <li><a href="#" className="hover:underline">Thông tin liên hệ</a></li>
-              <li><a href="#" className="hover:underline">Tin tức</a></li>
             </ul>
           </div>
           {/* Column 2 */}
@@ -82,24 +81,13 @@ function ClientFooter() {
           {/* Social icons */}
           <div className="flex space-x-4 mb-4 md:mb-0">
             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
-              <img src="/images/facebook.svg" alt="Facebook" className="h-8 w-8" />
-            </a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-              <img src="/images/instagram.svg" alt="Instagram" className="h-8 w-8" />
-            </a>
-            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer">
-              <img src="/images/youtube.svg" alt="YouTube" className="h-8 w-8" />
+              <img src="/images/facebook.webp" alt="Facebook" className="h-8 w-8" />
             </a>
           </div>
           {/* Payment icons */}
           <div className="flex flex-wrap items-center gap-3">
-            <img src="/images/zalopay.png" alt="ZaloPay" className="h-7" />
-            <img src="/images/alepay.png" alt="AlePay" className="h-7" />
-            <img src="/images/mastercard.png" alt="Mastercard" className="h-7" />
-            <img src="/images/momo.png" alt="Momo" className="h-7" />
-            <img src="/images/visa.png" alt="Visa" className="h-7" />
-            <img src="/images/vnpay.png" alt="VNPAY" className="h-7" />
-            <img src="/images/atm.png" alt="ATM" className="h-7" />
+            <img src="/images/vnpay.webp" alt="VNPAY" className="h-7" />
+            VNPay
           </div>
         </div>
 

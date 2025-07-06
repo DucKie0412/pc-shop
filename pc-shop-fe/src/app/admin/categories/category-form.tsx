@@ -87,9 +87,9 @@ export function CategoryForm({ initialData }: CategoryFormProps) {
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Name</FormLabel>
+                            <FormLabel>Tên danh mục</FormLabel>
                             <FormControl>
-                                <Input placeholder="Category name" {...field} />
+                                <Input placeholder="Tên danh mục" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -100,15 +100,15 @@ export function CategoryForm({ initialData }: CategoryFormProps) {
                     name="description"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Description</FormLabel>
+                            <FormLabel>Mô tả</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="Category description" {...field} />
+                                <Textarea placeholder="Mô tả danh mục" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <Button type="submit">{initialData ? "Save changes" : "Create category"}</Button>
+                <Button type="submit">{initialData ? "Lưu thay đổi" : "Tạo danh mục"}</Button>
             </form>
         </Form>
     );

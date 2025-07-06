@@ -1,13 +1,10 @@
 "use client";
 
 import { DataTable } from "@/components/ui/data-table";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { columns } from "./columns";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Plus } from "lucide-react";
 import { IUser } from "@/types/next-auth";
 import { sendRequest } from "@/utils/api";
 
@@ -41,22 +38,23 @@ export default function UsersPage() {
     }, [session]);
 
     const filteredUsers = users.filter(user =>
-        user?.name?.toLowerCase().includes(searchQuery.toLowerCase())
+        user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     if (!session) {
-        return <div className="container mx-auto py-10">Please sign in to view users.</div>;
+        return <div className="container mx-auto py-10">Vui lòng đăng nhập để xem danh sách người dùng.</div>;
     }
 
     return (
         <div className="container mx-auto py-10">
             <div className="flex flex-col gap-4">
                 <div className="flex justify-between items-center">
-                    <h1 className="text-3xl font-bold">Users</h1>
+                    <h1 className="text-3xl font-bold">Người dùng</h1>
                 </div>
                 <div className="flex items-center gap-4">
                     <Input
-                        placeholder="Search user by name..."
+                        placeholder="Nhập tên hoặc email cần tìm kiếm..."
                         className="max-w-sm"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -64,7 +62,7 @@ export default function UsersPage() {
                 </div>
                 <div className="rounded-md border">
                     {isLoading ? (
-                        <div className="p-4 text-center">Loading...</div>
+                        <div className="p-4 text-center">Đang tải dữ liệu...</div>
                     ) : (
                         <DataTable columns={columns} data={filteredUsers} />
                     )}

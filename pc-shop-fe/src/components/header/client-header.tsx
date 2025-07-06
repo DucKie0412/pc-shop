@@ -357,31 +357,12 @@ function Header() {
                                                     </ul>
                                                 </div>
                                                 <div className="space-y-4">
-                                                    <h3 className="font-bold text-[#0088D1] border-b pb-2">FAN</h3>
-                                                    <ul className="space-y-2 text-gray-700">
-                                                        {[
-                                                            "Leopard",
-                                                            "Phanteks",
-                                                            "NZXT"
-                                                        ].map(item => (
-                                                            <li
-                                                                key={item}
-                                                                className="hover:text-[#0088D1] cursor-pointer transition-colors"
-                                                                onClick={() => router.push(`/search?query=${encodeURIComponent(item)}`)}
-                                                            >
-                                                                {item}
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                                <div className="space-y-4">
                                                     <h3 className="font-bold text-[#0088D1] border-b pb-2">PHU KIEN MÁY TÍNH</h3>
                                                     <ul className="space-y-2 text-gray-700">
                                                         {[
-                                                            "Headphone",
-                                                            "Mouse",
-                                                            "Keyboard",
-                                                            "Mousepad",
+                                                            "Tai nghe",
+                                                            "Chuột",
+                                                            "Bàn phím",
                                                             "Webcam",
                                                             "Microphone"
                                                         ].map(item => (
@@ -407,7 +388,6 @@ function Header() {
                                 <Link href="/category/ssd" className="hover:text-gray-200 transition-colors">SSD</Link>
                                 <Link href="/category/psu" className="hover:text-gray-200 transition-colors">PSU</Link>
                                 <Link href="/category/case" className="hover:text-gray-200 transition-colors">CASE</Link>
-                                <Link href="/category/fan" className="hover:text-gray-200 transition-colors">FAN</Link>
                                 <Link href="/category/other" className="hover:text-gray-200 transition-colors">PHU KIEN MÁY TÍNH</Link>
                             </div>
                         </div>

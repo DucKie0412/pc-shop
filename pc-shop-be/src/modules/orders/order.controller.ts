@@ -56,6 +56,23 @@ export class OrderController {
     }
 
     @Public()
+    @Get('lookup')
+    async lookupOrder(
+        @Query('email') email: string,
+        @Query('phone') phone: string
+    ) {
+        try {
+            if (!email || !phone) throw new Error('Thiếu thông tin email hoặc số điện thoại');
+            return await this.orderService.findByEmailAndPhone(email, phone);
+        } catch (error) {
+            throw new HttpException(
+                { success: false, message: 'Không thể tra cứu đơn hàng', error: error.message },
+                HttpStatus.BAD_REQUEST
+            );
+        }
+    }
+
+    @Public()
     @Get(':id')
     async getOrderById(@Param('id') id: string) {
         try {
@@ -77,22 +94,6 @@ export class OrderController {
         return { statusCode: 200, message: 'Order deleted', data: deletedOrder };
     }
 
-    @Public()
-    @Get('lookup')
-    async lookupOrder(
-        @Query('email') email: string,
-        @Query('phone') phone: string
-    ) {
-        try {
-            if (!email || !phone) throw new Error('Thiếu thông tin email hoặc số điện thoại');
-            return await this.orderService.findByEmailAndPhone(email, phone);
-        } catch (error) {
-            throw new HttpException(
-                { success: false, message: 'Không thể tra cứu đơn hàng', error: error.message },
-                HttpStatus.BAD_REQUEST
-            );
-        }
-    }
 
     @Patch(':id')
     async updateOrder(

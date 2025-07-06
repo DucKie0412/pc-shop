@@ -33,23 +33,23 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 const cpuSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  categoryId: z.string().min(1, "Category is required"),  
-  manufacturerId: z.string().min(1, "Manufacturer is required"),
-  stock: z.coerce.number().min(0, "Stock must be at least 0"),
-  originalPrice: z.coerce.number().min(0, "Price must be at least 0"),
+  name: z.string().min(1, "Tên là bắt buộc"),
+  categoryId: z.string().min(1, "Danh mục là bắt buộc"),  
+  manufacturerId: z.string().min(1, "Nhà sản xuất là bắt buộc"),
+  stock: z.coerce.number().min(0, "Số lượng phải ít nhất 0"),
+  originalPrice: z.coerce.number().min(0, "Giá phải ít nhất 0"),
   discount: z.coerce.number().min(0).max(100),
-  cpuSocket: z.string().min(1, "Socket is required"),
-  cpuCores: z.string().min(1, "Cores is required"),
-  cpuThreads: z.string().min(1, "Threads is required"),
-  cpuBaseSpeed: z.string().min(1, "Base speed is required"),
-  cpuBoostSpeed: z.string().min(1, "Boost speed is required"),
-  cpuCache: z.string().min(1, "Cache is required"),
-  cpuTdp: z.string().min(1, "TDP is required"),
+  cpuSocket: z.string().min(1, "Socket là bắt buộc"),
+  cpuCores: z.string().min(1, "Số nhân là bắt buộc"),
+  cpuThreads: z.string().min(1, "Số luồng là bắt buộc"),
+  cpuBaseSpeed: z.string().min(1, "Xung nhịp cơ bản là bắt buộc"),
+  cpuBoostSpeed: z.string().min(1, "Xung nhịp boost là bắt buộc"),
+  cpuCache: z.string().min(1, "Bộ nhớ đệm là bắt buộc"),
+  cpuTdp: z.string().min(1, "TDP là bắt buộc"),
   images: z.array(z.string()).optional(),
   imagePublicIds: z.array(z.string()).optional(),
   details: z.array(z.object({
-    title: z.string().min(1, "Title is required"),
+    title: z.string().min(1, "Tiêu đề là bắt buộc"),
     content: z.string().optional(),
     image: z.string().optional()
   })).optional()
@@ -74,7 +74,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
   useEffect(() => {
     const fetchData = async () => {
       if (!session?.user?.accessToken) {
-        toast.error("Please login to continue");
+        toast.error("Vui lòng đăng nhập để tiếp tục");
         return;
       }
       setIsLoading(true);
@@ -142,7 +142,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
 
   const onSubmit = async (values: any) => {
     if (!session?.user?.accessToken) {
-      toast.error("Please login to continue");
+      toast.error("Vui lòng đăng nhập để tiếp tục");
       return;
     }
     try {
@@ -179,7 +179,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
       if (response.error) {
         toast.error(response.error);
       } else {
-        toast.success("CPU added successfully");
+        toast.success("Thêm CPU thành công");
         form.reset();
         setImages([]);
         setImagePublicIds([]);
@@ -188,7 +188,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error("Failed to add CPU");
+      toast.error("Lỗi khi thêm CPU");
     }
   };
 
@@ -200,9 +200,9 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
       : [];
 
   return (
-    <div className="max-w-xl mx-auto mt-8 bg-white rounded-xl shadow-lg p-8">
-      <Button type="button" onClick={onBack} variant="ghost" className="mb-4">&larr; Back</Button>
-      <h3 className="text-2xl font-bold mb-6 text-center">Add New CPU</h3>
+    <div className="max-w-xxl mx-auto mt-8 bg-white rounded-xl shadow-lg p-8">
+      <Button type="button" onClick={onBack} variant="ghost" className="mb-4">&larr; Quay lại</Button>
+      <h3 className="text-2xl font-bold mb-6 text-center">Thêm CPU mới</h3>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -210,9 +210,9 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Tên</FormLabel>
                 <FormControl>
-                  <Input placeholder="CPU name" {...field} />
+                  <Input placeholder="Tên CPU" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -225,7 +225,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
               name="categoryId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>Danh mục</FormLabel>
                   <Select
                     value={form.watch("categoryId")}
                     onValueChange={val => form.setValue("categoryId", val)}
@@ -233,7 +233,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
+                        <SelectValue placeholder="Chọn danh mục" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -253,7 +253,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
               name="manufacturerId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Manufacturer</FormLabel>
+                  <FormLabel>Nhà sản xuất</FormLabel>
                   <FormControl>
                     <Select
                       value={field.value}
@@ -261,7 +261,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                       disabled={isLoading}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a manufacturer" />
+                        <SelectValue placeholder="Chọn nhà sản xuất" />
                       </SelectTrigger>
                       <SelectContent>
                         {manufacturers.map((manufacturer) => (
@@ -283,9 +283,9 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
               name="stock"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Stock</FormLabel>
+                  <FormLabel>Tồn kho</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Stock quantity" {...field} />
+                    <Input type="number" placeholder="Số lượng" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -296,9 +296,9 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
               name="originalPrice"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Original Price</FormLabel>
+                  <FormLabel>Giá gốc</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Original price" {...field} />
+                    <Input type="number" placeholder="Giá gốc" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -309,9 +309,9 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
               name="discount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Discount (%)</FormLabel>
+                  <FormLabel>Chiết khấu (%)</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Discount percentage" {...field} />
+                    <Input type="number" placeholder="Chiết khấu" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -319,7 +319,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
             />
           </div>
           <div className="bg-gray-50 rounded p-4 mt-4">
-            <h4 className="font-semibold mb-2 text-gray-700">CPU Specs</h4>
+            <h4 className="font-semibold mb-2 text-gray-700">Thông số CPU</h4>
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -334,7 +334,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select socket" />
+                            <SelectValue placeholder="Chọn socket" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -355,7 +355,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                 name="cpuCores"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Cores</FormLabel>
+                    <FormLabel>Lõi</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -363,18 +363,18 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select cores" />
+                            <SelectValue placeholder="Chọn số nhân" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="2">2 Cores</SelectItem>
-                          <SelectItem value="4">4 Cores</SelectItem>
-                          <SelectItem value="6">6 Cores</SelectItem>
-                          <SelectItem value="8">8 Cores</SelectItem>
-                          <SelectItem value="10">10 Cores</SelectItem>
-                          <SelectItem value="12">12 Cores</SelectItem>
-                          <SelectItem value="16">16 Cores</SelectItem>
-                          <SelectItem value="24">24 Cores</SelectItem>
+                          <SelectItem value="2">2</SelectItem>
+                          <SelectItem value="4">4</SelectItem>
+                          <SelectItem value="6">6</SelectItem>
+                          <SelectItem value="8">8</SelectItem>
+                          <SelectItem value="10">10</SelectItem>
+                          <SelectItem value="12">12</SelectItem>
+                          <SelectItem value="16">16</SelectItem>
+                          <SelectItem value="24">24</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -387,7 +387,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                 name="cpuThreads"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Threads</FormLabel>
+                    <FormLabel>Luồng</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -395,18 +395,18 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select threads" />
+                            <SelectValue placeholder="Chọn số luồng" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="4">4 Threads</SelectItem>
-                          <SelectItem value="8">8 Threads</SelectItem>
-                          <SelectItem value="12">12 Threads</SelectItem>
-                          <SelectItem value="16">16 Threads</SelectItem>
-                          <SelectItem value="20">20 Threads</SelectItem>
-                          <SelectItem value="24">24 Threads</SelectItem>
-                          <SelectItem value="32">32 Threads</SelectItem>
-                          <SelectItem value="48">48 Threads</SelectItem>
+                          <SelectItem value="4">4</SelectItem>
+                          <SelectItem value="8">8</SelectItem>
+                          <SelectItem value="12">12</SelectItem>
+                          <SelectItem value="16">16</SelectItem>
+                          <SelectItem value="20">20</SelectItem>
+                          <SelectItem value="24">24</SelectItem>
+                          <SelectItem value="32">32</SelectItem>
+                          <SelectItem value="48">48</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -419,7 +419,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                 name="cpuBaseSpeed"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Base Speed</FormLabel>
+                    <FormLabel>Xung nhịp cơ bản</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value.startsWith("custom_") ? "custom" : field.value}
@@ -433,7 +433,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select base speed" />
+                            <SelectValue placeholder="Chọn xung nhịp cơ bản" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -451,7 +451,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                     {field.value.startsWith("custom_") && (
                       <Input
                         className="mt-2"
-                        placeholder="Enter custom base speed (e.g., 3.8 GHz)"
+                        placeholder="Nhập xung nhịp cơ bản tùy chỉnh (vd: 3.8 GHz)"
                         value={field.value.replace("custom_", "")}
                         onChange={e => field.onChange("custom_" + e.target.value)}
                       />
@@ -465,7 +465,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                 name="cpuBoostSpeed"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Boost Speed</FormLabel>
+                    <FormLabel>Xung nhịp boost</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value.startsWith("custom_") ? "custom" : field.value}
@@ -479,7 +479,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select boost speed" />
+                            <SelectValue placeholder="Chọn xung nhịp boost" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -497,7 +497,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                     {field.value.startsWith("custom_") && (
                       <Input
                         className="mt-2"
-                        placeholder="Enter custom boost speed (e.g., 5.2 GHz)"
+                        placeholder="Nhập xung nhịp boost tùy chỉnh (vd: 5.2 GHz)"
                         value={field.value.replace("custom_", "")}
                         onChange={e => field.onChange("custom_" + e.target.value)}
                       />
@@ -511,7 +511,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                 name="cpuCache"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Cache</FormLabel>
+                    <FormLabel>Bộ nhớ đệm</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value.startsWith("custom_") ? "custom" : field.value}
@@ -525,7 +525,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select cache" />
+                            <SelectValue placeholder="Chọn bộ nhớ đệm" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -544,7 +544,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                     {field.value.startsWith("custom_") && (
                       <Input
                         className="mt-2"
-                        placeholder="Enter custom cache (e.g., 18 MB)"
+                        placeholder="Nhập bộ nhớ đệm tùy chỉnh (vd: 18 MB)"
                         value={field.value.replace("custom_", "")}
                         onChange={e => field.onChange("custom_" + e.target.value)}
                       />
@@ -558,7 +558,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                 name="cpuTdp"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>TDP</FormLabel>
+                    <FormLabel>Mức tiêu thụ điện</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value.startsWith("custom_") ? "custom" : field.value}
@@ -572,7 +572,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select TDP" />
+                            <SelectValue placeholder="Chọn TDP" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -591,7 +591,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                     {field.value.startsWith("custom_") && (
                       <Input
                         className="mt-2"
-                        placeholder="Enter custom TDP (e.g., 180W)"
+                        placeholder="Nhập TDP tùy chỉnh (vd: 180W)"
                         value={field.value.replace("custom_", "")}
                         onChange={e => field.onChange("custom_" + e.target.value)}
                       />
@@ -603,7 +603,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
             </div>
 
             <div className="space-y-4">
-              <FormLabel>Product Images</FormLabel>
+              <FormLabel>Hình ảnh sản phẩm</FormLabel>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {images.map((image, index) => (
                   <div key={index} className="relative group">
@@ -616,7 +616,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                     />
                     {index === 0 && (
                       <span className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
-                        Main
+                        Ảnh chính
                       </span>
                     )}
                     <button
@@ -628,7 +628,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                       className="absolute bottom-2 left-2 bg-white text-blue-600 border border-blue-500 px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                       disabled={index === 0}
                     >
-                      Set as Main
+                      Đặt làm ảnh chính
                     </button>
                     <button
                       type="button"
@@ -672,7 +672,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                       </svg>
-                      <span className="mt-2 text-sm text-gray-500">Upload Image</span>
+                      <span className="mt-2 text-sm text-gray-500">Tải ảnh lên</span>
                     </button>
                   )}
                 </CldUploadWidget>
@@ -682,12 +682,12 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
           </div>
           {/* Product Details Section */}
           <div className="bg-gray-50 rounded p-4 mt-4">
-            <h4 className="font-semibold mb-2 text-gray-700">Product Details Sections</h4>
+            <h4 className="font-semibold mb-2 text-gray-700">Mô tả sản phẩm</h4>
             {details.map((detail, idx) => (
               <div key={idx} className="mb-4 border rounded p-3 bg-white">
                 <input
                   className="mb-2 w-full border rounded px-2 py-1"
-                  placeholder="Section Title"
+                  placeholder="Tiêu đề"
                   value={detail.title}
                   onChange={e => {
                     const newDetails = [...details];
@@ -697,7 +697,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                 />
                 <textarea
                   className="mb-2 w-full border rounded px-2 py-1"
-                  placeholder="Section Content"
+                  placeholder="Nội dung"
                   value={detail.content}
                   onChange={e => {
                     const newDetails = [...details];
@@ -707,7 +707,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                 />
                 {/* Image selection from uploaded images as thumbnails */}
                 <div className="mb-2">
-                  <div className="font-medium mb-1">Select Image</div>
+                  <div className="font-medium mb-1">Chọn ảnh</div>
                   <div className="flex gap-2 flex-wrap">
                     <div
                       className={`border rounded cursor-pointer p-1 ${!detail.image ? 'ring-2 ring-blue-500' : ''}`}
@@ -717,7 +717,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                         setDetails(newDetails);
                       }}
                     >
-                      <div className="w-24 h-16 flex items-center justify-center text-xs text-gray-400">No image</div>
+                      <div className="w-24 h-16 flex items-center justify-center text-xs text-gray-400">Không có ảnh</div>
                     </div>
                     {images.map((img, i) => (
                       <div
@@ -739,7 +739,7 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
                   className="text-red-500 text-sm"
                   onClick={() => setDetails(details.filter((_, i) => i !== idx))}
                 >
-                  Remove Section
+                  Xóa
                 </button>
               </div>
             ))}
@@ -748,10 +748,10 @@ export default function AddCPUForm({ onBack }: { onBack: () => void }) {
               className="bg-blue-500 text-white px-3 py-1 rounded"
               onClick={() => setDetails([...details, { title: "", content: "", image: "" }])}
             >
-              Add Section
+              Thêm
             </button>
           </div>
-          <Button type="submit" className="w-full">Add CPU</Button>
+          <Button type="submit" className="w-full">Thêm CPU</Button>
         </form>
       </Form>
     </div>

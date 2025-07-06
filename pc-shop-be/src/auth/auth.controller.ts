@@ -46,6 +46,7 @@ export class AuthController {
     return this.authService.reactiveAccount(email);
   }
 
+  @Public()
   @Post('change-password')
   @ResponseMessage('Change password successfully')
   handleChangePassword(@Body() changePasswordDto: ChangePasswordDto) {

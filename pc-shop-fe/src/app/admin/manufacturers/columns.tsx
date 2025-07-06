@@ -29,7 +29,7 @@ export const columns: ColumnDef<IManufacturer>[] = [
         size: 50,
     },
     {
-        header: ({ column }) => <SortableHeader column={column} title="Name" />,
+        header: ({ column }) => <SortableHeader column={column} title="Tên" />,
         accessorKey: "name",
         enableResizing: true,
         size: 100,
@@ -69,7 +69,7 @@ export const columns: ColumnDef<IManufacturer>[] = [
         },
     },
     {
-        header: ({ column }) => <SortableHeader column={column} title="Type" />,
+        header: ({ column }) => <SortableHeader column={column} title="Loại" />,
         accessorKey: "type",
         size: 100,
         enableResizing: true,
@@ -87,34 +87,34 @@ export const columns: ColumnDef<IManufacturer>[] = [
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
+                            <span className="sr-only">Mở menu</span>
                             <MoreHorizontal className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuLabel>Hành động</DropdownMenuLabel>
                         <DropdownMenuItem
                             onClick={() => navigator.clipboard.writeText(manufacturer._id)}
                         >
-                            Copy manufacturer ID
+                            Sao chép ID nhà sản xuất
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => {
                             router.push(`/admin/manufacturers/${manufacturer._id}/edit`)
-                        }}>Edit manufacturer</DropdownMenuItem>
+                        }}>Sửa nhà sản xuất</DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DeleteConfirmationModal
-                            title="Are you sure?"
-                            description="This action cannot be undone. This will permanently delete the manufacturer:"
+                            title="Bạn có chắc chắn?"
+                            description="Hành động này không thể hoàn tác. Điều này sẽ xóa vĩnh viễn nhà sản xuất:"
                             itemName={manufacturer.name}
                             itemId={manufacturer._id}
                             apiEndpoint="/manufacturers"
-                            successMessage="Manufacturer deleted successfully!"
-                            errorMessage="An error occurred while deleting the manufacturer"
+                            successMessage="Nhà sản xuất đã được xóa thành công!"
+                            errorMessage="Đã xảy ra lỗi khi xóa nhà sản xuất"
                             onSuccess={() => router.refresh()}
                             trigger={
                                 <DropdownMenuItem onSelect={e => e.preventDefault()}>
-                                    Delete manufacturer
+                                    Xóa nhà sản xuất
                                 </DropdownMenuItem>
                             }
                         />

@@ -30,21 +30,21 @@ import {
 } from "@/components/ui/select";
 
 const hddSchema = z.object({
-    name: z.string().min(1, "Name is required"),
-    categoryId: z.string().min(1, "Category is required"),
-    manufacturerId: z.string().min(1, "Manufacturer is required"),
-    stock: z.coerce.number().min(0, "Stock must be at least 0"),
-    originalPrice: z.coerce.number().min(0, "Price must be at least 0"),
-    discount: z.coerce.number().min(0).max(100),
-    hddCapacity: z.string().min(1, "Capacity is required"),
-    hddFormFactor: z.string().min(1, "Form factor is required"),
-    hddInterface: z.string().min(1, "Interface is required"),
-    hddRpm: z.string().min(1, "RPM is required"),
-    hddCache: z.string().min(1, "Cache is required"),
+    name: z.string().min(1, "Tên là bắt buộc"),
+    categoryId: z.string().min(1, "Danh mục là bắt buộc"),
+    manufacturerId: z.string().min(1, "Nhà sản xuất là bắt buộc"),
+    stock: z.coerce.number().min(0, "Số lượng phải ít nhất 0"),
+    originalPrice: z.coerce.number().min(0, "Giá phải ít nhất 0"),
+    discount: z.coerce.number().min(0, "Chiết khấu ít nhất 0").max(100),
+    hddCapacity: z.string().min(1, "Dung lượng là bắt buộc"),
+    hddFormFactor: z.string().min(1, "Hình dạng là bắt buộc"),
+    hddInterface: z.string().min(1, "Giao diện là bắt buộc"),
+    hddRpm: z.string().min(1, "RPM là bắt buộc"),
+    hddCache: z.string().min(1, "Bộ nhớ đệm là bắt buộc"),
     images: z.array(z.string()).optional(),
     imagePublicIds: z.array(z.string()).optional(),
     details: z.array(z.object({
-        title: z.string().min(1, "Title is required"),
+        title: z.string().min(1, "Tiêu đề là bắt buộc"),
         content: z.string().optional(),
         image: z.string().optional()
     })).optional()
@@ -84,7 +84,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
     useEffect(() => {
         const fetchData = async () => {
             if (!session?.user?.accessToken) {
-                toast.error("Please login to continue");
+                toast.error("Vui lòng đăng nhập để tiếp tục");
                 return;
             }
             setIsLoading(true);
@@ -130,7 +130,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
 
     const onSubmit = async (values: any) => {
         if (!session?.user?.accessToken) {
-            toast.error("Please login to continue");
+            toast.error("Vui lòng đăng nhập để tiếp tục");
             return;
         }
         try {
@@ -162,20 +162,20 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
             if (response.error) {
                 toast.error(response.error);
             } else {
-                toast.success("HDD added successfully");
+                toast.success("Thêm HDD thành công");
                 form.reset();
                 setTimeout(() => { router.push("/admin/products"); }, 2000);
             }
         } catch (error) {
             console.error("Error submitting form:", error);
-            toast.error("Failed to add HDD");
+            toast.error("Lỗi khi thêm HDD");
         }
     };
 
     return (
         <div className="max-w-xl mx-auto mt-8 bg-white rounded-xl shadow-lg p-8">
-            <Button type="button" onClick={onBack} variant="ghost" className="mb-4">&larr; Back</Button>
-            <h3 className="text-2xl font-bold mb-6 text-center">Add New HDD</h3>
+            <Button type="button" onClick={onBack} variant="ghost" className="mb-4">&larr; Quay lại</Button>
+            <h3 className="text-2xl font-bold mb-6 text-center">Thêm HDD mới</h3>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField
@@ -183,9 +183,9 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                         name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Name</FormLabel>
+                                <FormLabel>Tên</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="HDD name" {...field} />
+                                    <Input placeholder="Tên HDD" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -198,7 +198,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                             name="categoryId"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Category</FormLabel>
+                                    <FormLabel>Danh mục</FormLabel>
                                     <Select
                                         value={form.watch("categoryId")}
                                         onValueChange={val => form.setValue("categoryId", val)}
@@ -206,7 +206,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                                     >
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Select a category" />
+                                                <SelectValue placeholder="Chọn danh mục" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
@@ -226,7 +226,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                             name="manufacturerId"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Manufacturer</FormLabel>
+                                    <FormLabel>Nhà sản xuất</FormLabel>
                                     <Select
                                         value={field.value}
                                         onValueChange={field.onChange}
@@ -234,7 +234,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                                     >
                                         <FormControl>
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Select a manufacturer" />
+                                                <SelectValue placeholder="Chọn nhà sản xuất" />
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent>
@@ -256,9 +256,9 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                             name="stock"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Stock</FormLabel>
+                                    <FormLabel>Tồn kho</FormLabel>
                                     <FormControl>
-                                        <Input type="number" placeholder="Stock quantity" {...field} />
+                                        <Input type="number" placeholder="Số lượng" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -269,9 +269,9 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                             name="originalPrice"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Original Price</FormLabel>
+                                    <FormLabel>Giá gốc</FormLabel>
                                     <FormControl>
-                                        <Input type="number" placeholder="Original price" {...field} />
+                                        <Input type="number" placeholder="Giá gốc" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -282,9 +282,9 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                             name="discount"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Discount (%)</FormLabel>
+                                    <FormLabel>Chiết khấu (%)</FormLabel>
                                     <FormControl>
-                                        <Input type="number" placeholder="Discount percentage" {...field} />
+                                        <Input type="number" placeholder="Chiết khấu" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -292,14 +292,14 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                         />
                     </div>
                     <div className="bg-gray-50 rounded p-4 mt-4">
-                        <h4 className="font-semibold mb-2 text-gray-700">HDD Specs</h4>
+                        <h4 className="font-semibold mb-2 text-gray-700">Thông số HDD</h4>
                         <div className="grid grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}
                                 name="hddCapacity"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Capacity</FormLabel>
+                                        <FormLabel>Dung lượng</FormLabel>
                                         <FormControl>
                                             <Select
                                                 value={field.value}
@@ -307,7 +307,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="Select capacity" />
+                                                        <SelectValue placeholder="Chọn dung lượng" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
@@ -336,7 +336,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                                 name="hddFormFactor"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Form Factor</FormLabel>
+                                        <FormLabel>Hình dạng</FormLabel>
                                         <FormControl>
                                             <Select
                                                 value={field.value}
@@ -344,7 +344,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="Select form factor" />
+                                                        <SelectValue placeholder="Chọn hình dạng" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
@@ -362,7 +362,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                                 name="hddInterface"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Interface</FormLabel>
+                                        <FormLabel>Giao diện</FormLabel>
                                         <FormControl>
                                             <Select
                                                 value={field.value}
@@ -370,7 +370,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="Select interface" />
+                                                        <SelectValue placeholder="Chọn giao diện" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
@@ -388,7 +388,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                                 name="hddRpm"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>RPM</FormLabel>
+                                        <FormLabel>Tốc độ quay (RPM)</FormLabel>
                                         <FormControl>
                                             <Select
                                                 value={field.value}
@@ -396,7 +396,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="Select RPM" />
+                                                        <SelectValue placeholder="Chọn RPM" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
@@ -417,7 +417,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                                 name="hddCache"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Cache</FormLabel>
+                                        <FormLabel>Bộ nhớ đệm</FormLabel>
                                         <FormControl>
                                             <Select
                                                 value={field.value}
@@ -425,7 +425,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                                             >
                                                 <FormControl>
                                                     <SelectTrigger>
-                                                        <SelectValue placeholder="Select cache" />
+                                                        <SelectValue placeholder="Chọn bộ nhớ đệm" />
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
@@ -444,7 +444,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                         </div>
                     </div>
                     <div className="space-y-4">
-                        <FormLabel>Product Images</FormLabel>
+                        <FormLabel>Hình ảnh sản phẩm</FormLabel>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             {images.map((image, index) => (
                                 <div key={index} className="relative group">
@@ -456,9 +456,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                                         className={`rounded-lg object-cover ${index === 0 ? 'ring-2 ring-blue-500' : ''}`}
                                     />
                                     {index === 0 && (
-                                        <span className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
-                                            Main
-                                        </span>
+                                        <span className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">Ảnh chính</span>
                                     )}
                                     <button
                                         type="button"
@@ -469,7 +467,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                                         className="absolute bottom-2 left-2 bg-white text-blue-600 border border-blue-500 px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                                         disabled={index === 0}
                                     >
-                                        Set as Main
+                                        Đặt làm ảnh chính
                                     </button>
                                     <button
                                         type="button"
@@ -513,7 +511,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                         </svg>
-                                        <span className="mt-2 text-sm text-gray-500">Upload Image</span>
+                                        <span className="mt-2 text-sm text-gray-500">Tải ảnh lên</span>
                                     </button>
                                 )}
                             </CldUploadWidget>
@@ -521,12 +519,12 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                     </div>
                     {/* Product Details Section */}
                     <div className="bg-gray-50 rounded p-4 mt-4">
-                        <h4 className="font-semibold mb-2 text-gray-700">Product Details Sections</h4>
+                        <h4 className="font-semibold mb-2 text-gray-700">Mô tả sản phẩm</h4>
                         {details.map((detail, idx) => (
                             <div key={idx} className="mb-4 border rounded p-3 bg-white">
                                 <input
                                     className="mb-2 w-full border rounded px-2 py-1"
-                                    placeholder="Section Title"
+                                    placeholder="Tiêu đề"
                                     value={detail.title}
                                     onChange={e => {
                                         const newDetails = [...details];
@@ -536,7 +534,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                                 />
                                 <textarea
                                     className="mb-2 w-full border rounded px-2 py-1"
-                                    placeholder="Section Content"
+                                    placeholder="Nội dung"
                                     value={detail.content}
                                     onChange={e => {
                                         const newDetails = [...details];
@@ -546,7 +544,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                                 />
                                 {/* Image selection from uploaded images as thumbnails */}
                                 <div className="mb-2">
-                                    <div className="font-medium mb-1">Select Image</div>
+                                    <div className="font-medium mb-1">Chọn ảnh</div>
                                     <div className="flex gap-2 flex-wrap">
                                         <div
                                             className={`border rounded cursor-pointer p-1 ${!detail.image ? 'ring-2 ring-blue-500' : ''}`}
@@ -556,7 +554,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                                                 setDetails(newDetails);
                                             }}
                                         >
-                                            <div className="w-24 h-16 flex items-center justify-center text-xs text-gray-400">No image</div>
+                                            <div className="w-24 h-16 flex items-center justify-center text-xs text-gray-400">Không có ảnh</div>
                                         </div>
                                         {images.map((img, i) => (
                                             <div
@@ -578,7 +576,7 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                                     className="text-red-500 text-sm"
                                     onClick={() => setDetails(details.filter((_, i) => i !== idx))}
                                 >
-                                    Remove Section
+                                    Xóa
                                 </button>
                             </div>
                         ))}
@@ -587,10 +585,10 @@ export default function AddHDDForm({ onBack }: { onBack: () => void }) {
                             className="bg-blue-500 text-white px-3 py-1 rounded"
                             onClick={() => setDetails([...details, { title: "", content: "", image: "" }])}
                         >
-                            Add Section
+                            Thêm
                         </button>
                     </div>
-                    <Button type="submit" className="w-full">Add HDD</Button>
+                    <Button type="submit" className="w-full">Thêm HDD</Button>
                 </form>
             </Form>
         </div>

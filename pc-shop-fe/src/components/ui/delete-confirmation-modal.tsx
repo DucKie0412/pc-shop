@@ -50,18 +50,15 @@ export function DeleteConfirmationModal({
         setIsDeleting(true);
         try {
             const headers = { Authorization: `Bearer ${session?.data?.user.accessToken}` };
-            console.log("[DeleteConfirmationModal] handleDelete headers:", headers);
             const res = await sendRequest<IBackendRes<any>>({
                 method: "DELETE",
                 url: `${process.env.NEXT_PUBLIC_API_URL}${apiEndpoint}/${itemId}`,
                 headers,
             });
-            console.log("[DeleteConfirmationModal] handleDelete response:", res);
 
             if (res?.statusCode === 200) {
                 toast.success(successMessage, { autoClose: 2300 });
                 setTimeout(() => {
-                    
                     router.refresh();
                     onSuccess?.();
                 }, 2000);
@@ -90,17 +87,18 @@ export function DeleteConfirmationModal({
                     <AlertDialogTitle>{title}</AlertDialogTitle>
                     <AlertDialogDescription>
                         {description}{" "}
-                        <span className="font-semibold">{itemName}</span>.
+                        <span className="font-semibold">{itemName}</span>
+                        <span> chứ ?</span>
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
                     <AlertDialogAction 
                         onClick={handleDelete}
                         disabled={isDeleting}
                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
-                        {isDeleting ? "Deleting..." : "Delete"}
+                        {isDeleting ? "Đang xóa..." : "Xác nhận"}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

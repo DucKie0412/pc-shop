@@ -172,15 +172,15 @@ export function ProductForm({ initialData }: ProductFormProps) {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 overflow-y-auto max-h-[80vh]">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-xxl space-y-8 overflow-y-auto max-h-[80vh]">
                 <FormField
                     control={form.control}
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Name</FormLabel>
+                            <FormLabel>Tên sản phẩm</FormLabel>
                             <FormControl>
-                                <Input placeholder="Product name" {...field} />
+                                <Input placeholder="Tên sản phẩm" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -191,7 +191,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
                     name="categoryId"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Category</FormLabel>
+                            <FormLabel>Danh mục</FormLabel>
                             <Select
                                 value={field.value}
                                 onValueChange={field.onChange}
@@ -199,7 +199,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
                             >
                                 <FormControl>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select a category" />
+                                        <SelectValue placeholder="Chọn danh mục" />
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
@@ -219,7 +219,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
                     name="manufacturerId"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Manufacturer</FormLabel>
+                            <FormLabel>Nhà sản xuất</FormLabel>
                             <Select
                                 value={field.value}
                                 onValueChange={field.onChange}
@@ -227,7 +227,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
                             >
                                 <FormControl>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select a manufacturer" />
+                                        <SelectValue placeholder="Chọn nhà sản xuất" />
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
@@ -247,9 +247,9 @@ export function ProductForm({ initialData }: ProductFormProps) {
                     name="stock"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Stock</FormLabel>
+                            <FormLabel>Tồn kho</FormLabel>
                             <FormControl>
-                                <Input type="number" placeholder="Stock quantity" {...field} />
+                                <Input type="number" placeholder="Tồn kho" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -260,9 +260,9 @@ export function ProductForm({ initialData }: ProductFormProps) {
                     name="originalPrice"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Original Price</FormLabel>
+                            <FormLabel>Giá gốc</FormLabel>
                             <FormControl>
-                                <Input type="number" placeholder="Original price" {...field} />
+                                <Input type="number" placeholder="Giá gốc" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -273,7 +273,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
                     name="discount"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Discount (%)</FormLabel>
+                            <FormLabel>Chiết khấu (%)</FormLabel>
                             <FormControl>
                                 <Input type="number" min={0} max={100} {...field} />
                             </FormControl>
@@ -311,7 +311,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
                     )}
                 />
                 <div className="space-y-4">
-                    <FormLabel>Product Images</FormLabel>
+                    <FormLabel>Hình ảnh sản phẩm</FormLabel>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {images.map((image, index) => (
                             <div key={index} className="relative group">
@@ -324,7 +324,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
                                 />
                                 {index === 0 && (
                                     <span className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
-                                        Main
+                                        Chính
                                     </span>
                                 )}
                                 <button
@@ -337,7 +337,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
                                     className="absolute bottom-2 left-2 bg-white text-blue-600 border border-blue-500 px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                                     disabled={index === 0}
                                 >
-                                    Set as Main
+                                    Đặt làm ảnh chính
                                 </button>
                                 <button
                                     type="button"
@@ -381,14 +381,14 @@ export function ProductForm({ initialData }: ProductFormProps) {
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                     </svg>
-                                    <span className="mt-2 text-sm text-gray-500">Upload Image</span>
+                                    <span className="mt-2 text-sm text-gray-500">Tải lên hình ảnh</span>
                                 </button>
                             )}
                         </CldUploadWidget>
                     </div>
                 </div>
                 <div>
-                    <FormLabel>Technical Specs</FormLabel>
+                    <FormLabel>Thông số kỹ thuật</FormLabel>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {Array.isArray(PRODUCT_TYPE_SPECS[selectedType as keyof typeof PRODUCT_TYPE_SPECS]) &&
                             (PRODUCT_TYPE_SPECS[selectedType as keyof typeof PRODUCT_TYPE_SPECS] as Array<{ name: string; label: string; type: string; options?: string[] }>).map((spec) => {
@@ -470,7 +470,7 @@ export function ProductForm({ initialData }: ProductFormProps) {
                     </div>
                 </div>
                 <Button type="submit" disabled={isLoading}>
-                    {isLoading ? "Loading..." : (initialData ? "Save changes" : "Create product")}
+                    {isLoading ? "Đang tải..." : (initialData ? "Lưu thay đổi" : "Tạo sản phẩm")}
                 </Button>
             </form>
         </Form>

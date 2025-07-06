@@ -3,18 +3,6 @@ import { Document, HydratedDocument, Types } from 'mongoose';
 
 export type ManufacturerDocument = HydratedDocument<Manufacturer>;
 
-export enum ManufacturerType {
-    CPU = 'cpu',
-    GPU = 'gpu',
-    RAM = 'ram',
-    SSD = 'ssd',
-    MAINBOARD = 'mainboard',
-    PSU = 'psu',
-    CASE = 'case',
-    MONITOR = 'monitor',
-    OTHER = 'other'
-}
-
 @Schema({ timestamps: true })
 export class Manufacturer extends Document {
     _id: Types.ObjectId;
@@ -28,8 +16,8 @@ export class Manufacturer extends Document {
     @Prop()
     website?: string;
 
-    @Prop({ required: true, enum: ManufacturerType })
-    type?: ManufacturerType;
+    @Prop({ required: true})
+    type?: string;
 }
 
 export const ManufacturerSchema = SchemaFactory.createForClass(Manufacturer); 

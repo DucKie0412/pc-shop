@@ -100,7 +100,7 @@ const OrderManagementPage = () => {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-6">Quản lý đơn hàng</h1>
+            <h1 className="text-2xl font-bold mb-6">Đơn hàng</h1>
             
             {/* Filters */}
             <div className="mb-6 flex gap-4 flex-wrap">

@@ -24,7 +24,7 @@ import * as z from "zod";
 
 const formSchema = z.object({
     email: z.string().email().optional(),
-    name: z.string().min(1, "Name is required"),
+    name: z.string().min(1, "Tên không được để trống"),
     phone: z.string().optional(),
     address: z.string().optional(),
     point: z.number().optional(),
@@ -88,13 +88,13 @@ export default function EditUserPage() {
             });
             
             if (res?.statusCode === 200) {
-                toast.success("User updated successfully!");
+                toast.success("Cập nhật thành công!");
                 router.push("/admin/users");
             } else {
-                toast.error("Failed to update user");
+                toast.error("Cập nhật thất bại");
             }
         } catch (error) {
-            toast.error("An error occurred while updating user");
+            toast.error("Cập nhật thất bại");
         }
     }
 
@@ -111,7 +111,7 @@ export default function EditUserPage() {
                         >
                             <ArrowLeft className="h-4 w-4" />
                         </Button>
-                        <CardTitle>Edit User</CardTitle>
+                        <CardTitle>Sửa tài khoản</CardTitle>
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -135,7 +135,7 @@ export default function EditUserPage() {
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <Label>Name</Label>
+                                        <Label>Tên</Label>
                                         <FormControl>
                                             <Input type="text" {...field} />
                                         </FormControl>
@@ -148,7 +148,7 @@ export default function EditUserPage() {
                                 name="phone"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <Label>Phone Number</Label>
+                                        <Label>Số điện thoại</Label>
                                         <FormControl>
                                             <Input type="text" {...field} />
                                         </FormControl>
@@ -161,7 +161,7 @@ export default function EditUserPage() {
                                 name="address"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <Label>Address</Label>
+                                        <Label>Địa chỉ</Label>
                                         <FormControl>
                                             <Input type="text" {...field} />
                                         </FormControl>
@@ -174,7 +174,7 @@ export default function EditUserPage() {
                                 name="point"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <Label>Points</Label>
+                                        <Label>Điểm</Label>
                                         <FormControl>
                                             <Input type="number" {...field} />
                                         </FormControl>
@@ -188,9 +188,9 @@ export default function EditUserPage() {
                                 render={({ field }) => (
                                     <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                                         <div className="space-y-0.5">
-                                            <Label>Active Status</Label>
+                                            <Label>Trạng thái</Label>
                                             <div className="text-sm text-muted-foreground">
-                                                Enable or disable this user account
+                                                Kích hoạt hoặc vô hiệu hóa tài khoản này
                                             </div>
                                         </div>
                                         <FormControl>
@@ -202,7 +202,7 @@ export default function EditUserPage() {
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit" className="w-full">Save Changes</Button>
+                            <Button type="submit" className="w-full">Lưu thay đổi</Button>
                         </form>
                     </Form>
                 </CardContent>

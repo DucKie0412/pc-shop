@@ -55,32 +55,32 @@ export default function ManufacturersPage() {
     );
 
     if (!session) {
-        return <div className="container mx-auto py-10">Please sign in to view manufacturers.</div>;
+        return <div className="container mx-auto py-10">Vui lòng đăng nhập để xem nhà sản xuất.</div>;
     }
 
     return (
         <div className="container mx-auto py-10">
             <div className="flex flex-col gap-4">
                 <div className="flex justify-between items-center">
-                    <h1 className="text-3xl font-bold">Manufacturers</h1>
+                    <h1 className="text-3xl font-bold">Nhà sản xuất</h1>
                     <Button>
                         <Plus className="mr-2 h-4 w-4" />
-                        <Link href="/admin/manufacturers/create">Add Manufacturer</Link>
+                        <Link href="/admin/manufacturers/create">Thêm nhà sản xuất</Link>
                     </Button>
                 </div>
                 <div className="flex items-center gap-4">
                     <Input
-                        placeholder="Search manufacturer by name..."
+                        placeholder="Tìm kiếm nhà sản xuất theo tên..."
                         className="max-w-sm"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                     <Select value={typeFilter} onValueChange={setTypeFilter}>
                         <SelectTrigger>
-                            <SelectValue placeholder="Filter by type" />
+                            <SelectValue placeholder="Lọc theo loại" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="all">All Types</SelectItem>
+                            <SelectItem value="all">Tất cả loại</SelectItem>
                             <SelectItem value="cpu">CPU</SelectItem>
                             <SelectItem value="mainboard">Mainboard</SelectItem>
                             <SelectItem value="ram">RAM</SelectItem>
@@ -95,7 +95,7 @@ export default function ManufacturersPage() {
                 </div>
                 <div className="rounded-md border">
                     {isLoading ? (
-                        <div className="p-4 text-center">Loading...</div>
+                        <div className="p-4 text-center">Đang tải...</div>
                     ) : (
                         <DataTable columns={columns} data={filteredManufacturers} />
                     )}

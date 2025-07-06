@@ -127,21 +127,16 @@ function Homepage() {
                             title="CASE"
                             products={products.filter(p => p.type === "case")}
                             viewAllLink="/category/case"
-                        />  
+                        />    
                         <ProductCardSlider
-                            title="FAN"
-                            products={products.filter(p => p.type === "fan")}
-                            viewAllLink="/category/fan"
-                        />  
-                        <ProductCardSlider
-                            title="MONITOR"
+                            title="MÀN HÌNH"
                             products={products.filter(p => p.type === "monitor")}
                             viewAllLink="/category/monitor"
                         />
                         <ProductCardSlider
-                            title="PHU KIEN MÁY TÍNH"
+                            title="PHỤ KIỆN MÁY TÍNH"
                             products={products.filter(p => p.type === "other")}
-                            viewAllLink="/category/phukien"
+                            viewAllLink="/category/other"
                         />
                     </>
                 )}

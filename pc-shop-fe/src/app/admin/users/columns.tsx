@@ -29,7 +29,7 @@ export const columns: ColumnDef<IUser>[] = [
                 onClick={column.getToggleSortingHandler()}
                 className="cursor-pointer flex items-center gap-1"
             >
-                Name
+                Tên
                 {column.getCanSort() && (
                     <span>
                         {column.getIsSorted() === "asc" ? "↑" : column.getIsSorted() === "desc" ? "↓" : "↕"}
@@ -64,7 +64,7 @@ export const columns: ColumnDef<IUser>[] = [
         maxSize: 200,
     },
     {
-        header: "Phone",
+        header: "Số điện thoại",
         accessorKey: "phone",
         size: 120,
         enableResizing: true,
@@ -72,7 +72,7 @@ export const columns: ColumnDef<IUser>[] = [
         maxSize: 200,
     },
     {
-        header: "Address",
+        header: "Địa chỉ",
         accessorKey: "address",
         size: 120,
         enableResizing: true,
@@ -80,7 +80,7 @@ export const columns: ColumnDef<IUser>[] = [
         maxSize: 200,
     },
     {
-        header: "Point",
+        header: "Điểm",
         accessorKey: "points",
         size: 120,
         enableResizing: true,
@@ -93,7 +93,7 @@ export const columns: ColumnDef<IUser>[] = [
                 onClick={column.getToggleSortingHandler()}
                 className="cursor-pointer flex items-center gap-1"
             >
-                Active Status
+                Trạng thái kích hoạt
                 {column.getCanSort() && (
                     <span>
                         {column.getIsSorted() === "asc" ? "↑" : column.getIsSorted() === "desc" ? "↓" : "↕"}
@@ -110,7 +110,7 @@ export const columns: ColumnDef<IUser>[] = [
             const isActive = row.original.isActive;
             return <Badge className={isActive ? "border-transparent bg-emerald-500 text-primary-foreground shadow hover:bg-emerald-500/80"
                 : "border-transparent bg-rose-500 text-primary-foreground shadow hover:bg-rose-500/80"}>
-                {isActive ? "Active" : "Inactive"}
+                {isActive ? "Đã kích hoạt" : "Chưa kích hoạt"}
             </Badge>
         },
     },
@@ -124,33 +124,33 @@ export const columns: ColumnDef<IUser>[] = [
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
+                            <span className="sr-only">Mở menu</span>
                             <MoreHorizontal className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuLabel>Hành động</DropdownMenuLabel>
                         <DropdownMenuItem
                             onClick={() => navigator.clipboard.writeText(user._id)}
                         >
-                            Copy user ID
+                            Sao chép ID
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => {
                             router.push(`/admin/users/edit/${user._id}`)
-                        }}>Edit user</DropdownMenuItem>
+                        }}>Sửa người dùng</DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DeleteConfirmationModal
-                            title="Are you sure?"
-                            description="This action cannot be undone. This will permanently delete the user account for"
+                            title="Xác nhận xóa"
+                            description="Hành động này không thể được khôi phục. Bạn muốn xóa bỏ người dùng"
                             itemName={`${user.name} (${user.email})`}
                             itemId={user._id}
                             apiEndpoint="/users"
-                            successMessage="User deleted successfully!"
-                            errorMessage="An error occurred while deleting the user"
+                            successMessage="Xóa người dùng thành công!"
+                            errorMessage="Có lỗi xảy ra khi xóa"
                             trigger={
                                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                    Delete user
+                                    Xóa người dùng
                                 </DropdownMenuItem>
                             }
                         />

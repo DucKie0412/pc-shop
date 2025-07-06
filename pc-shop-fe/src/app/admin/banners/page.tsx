@@ -131,17 +131,16 @@ export default function SettingsPage() {
 
     return (
         <div className="container mx-auto py-10">
-            <h1 className="text-2xl font-bold mb-6">Banner Settings</h1>
+            <h1 className="text-2xl font-bold mb-6">Quản lý banner</h1>
 
             <div className="mb-8">
-                <h2 className="text-xl font-semibold mb-4">Add New Banner</h2>
                 <CldUploadWidget
                     uploadPreset="pc_shop_banners"
                     onSuccess={handleCreateBanner}
                 >
                     {({ open }) => (
                         <Button onClick={() => open()}>
-                            Upload New Banner
+                            Tải lên banner mới
                         </Button>
                     )}
                 </CldUploadWidget>
@@ -164,21 +163,21 @@ export default function SettingsPage() {
                                 </div>
                                 <div className="space-y-4">
                                     <div>
-                                        <Label>Title</Label>
+                                        <Label>Tiêu đề</Label>
                                         <Input
                                             value={edited.title ?? banner.title}
                                             onChange={e => handleEditBanner(banner._id, { title: e.target.value })}
                                         />
                                     </div>
                                     <div>
-                                        <Label>Link</Label>
+                                        <Label>Đường dẫn</Label>
                                         <Input
                                             value={edited.link ?? banner.link}
                                             onChange={e => handleEditBanner(banner._id, { link: e.target.value })}
                                         />
                                     </div>
                                     <div>
-                                        <Label>Type</Label>
+                                        <Label>Loại</Label>
                                         <Select
                                             value={edited.type ?? banner.type}
                                             onValueChange={value => handleEditBanner(banner._id, { type: value as BannerType })}
@@ -193,7 +192,7 @@ export default function SettingsPage() {
                                         </Select>
                                     </div>
                                     <div>
-                                        <Label>Order</Label>
+                                        <Label>Thứ tự</Label>
                                         <Input
                                             type="number"
                                             value={edited.order ?? banner.order}
@@ -205,25 +204,25 @@ export default function SettingsPage() {
                                             checked={edited.isActive ?? banner.isActive}
                                             onCheckedChange={checked => handleEditBanner(banner._id, { isActive: checked })}
                                         />
-                                        <Label>Active</Label>
+                                        <Label>Hoạt động</Label>
                                     </div>
                                         <DeleteConfirmationModal
-                                            title="Delete Banner"
-                                            description="Are you sure you want to delete the banner:"
+                                            title="Xóa banner"
+                                            description="Bạn có chắc chắn muốn xóa banner:"
                                             itemName={banner.title}
                                             itemId={banner._id}
                                             apiEndpoint="/banners"
-                                            trigger={<Button asChild className="destructive cursor-pointer"><span>Delete Banner</span></Button>}
+                                            trigger={<Button asChild className="destructive cursor-pointer"><span>Xóa banner</span></Button>}
                                             onSuccess={fetchBanners}
-                                            successMessage="Banner deleted successfully!"
-                                            errorMessage="Failed to delete banner."
+                                            successMessage="Banner đã được xóa thành công!"
+                                            errorMessage="Không thể xóa banner."
                                         />
                                 </div>
                                 {isDirty && (
                                     <div className="mt-4 bg-yellow-100 border border-yellow-400 rounded p-2 flex justify-between items-center">
-                                        <span className="text-yellow-800">You have unsaved changes</span>
+                                        <span className="text-yellow-800">Bạn có thay đổi chưa lưu</span>
                                         <Button size="sm" onClick={() => handleSaveBanner(banner._id)}>
-                                            Save
+                                            Lưu
                                         </Button>
                                     </div>
                                 )}

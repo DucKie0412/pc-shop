@@ -41,16 +41,16 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
         try {
             await updateQuantity(productId, newQuantity);
         } catch (error) {
-            toast.error('Failed to update quantity');
+            toast.error('Lỗi hệ thống! Vui lòng thử lại sau!');
         }
     };
 
     const handleRemoveItem = async (productId: string) => {
         try {
             await removeFromCart(productId);
-            toast.success('Item removed from cart');
+            toast.success('Đã xóa sản phẩm khỏi giỏ hàng');
         } catch (error) {
-            toast.error('Failed to remove item');
+            toast.error('Lỗi hệ thống! Vui lòng thử lại sau!');
         }
     };
 

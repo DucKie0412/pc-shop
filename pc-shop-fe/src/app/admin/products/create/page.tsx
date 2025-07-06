@@ -34,13 +34,13 @@ export default function AddProductEntry() {
       return <FormComponent onBack={() => setSelectedType(null)} />;
     }
     return (
-      <div className="p-8 text-center">Form for this type is not implemented yet.</div>
+      <div className="p-8 text-center">Chưa có mẫu thêm cho sản phẩm này.</div>
     );
   }
 
   return (
     <div className="flex flex-col items-center gap-4 py-8">
-      <h2 className="text-2xl font-bold mb-4">Choose Product Type</h2>
+      <h2 className="text-2xl font-bold mb-4">Chọn loại sản phẩm</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {PRODUCT_TYPES.map((type) => (
           <button
@@ -48,7 +48,7 @@ export default function AddProductEntry() {
             className="px-6 py-3 bg-blue-600 text-white rounded shadow hover:bg-blue-700"
             onClick={() => setSelectedType(type)}
           >
-            Add new {type.toUpperCase()}
+            Thêm mới {type.toUpperCase()}
           </button>
         ))}
       </div>

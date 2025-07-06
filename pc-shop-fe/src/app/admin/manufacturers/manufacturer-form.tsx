@@ -20,6 +20,8 @@ import { sendRequest } from "@/utils/api";
 import { useSession } from "next-auth/react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ICategory } from "@/types/category";
 
 const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -41,6 +43,7 @@ interface ManufacturerFormProps {
 export function ManufacturerForm({ initialData }: ManufacturerFormProps) {
     const router = useRouter();
     const { data: session } = useSession();
+    const [categories, setCategories] = useState<ICategory[]>([]);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -51,6 +54,24 @@ export function ManufacturerForm({ initialData }: ManufacturerFormProps) {
             type: "",
         },
     });
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await sendRequest<{ data: ICategory[] }>({
+                    url: '/api/categories',
+                    method: 'GET',
+                    headers: { Authorization: `Bearer ${session?.user?.accessToken}` },
+                });
+                if (res?.data) {
+                    setCategories(res.data);
+                }
+            } catch (error) {
+                toast.error('Không thể tải danh mục');
+            }
+        };
+        if (session?.user?.accessToken) fetchCategories();
+    }, [session]);
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
@@ -88,9 +109,9 @@ export function ManufacturerForm({ initialData }: ManufacturerFormProps) {
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Name</FormLabel>
+                            <FormLabel>Tên</FormLabel>
                             <FormControl>
-                                <Input placeholder="Manufacturer name" {...field} />
+                                <Input placeholder="Tên nhà sản xuất" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -127,31 +148,26 @@ export function ManufacturerForm({ initialData }: ManufacturerFormProps) {
                     name="type"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Type</FormLabel>
+                            <FormLabel>Loại</FormLabel>
                             <Select value={field.value} onValueChange={field.onChange}>
                                 <FormControl>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="Select a type" />
+                                        <SelectValue placeholder="Chọn loại" />
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                    <SelectItem value="cpu">CPU</SelectItem>
-                                    <SelectItem value="mainboard">Mainboard</SelectItem>
-                                    <SelectItem value="ram">RAM</SelectItem>
-                                    <SelectItem value="vga">VGA</SelectItem>
-                                    <SelectItem value="ssd">SSD</SelectItem>
-                                    <SelectItem value="hdd">HDD</SelectItem>
-                                    <SelectItem value="psu">PSU</SelectItem>
-                                    <SelectItem value="case">Case</SelectItem>
-                                    <SelectItem value="monitor">Monitor</SelectItem>
-                                    <SelectItem value="other">Other</SelectItem>
+                                    {categories.map((cat) => (
+                                        <SelectItem key={cat._id} value={cat.name.trim().toLowerCase()}>
+                                            {cat.name}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <Button type="submit">{initialData ? "Save changes" : "Create manufacturer"}</Button>
+                <Button type="submit">{initialData ? "Lưu thay đổi" : "Tạo nhà sản xuất"}</Button>
             </form>
         </Form>
     );

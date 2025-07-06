@@ -23,7 +23,7 @@ const ReactiveModal = ({ isOpen, setIsOpen, userEmail }: { isOpen: boolean; setI
 
     const reActive = async (email: string) => {
         if (!email) {
-            toast.warning("Invalid email. Please try again!");
+            toast.warning("Email không hợp lệ. Vui lòng thử lại!");
             return;
         }
 
@@ -36,15 +36,15 @@ const ReactiveModal = ({ isOpen, setIsOpen, userEmail }: { isOpen: boolean; setI
 
 
             if (res?.statusCode === 400) {
-                toast.warning("Your email has already been activated!", { autoClose: 4000 });
+                toast.warning("Email đã được kích hoạt!", { autoClose: 4000 });
             } else if (res?.statusCode === 201) {
                 router.push(`/auth/active/${res?.data?._id}`);
             } else {
-                toast.error("Failed to resend code! Internal server error");
+                toast.error("Lỗi hệ thống! Vui lòng thử lại sau!");
             }
         } catch (error) {
             console.error("Error in reActive:", error);
-            toast.error("Something went wrong. Please try again later.");
+            toast.error("Lỗi hệ thống! Vui lòng thử lại sau!");
         }
     };
 
@@ -53,13 +53,13 @@ const ReactiveModal = ({ isOpen, setIsOpen, userEmail }: { isOpen: boolean; setI
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Seem your account hasn't active yet :(( </DialogTitle>
+                    <DialogTitle>Tài khoản của bạn chưa được kích hoạt!</DialogTitle>
                     <DialogDescription>
-                        Click the button below to get an email with a code to active your account
+                        Nhấn nút bên dưới để nhận được email với mã code để kích hoạt tài khoản
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                    <Button onClick={() => reActive(userEmail)} className="w-full">Get code</Button>
+                    <Button onClick={() => reActive(userEmail)} className="w-full">Lấy mã code</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

@@ -22,7 +22,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon, ArrowRightLeftIcon, ArrowUpDown } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -116,7 +116,7 @@ export function DataTable<TData, TValue>({
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
+                                    Không có kết quả.
                                 </TableCell>
                             </TableRow>
                         )}
@@ -128,7 +128,7 @@ export function DataTable<TData, TValue>({
             <div className="flex items-center justify-between py-4">
                 {/* Page Size Dropdown */}
                 <div className="flex items-center space-x-2">
-                    <span>Rows per page:</span>
+                    <span>Số dòng hiển thị:</span>
                     <select
                         className="border rounded p-1"
                         value={table.getState().pagination.pageSize}
@@ -144,19 +144,19 @@ export function DataTable<TData, TValue>({
                 {/* Pagination Buttons */}
                 <div className="flex items-center space-x-2">
                     <Button variant="outline" size="sm" onClick={() => table.firstPage()} disabled={!table.getCanPreviousPage()}>
-                        First
+                        Đầu
                     </Button>
                     <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-                        Previous
+                        <ArrowLeftIcon />
                     </Button>
                     <span>
-                        Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                        Trang {table.getState().pagination.pageIndex + 1} trên {table.getPageCount()}
                     </span>
                     <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-                        Next
+                        <ArrowRightIcon />
                     </Button>
                     <Button variant="outline" size="sm" onClick={() => table.lastPage()} disabled={!table.getCanNextPage()}>
-                        Last
+                        Cuối
                     </Button>
                 </div>
             </div>

@@ -24,8 +24,8 @@ const LoginForm = () => {
 
     // Define the Zod schema
     const LoginSchema = z.object({
-        username: z.string().email("Invalid email address"), // Add custom error message
-        password: z.string().min(6, "Password must be at least 6 characters long"), // Add custom error message
+        username: z.string().email("Email không hợp lệ"), // Add custom error message
+        password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"), // Add custom error message
     });
 
     // Initialize react-hook-form with zodResolver
@@ -46,19 +46,19 @@ const LoginForm = () => {
         const res = await authenticate(username, password);
         setIsUserEmail("");
 
-        if (res?.error) {
+        if (res?.error) {   
             if (res?.code === 1) {
-                toast.error("Incorrect email or password!");
+                toast.error("Sai email hoặc mật khẩu!");
             }
             else if (res?.code === 2) {
                 setIsModalOpen(true);
                 setIsUserEmail(username);
             }
             else {
-                toast.error("Internal server error. Please try again!");
+                toast.error("Lỗi hệ thống! Vui lòng thử lại sau!");
             }
         } else {
-            toast.success("Login success!");
+            toast.success("Đăng nhập thành công!");
             // Chuyển hướng sau khi đăng nhập
             setTimeout(() => {
                 router.replace("/");

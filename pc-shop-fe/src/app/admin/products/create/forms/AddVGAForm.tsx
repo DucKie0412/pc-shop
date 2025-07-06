@@ -30,16 +30,16 @@ import {
 } from "@/components/ui/select";
 
 const vgaSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  categoryId: z.string().min(1, "Category is required"),
-  manufacturerId: z.string().min(1, "Manufacturer is required"),
-  stock: z.coerce.number().min(0, "Stock must be at least 0"),
-  originalPrice: z.coerce.number().min(0, "Price must be at least 0"),
+  name: z.string().min(1, "Tên sản phẩm là bắt buộc"),
+  categoryId: z.string().min(1, "Danh mục là bắt buộc"),
+  manufacturerId: z.string().min(1, "Nhà sản xuất là bắt buộc"),
+  stock: z.coerce.number().min(0, "Số lượng phải ít nhất 0"),
+  originalPrice: z.coerce.number().min(0, "Giá phải ít nhất 0"),
   discount: z.coerce.number().min(0).max(100),
-  vgaVram: z.string().min(1, "VRAM must be at least 1"),
-  vgaVramType: z.string().min(1, "VRAM type is required"),
-  vgaBoostSpeed: z.string().min(1, "Boost speed is required"),
-  vgaPCIExpress: z.string().min(1, "PCI Express version is required"),
+  vgaVram: z.string().min(1, "VRAM phải ít nhất 1"),
+  vgaVramType: z.string().min(1, "VRAM type là bắt buộc"),
+  vgaBoostSpeed: z.string().min(1, "Boost speed là bắt buộc"),
+  vgaPCIExpress: z.string().min(1, "PCI Express version là bắt buộc"),
   vgaDisplayPorts: z.coerce.number().min(0).default(0),
   vgaHdmiPorts: z.coerce.number().min(0).default(0),
   vgaVgaPorts: z.coerce.number().min(0).default(0),
@@ -48,14 +48,14 @@ const vgaSchema = z.object({
   vga6Plus2PinConnectors: z.coerce.number().min(0).default(0),
   vga8PinConnectors: z.coerce.number().min(0).default(0),
   vga12PinConnectors: z.coerce.number().min(0).default(0),
-  vgaMaxTDP: z.string().min(1, "Max TDP is required"),
-  vgaSizeWidth: z.string().min(1, "Width is required"),
-  vgaSizeLength: z.string().min(1, "Length is required"),
-  vgaSizeHeight: z.string().min(1, "Height is required"),
+  vgaMaxTDP: z.string().min(1, "Max TDP là bắt buộc"),
+  vgaSizeWidth: z.string().min(1, "Width là bắt buộc"),
+  vgaSizeLength: z.string().min(1, "Length là bắt buộc"),
+  vgaSizeHeight: z.string().min(1, "Height là bắt buộc"),
   images: z.array(z.string()).optional(),
   imagePublicIds: z.array(z.string()).optional(),
   details: z.array(z.object({
-    title: z.string().min(1, "Title is required"),
+    title: z.string().min(1, "Title là bắt buộc"),
     content: z.string().optional(),
     image: z.string().optional()
   })).optional()
@@ -106,7 +106,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
   useEffect(() => {
     const fetchData = async () => {
       if (!session?.user?.accessToken) {
-        toast.error("Please login to continue");
+        toast.error("Vui lòng đăng nhập để tiếp tục");
         return;
       }
       setIsLoading(true);
@@ -154,7 +154,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
 
   const onSubmit = async (values: any) => {
     if (!session?.user?.accessToken) {
-      toast.error("Please login to continue");
+      toast.error("Vui lòng đăng nhập để tiếp tục");
       return;
     }
     try {
@@ -195,20 +195,20 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
       if (response.error) {
         toast.error(response.error);
       } else {
-        toast.success("VGA added successfully");
+        toast.success("Thêm VGA thành công");
         form.reset();
         setTimeout(() => { router.push("/admin/products"); }, 2000);
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error("Failed to add VGA");
+      toast.error("Lỗi khi thêm VGA");
     }
   };
 
   return (
     <div className="max-w-xl mx-auto mt-8 bg-white rounded-xl shadow-lg p-8">
-      <Button type="button" onClick={onBack} variant="ghost" className="mb-4">&larr; Back</Button>
-      <h3 className="text-2xl font-bold mb-6 text-center">Add New VGA</h3>
+      <Button type="button" onClick={onBack} variant="ghost" className="mb-4">&larr; Quay lại</Button>
+      <h3 className="text-2xl font-bold mb-6 text-center">Thêm VGA mới</h3>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -216,9 +216,9 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Tên</FormLabel>
                 <FormControl>
-                  <Input placeholder="VGA name" {...field} />
+                  <Input placeholder="Tên VGA" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -231,7 +231,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
               name="categoryId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>Danh mục</FormLabel>
                   <Select
                     value={form.watch("categoryId")}
                     onValueChange={val => form.setValue("categoryId", val)}
@@ -239,7 +239,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
+                        <SelectValue placeholder="Chọn danh mục" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -259,7 +259,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
               name="manufacturerId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Manufacturer</FormLabel>
+                  <FormLabel>Nhà sản xuất</FormLabel>
                   <Select
                     value={field.value}
                     onValueChange={field.onChange}
@@ -267,7 +267,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a manufacturer" />
+                        <SelectValue placeholder="Chọn nhà sản xuất" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -289,9 +289,9 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
               name="stock"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Stock</FormLabel>
+                  <FormLabel>Tồn kho</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Stock quantity" {...field} />
+                    <Input type="number" placeholder="Số lượng" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -302,9 +302,9 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
               name="originalPrice"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Original Price</FormLabel>
+                  <FormLabel>Giá gốc</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Original price" {...field} />
+                    <Input type="number" placeholder="Giá gốc" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -315,9 +315,9 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
               name="discount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Discount (%)</FormLabel>
+                  <FormLabel>Chiết khấu (%)</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Discount percentage" {...field} />
+                    <Input type="number" placeholder="Chiết khấu" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -325,7 +325,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
             />
           </div>
           <div className="bg-gray-50 rounded p-4 mt-4">
-            <h4 className="font-semibold mb-2 text-gray-700">VGA Specs</h4>
+            <h4 className="font-semibold mb-2 text-gray-700">Thông số VGA</h4>
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -340,7 +340,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a size" />
+                            <SelectValue placeholder="Chọn dung lượng VRAM" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -366,7 +366,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                 name="vgaVramType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>VRAM Type</FormLabel>
+                    <FormLabel>Loại VRAM</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -374,7 +374,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a VRAM type" />
+                            <SelectValue placeholder="Chọn loại VRAM" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -395,7 +395,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                 name="vgaBoostSpeed"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Boost Speed (MHz)</FormLabel>
+                    <FormLabel>Xung nhịp boost (MHz)</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value.startsWith("custom_") ? "custom" : field.value}
@@ -409,7 +409,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select boost speed" />
+                            <SelectValue placeholder="Chọn xung nhịp boost" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -436,7 +436,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                     {field.value.startsWith("custom_") && (
                       <Input
                         className="mt-2"
-                        placeholder="Enter custom boost speed (e.g., 2750 MHz)"
+                        placeholder="Nhập xung nhịp boost tùy chỉnh (vd: 2750 MHz)"
                         value={field.value.replace("custom_", "")}
                         onChange={e => field.onChange("custom_" + e.target.value)}
                       />
@@ -450,7 +450,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                 name="vgaPCIExpress"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>PCI Express</FormLabel>
+                    <FormLabel>Chuẩn PCI Express</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value.startsWith("custom_") ? "custom" : field.value}
@@ -464,7 +464,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select PCI Express version" />
+                            <SelectValue placeholder="Chọn chuẩn PCI Express" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -487,7 +487,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                 name="vgaMaxTDP"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Max TDP (W)</FormLabel>
+                    <FormLabel>TDP tối đa (W)</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value.startsWith("custom_") ? "custom" : field.value}
@@ -501,7 +501,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select max TDP" />
+                            <SelectValue placeholder="Chọn TDP tối đa" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -529,7 +529,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                     {field.value.startsWith("custom_") && (
                       <Input
                         className="mt-2"
-                        placeholder="Enter custom max TDP (e.g., 425W)"
+                        placeholder="Nhập TDP tối đa tùy chỉnh (vd: 425W)"
                         value={field.value.replace("custom_", "")}
                         onChange={e => field.onChange("custom_" + e.target.value)}
                       />
@@ -542,7 +542,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
 
             {/* Display Ports Section */}
             <div className="mt-6">
-              <h5 className="font-semibold mb-3 text-gray-700">Display Ports</h5>
+              <h5 className="font-semibold mb-3 text-gray-700">Cổng xuất hình</h5>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <FormField
                   control={form.control}
@@ -554,7 +554,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                         <Input
                           type="number"
                           min="0"
-                          placeholder="Count"
+                          placeholder="Số lượng"
                           {...field}
                         />
                       </FormControl>
@@ -572,7 +572,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                         <Input
                           type="number"
                           min="0"
-                          placeholder="Count"
+                          placeholder="Số lượng"
                           {...field}
                         />
                       </FormControl>
@@ -590,7 +590,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                         <Input
                           type="number"
                           min="0"
-                          placeholder="Count"
+                          placeholder="Số lượng"
                           {...field}
                         />
                       </FormControl>
@@ -608,7 +608,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                         <Input
                           type="number"
                           min="0"
-                          placeholder="Count"
+                          placeholder="Số lượng"
                           {...field}
                         />
                       </FormControl>
@@ -621,7 +621,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
 
             {/* Power Connectors Section */}
             <div className="mt-6">
-              <h5 className="font-semibold mb-3 text-gray-700">Power Connectors</h5>
+              <h5 className="font-semibold mb-3 text-gray-700">Cổng nguồn</h5>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <FormField
                   control={form.control}
@@ -633,7 +633,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                         <Input
                           type="number"
                           min="0"
-                          placeholder="Count"
+                          placeholder="Số lượng"
                           {...field}
                         />
                       </FormControl>
@@ -651,7 +651,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                         <Input
                           type="number"
                           min="0"
-                          placeholder="Count"
+                          placeholder="Số lượng"
                           {...field}
                         />
                       </FormControl>
@@ -669,7 +669,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                         <Input
                           type="number"
                           min="0"
-                          placeholder="Count"
+                          placeholder="Số lượng"
                           {...field}
                         />
                       </FormControl>
@@ -687,7 +687,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                         <Input
                           type="number"
                           min="0"
-                          placeholder="Count"
+                          placeholder="Số lượng"
                           {...field}
                         />
                       </FormControl>
@@ -700,19 +700,19 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
 
             {/* Dimensions Section */}
             <div className="mt-6">
-              <h5 className="font-semibold mb-3 text-gray-700">Dimensions</h5>
+              <h5 className="font-semibold mb-3 text-gray-700">Kích thước</h5>
               <div className="grid grid-cols-3 gap-4">
                 <FormField
                   control={form.control}
                   name="vgaSizeWidth"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Width (mm)</FormLabel>
+                      <FormLabel>Rộng (mm)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           min="0"
-                          placeholder="Enter width"
+                          placeholder="Nhập chiều rộng"
                           {...field}
                         />
                       </FormControl>
@@ -725,12 +725,12 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                   name="vgaSizeLength"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Length (mm)</FormLabel>
+                      <FormLabel>Dài (mm)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           min="0"
-                          placeholder="Enter length"
+                          placeholder="Nhập chiều dài"
                           {...field}
                         />
                       </FormControl>
@@ -743,12 +743,12 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                   name="vgaSizeHeight"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Height (mm)</FormLabel>
+                      <FormLabel>Cao (mm)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           min="0"
-                          placeholder="Enter height"
+                          placeholder="Nhập chiều cao"
                           {...field}
                         />
                       </FormControl>
@@ -760,7 +760,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
             </div>
           </div>
           <div className="space-y-4">
-            <FormLabel>Product Images</FormLabel>
+            <FormLabel>Hình ảnh sản phẩm</FormLabel>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {images.map((image, index) => (
                 <div key={index} className="relative group">
@@ -772,9 +772,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                     className={`rounded-lg object-cover ${index === 0 ? 'ring-2 ring-blue-500' : ''}`}
                   />
                   {index === 0 && (
-                    <span className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
-                      Main
-                    </span>
+                    <span className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">Ảnh chính</span>
                   )}
                   <button
                     type="button"
@@ -786,7 +784,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                     className="absolute bottom-2 left-2 bg-white text-blue-600 border border-blue-500 px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                     disabled={index === 0}
                   >
-                    Set as Main
+                    Đặt làm ảnh chính
                   </button>
                   <button
                     type="button"
@@ -830,7 +828,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
-                    <span className="mt-2 text-sm text-gray-500">Upload Image</span>
+                    <span className="mt-2 text-sm text-gray-500">Tải ảnh lên</span>
                   </button>
                 )}
               </CldUploadWidget>
@@ -838,12 +836,12 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
           </div>
           {/* Product Details Section */}
           <div className="bg-gray-50 rounded p-4 mt-4">
-            <h4 className="font-semibold mb-2 text-gray-700">Product Details Sections</h4>
+            <h4 className="font-semibold mb-2 text-gray-700">Mô tả sản phẩm</h4>
             {details.map((detail, idx) => (
               <div key={idx} className="mb-4 border rounded p-3 bg-white">
                 <input
                   className="mb-2 w-full border rounded px-2 py-1"
-                  placeholder="Section Title"
+                  placeholder="Tiêu đề"
                   value={detail.title}
                   onChange={e => {
                     const newDetails = [...details];
@@ -853,7 +851,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                 />
                 <textarea
                   className="mb-2 w-full border rounded px-2 py-1"
-                  placeholder="Section Content"
+                  placeholder="Nội dung"
                   value={detail.content}
                   onChange={e => {
                     const newDetails = [...details];
@@ -863,7 +861,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                 />
                 {/* Image selection from uploaded images as thumbnails */}
                 <div className="mb-2">
-                  <div className="font-medium mb-1">Select Image</div>
+                  <div className="font-medium mb-1">Chọn ảnh</div>
                   <div className="flex gap-2 flex-wrap">
                     <div
                       className={`border rounded cursor-pointer p-1 ${!detail.image ? 'ring-2 ring-blue-500' : ''}`}
@@ -873,7 +871,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                         setDetails(newDetails);
                       }}
                     >
-                      <div className="w-24 h-16 flex items-center justify-center text-xs text-gray-400">No image</div>
+                      <div className="w-24 h-16 flex items-center justify-center text-xs text-gray-400">Không có ảnh</div>
                     </div>
                     {images.map((img, i) => (
                       <div
@@ -895,7 +893,7 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
                   className="text-red-500 text-sm"
                   onClick={() => setDetails(details.filter((_, i) => i !== idx))}
                 >
-                  Remove Section
+                  Xóa
                 </button>
               </div>
             ))}
@@ -904,10 +902,10 @@ export default function AddVGAForm({ onBack }: { onBack: () => void }) {
               className="bg-blue-500 text-white px-3 py-1 rounded"
               onClick={() => setDetails([...details, { title: "", content: "", image: "" }])}
             >
-              Add Section
+              Thêm
             </button>
           </div>
-          <Button type="submit" className="w-full">Add VGA</Button>
+          <Button type="submit" className="w-full">Thêm VGA</Button>
         </form>
       </Form>
     </div>

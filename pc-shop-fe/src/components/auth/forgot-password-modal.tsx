@@ -33,16 +33,16 @@ const ForgotPasswordModal = ({ isOpen, setIsOpen, userEmail }: { isOpen: boolean
         })
 
         if (res?.statusCode === 400) {
-            toast.warning("No user found!", { autoClose: 3000 })
+            toast.warning("Không tìm thấy tài khoản!", { autoClose: 3000 })
         }
         else if (res?.statusCode === 201) {
-            toast.success("A change password code is sent, please check your mail inbox!", { autoClose: 4000 })
+            toast.success("Mã code đổi mật khẩu đã được gửi đến email của bạn, vui lòng kiểm tra hộp thư đến!", { autoClose: 4000 })
             setTimeout(() => {
                 router.push(`/auth/change-password?email=${encodeURIComponent(email)}`);
             }, 2500);
         }
         else {
-            toast.error("Failed to send code! Internal server error")
+            toast.error("Lỗi hệ thống! Vui lòng thử lại sau!")
         }
 
     };
@@ -52,13 +52,13 @@ const ForgotPasswordModal = ({ isOpen, setIsOpen, userEmail }: { isOpen: boolean
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Forgot password?</DialogTitle>
+                    <DialogTitle>Quên mật khẩu?</DialogTitle>
                     <DialogDescription>
-                        Enter your email and click the button below to get an email with a code to reset your password
+                        Nhập email của bạn và nhấn nút bên dưới, hệ thống sẽ gửi mã code để đổi mật khẩu đến email của bạn
                     </DialogDescription>
                     <Input
                         type="text"
-                        placeholder="e.g: example@mail.com"
+                        placeholder="Ví dụ: example@gmail.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
@@ -66,7 +66,7 @@ const ForgotPasswordModal = ({ isOpen, setIsOpen, userEmail }: { isOpen: boolean
                 <DialogFooter>
                     <Button onClick={() => sendCode(email)}
                         className="w-full">
-                        Get code
+                        Lấy mã code
                     </Button>
                 </DialogFooter>
             </DialogContent>

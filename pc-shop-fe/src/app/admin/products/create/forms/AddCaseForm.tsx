@@ -33,23 +33,23 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 const caseSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  categoryId: z.string().min(1, "Category is required"),
-  manufacturerId: z.string().min(1, "Manufacturer is required"),
-  stock: z.coerce.number().min(0, "Stock must be at least 0"),
-  originalPrice: z.coerce.number().min(0, "Price must be at least 0"),
+  name: z.string().min(1, "Không được để trống"),
+  categoryId: z.string().min(1, "Không được để trống"),
+  manufacturerId: z.string().min(1, "Không được để trống"),
+  stock: z.coerce.number().min(0, "Không được để trống, tối thiểu 0"),
+  originalPrice: z.coerce.number().min(0, "Không được để trống, tối thiểu 0"),
   discount: z.coerce.number().min(0).max(100),
-  formFactor: z.string().min(1, "Form factor is required"),
-  material: z.string().min(1, "Material is required"),
-  color: z.string().min(1, "Color is required"),
-  length: z.coerce.number().min(0, "Length must be at least 0"),
-  width: z.coerce.number().min(0, "Width must be at least 0"),
-  height: z.coerce.number().min(0, "Height must be at least 0"),
-  fans: z.coerce.number().min(0, "Number of fans must be at least 0"),
+  formFactor: z.string().min(1, "Không được để trống"),
+  material: z.string().min(1, "Không được để trống"),
+  color: z.string().min(1, "Không được để trống"),
+  length: z.coerce.number().min(0, "Không được để trống, tối thiểu 0"),
+  width: z.coerce.number().min(0, "Không được để trống, tối thiểu 0"),
+  height: z.coerce.number().min(0, "Không được để trống, tối thiểu 0"),
+  fans: z.coerce.number().min(0, "Không được để trống, tối thiểu 0"),
   images: z.array(z.string()).optional(),
   imagePublicIds: z.array(z.string()).optional(),
   details: z.array(z.object({
-    title: z.string().min(1, "Title is required"),
+    title: z.string().min(1, "Không được để trống"),
     content: z.string().optional(),
     image: z.string().optional()
   })).optional()
@@ -90,7 +90,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
 
   const onSubmit = async (values: any) => {
     if (!session?.user?.accessToken) {
-      toast.error("Please login to continue");
+      toast.error("Đăng nhập để tiếp tục");
       return;
     }
     try {
@@ -123,7 +123,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
       if (response.error) {
         toast.error(response.error);
       } else {
-        toast.success("Case added successfully");
+        toast.success("Thêm sản phẩm thành công");
         form.reset();
         setImages([]);
         setImagePublicIds([]);
@@ -131,14 +131,14 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error("Failed to add Case");
+      toast.error("Lỗi khi thêm sản phẩm");
     }
   };
 
   useEffect(() => {
     const fetchData = async () => {
       if (!session?.user?.accessToken) {
-        toast.error("Please login to continue");
+        toast.error("Đăng nhập để tiếp tục");
         return;
       }
       setIsLoading(true);
@@ -184,8 +184,8 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="max-w-xl mx-auto mt-8 bg-white rounded-xl shadow-lg p-8">
-      <Button type="button" onClick={onBack} variant="ghost" className="mb-4">&larr; Back</Button>
-      <h3 className="text-2xl font-bold mb-6 text-center">Add New Case</h3>
+      <Button type="button" onClick={onBack} variant="ghost" className="mb-4">&larr; Quay lại</Button>
+      <h3 className="text-2xl font-bold mb-6 text-center">Thêm mới</h3>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -193,7 +193,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Tên</FormLabel>
                 <FormControl>
                   <Input placeholder="Case name" {...field} />
                 </FormControl>
@@ -207,7 +207,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
               name="categoryId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>Danh mục</FormLabel>
                   <Select
                     value={form.watch("categoryId")}
                     onValueChange={val => form.setValue("categoryId", val)}
@@ -215,7 +215,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
+                        <SelectValue placeholder="Chọn danh mục" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -235,7 +235,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
               name="manufacturerId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Manufacturer</FormLabel>
+                  <FormLabel>Nhà sản xuất</FormLabel>
                   <Select
                     value={field.value}
                     onValueChange={field.onChange}
@@ -243,7 +243,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a manufacturer" />
+                        <SelectValue placeholder="Chọn nhà sản xuất" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -265,9 +265,9 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
               name="stock"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Stock</FormLabel>
+                  <FormLabel>Tồn kho</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Stock quantity" {...field} />
+                    <Input type="number" placeholder="Số lượng" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -278,9 +278,9 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
               name="originalPrice"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Original Price</FormLabel>
+                  <FormLabel>Giá gốc</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Original price" {...field} />
+                    <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -291,9 +291,9 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
               name="discount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Discount (%)</FormLabel>
+                  <FormLabel>Giảm giá (%)</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Discount percentage" {...field} />
+                    <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -301,14 +301,14 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
             />
           </div>
           <div className="bg-gray-50 rounded p-4 mt-4">
-            <h4 className="font-semibold mb-2 text-gray-700">Case Specs</h4>
+            <h4 className="font-semibold mb-2 text-gray-700">Thông số chi tiết</h4>
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="formFactor"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Form Factor</FormLabel>
+                    <FormLabel>Kiểu case</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -316,7 +316,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select form factor" />
+                            <SelectValue placeholder="Chọn kiểu case" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -336,7 +336,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                 name="material"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Material</FormLabel>
+                    <FormLabel>Chất liệu</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -344,14 +344,14 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select material" />
+                            <SelectValue placeholder="Chọn một chất liệu" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Steel">Steel</SelectItem>
-                          <SelectItem value="Aluminum">Aluminum</SelectItem>
-                          <SelectItem value="Plastic">Plastic</SelectItem>
-                          <SelectItem value="Tempered Glass">Tempered Glass</SelectItem>
+                          <SelectItem value="Steel">Thép</SelectItem>
+                          <SelectItem value="Aluminum">Nhôm</SelectItem>
+                          <SelectItem value="Plastic">Nhựa</SelectItem>
+                          <SelectItem value="Tempered Glass">Kính cường lực</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -364,7 +364,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                 name="color"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Color</FormLabel>
+                    <FormLabel>Màu</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -372,13 +372,13 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select color" />
+                            <SelectValue placeholder="Chọn màu" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="Black">Black</SelectItem>
-                          <SelectItem value="White">White</SelectItem>
-                          <SelectItem value="Gray">Gray</SelectItem>
+                          <SelectItem value="Black">Đen</SelectItem>
+                          <SelectItem value="White">Trắng</SelectItem>
+                          <SelectItem value="Gray">Xám</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -387,16 +387,16 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                 )}
               />
               <div className="col-span-2">
-                <h5 className="text-sm font-medium mb-2">Dimensions (mm)</h5>
+                <h5 className="text-sm font-medium mb-2">Kích thước (mm)</h5>
                 <div className="grid grid-cols-3 gap-4">
                   <FormField
                     control={form.control}
                     name="length"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Length</FormLabel>
+                        <FormLabel>Chiều dài</FormLabel>
                         <FormControl>
-                          <Input type="number" placeholder="Length" {...field} />
+                          <Input type="number" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -407,9 +407,9 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                     name="width"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Width</FormLabel>
+                        <FormLabel>Chiều rộng</FormLabel>
                         <FormControl>
-                          <Input type="number" placeholder="Width" {...field} />
+                          <Input type="number" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -420,9 +420,9 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                     name="height"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Height</FormLabel>
+                        <FormLabel>Chiều cao</FormLabel>
                         <FormControl>
-                          <Input type="number" placeholder="Height" {...field} />
+                          <Input type="number" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -435,9 +435,9 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                 name="fans"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Number of Fans</FormLabel>
+                    <FormLabel>Số lượng quạt</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="Number of included fans" {...field} />
+                      <Input type="number" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -447,7 +447,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
           </div>
 
           <div className="space-y-4">
-            <FormLabel>Product Images</FormLabel>
+            <FormLabel>Hình ảnh sản phẩm</FormLabel>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {images.map((image, index) => (
                 <div key={index} className="relative group">
@@ -460,7 +460,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                   />
                   {index === 0 && (
                     <span className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
-                      Main
+                      Ảnh chính
                     </span>
                   )}
                   <button
@@ -473,7 +473,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                     className="absolute bottom-2 left-2 bg-white text-blue-600 border border-blue-500 px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                     disabled={index === 0}
                   >
-                    Set as Main
+                    Đặt làm ảnh chính
                   </button>
                   <button
                     type="button"
@@ -517,7 +517,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
-                    <span className="mt-2 text-sm text-gray-500">Upload Image</span>
+                    <span className="mt-2 text-sm text-gray-500">Tải ảnh lên</span>
                   </button>
                 )}
               </CldUploadWidget>
@@ -525,12 +525,12 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
           </div>
             {/* Product Details Section */}
           <div className="bg-gray-50 rounded p-4 mt-4">
-            <h4 className="font-semibold mb-2 text-gray-700">Product Details Sections</h4>
+            <h4 className="font-semibold mb-2 text-gray-700">Mô tả sản phẩm</h4>
             {details.map((detail, idx) => (
               <div key={idx} className="mb-4 border rounded p-3 bg-white">
                 <input
                   className="mb-2 w-full border rounded px-2 py-1"
-                  placeholder="Section Title"
+                  placeholder="Tiêu đề"
                   value={detail.title}
                   onChange={e => {
                     const newDetails = [...details];
@@ -540,7 +540,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                 />
                 <textarea
                   className="mb-2 w-full border rounded px-2 py-1"
-                  placeholder="Section Content"
+                  placeholder="Nội dung"
                   value={detail.content}
                   onChange={e => {
                     const newDetails = [...details];
@@ -550,7 +550,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                 />
                 {/* Image selection from uploaded images as thumbnails */}
                 <div className="mb-2">
-                  <div className="font-medium mb-1">Select Image</div>
+                  <div className="font-medium mb-1">Chọn ảnh</div>
                   <div className="flex gap-2 flex-wrap">
                     <div
                       className={`border rounded cursor-pointer p-1 ${!detail.image ? 'ring-2 ring-blue-500' : ''}`}
@@ -560,7 +560,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                         setDetails(newDetails);
                       }}
                     >
-                      <div className="w-24 h-16 flex items-center justify-center text-xs text-gray-400">No image</div>
+                      <div className="w-24 h-16 flex items-center justify-center text-xs text-gray-400">Không có ảnh</div>
                     </div>
                     {images.map((img, i) => (
                       <div
@@ -582,7 +582,7 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
                   className="text-red-500 text-sm"
                   onClick={() => setDetails(details.filter((_, i) => i !== idx))}
                 >
-                  Remove Section
+                  Xóa
                 </button>
               </div>
             ))}
@@ -591,10 +591,10 @@ export default function AddCaseForm({ onBack }: { onBack: () => void }) {
               className="bg-blue-500 text-white px-3 py-1 rounded"
               onClick={() => setDetails([...details, { title: "", content: "", image: "" }])}
             >
-              Add Section
+              Thêm
             </button>
           </div>
-          <Button type="submit" className="w-full">Add Case</Button>
+          <Button type="submit" className="w-full">Thêm case</Button>
         </form>
       </Form>
     </div>

@@ -29,7 +29,7 @@ export const columns = (refreshTable: () => void): ColumnDef<ICategory>[] => [
         size: 50,
     },
     {
-        header: ({ column }) => <SortableHeader column={column} title="Name" />,
+        header: ({ column }) => <SortableHeader column={column} title="Tên danh mục" />,
         accessorKey: "name",
         enableResizing: true,
         size: 100,
@@ -37,7 +37,7 @@ export const columns = (refreshTable: () => void): ColumnDef<ICategory>[] => [
         maxSize: 200,
     },
     {
-        header: ({ column }) => <SortableHeader column={column} title="Description" />,
+        header: ({ column }) => <SortableHeader column={column} title="Mô tả" />,
         accessorKey: "description",
         size: 120,
         enableResizing: true,
@@ -55,34 +55,34 @@ export const columns = (refreshTable: () => void): ColumnDef<ICategory>[] => [
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
+                            <span className="sr-only">Mở menu</span>
                             <MoreHorizontal className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuLabel>Hành động</DropdownMenuLabel>
                         <DropdownMenuItem
                             onClick={() => navigator.clipboard.writeText(category._id)}
                         >
-                            Copy category ID
+                            Sao chép ID danh mục
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => {
                             router.push(`/admin/categories/${category._id}/edit`)
-                        }}>Edit category</DropdownMenuItem>
+                        }}>Sửa danh mục</DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DeleteConfirmationModal
-                            title="Are you sure?"
-                            description="This action cannot be undone. This will permanently delete the category:"
+                            title="Bạn có chắc chắn?"
+                            description="Hành động này không thể hoàn tác. Điều này sẽ xóa vĩnh viễn danh mục:"
                             itemName={category.name}
                             itemId={category._id}
                             apiEndpoint="/categories"
-                            successMessage="Category deleted successfully!"
-                            errorMessage="An error occurred while deleting the category"
+                            successMessage="Danh mục đã được xóa thành công!"
+                            errorMessage="Đã xảy ra lỗi khi xóa danh mục"
                             onSuccess={refreshTable}
                             trigger={
                                 <DropdownMenuItem onSelect={e => e.preventDefault()}>
-                                    Delete category
+                                    Xóa danh mục
                                 </DropdownMenuItem>
                             }
                         />

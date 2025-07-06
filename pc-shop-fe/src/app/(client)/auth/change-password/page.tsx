@@ -7,6 +7,7 @@ import { sendRequest } from "@/utils/api";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +17,7 @@ const ChangePassword = () => {
     const searchParams = useSearchParams();
     const email = searchParams.get("email") || "";
     const router = useRouter();
+    const { data: session } = useSession();
     const form = useForm({
         defaultValues: {
             email: decodeURIComponent(email),
@@ -35,20 +37,23 @@ const ChangePassword = () => {
                 codeId,
                 newPassword,
                 confirmPassword
+            },
+            headers: {
+                "Authorization": `Bearer ${session?.user?.accessToken}`
             }
         })
 
         if (res?.statusCode === 400) {
-            toast.warning("Invalid code or wrong code!", { autoClose: 4000 })
+            toast.warning("Mã code không hợp lệ hoặc đã hết hạn!", { autoClose: 4000 })
         }
-        else if (res?.statusCode === 201) {
-            toast.success("Change password successfully!", { autoClose: 4000 })
+        else if (res?.statusCode === 201 || res?.statusCode === 200) {
+            toast.success("Đổi mật khẩu thành công!", { autoClose: 4000 })
             setTimeout(() => {
                 router.push(`/auth/login`);
             }, 2800);
         }
         else {
-            toast.error("Failed to change password! Internal server error")
+            toast.error("Lỗi hệ thống! Vui lòng thử lại sau!")
         }
     };
 
@@ -56,7 +61,7 @@ const ChangePassword = () => {
         <div className="flex justify-center mt-10">
             <Card className="w-full max-w-md p-6 shadow-lg">
                 <CardHeader>
-                    <CardTitle className="text-center">Change Password</CardTitle>
+                    <CardTitle className="text-center">Đổi mật khẩu</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Form {...form}>
@@ -91,10 +96,10 @@ const ChangePassword = () => {
                             <FormField
                                 control={form.control}
                                 name="newPassword"
-                                rules={{ required: "Please input your new password!" }}
+                                rules={{ required: "Vui lòng nhập mật khẩu mới!" }}
                                 render={({ field }) => (
                                     <FormItem>
-                                        <Label>New password</Label>
+                                        <Label>Mật khẩu mới</Label>
                                         <FormControl>
                                             <Input type="password" {...field} />
                                         </FormControl>
@@ -105,10 +110,10 @@ const ChangePassword = () => {
                             <FormField
                                 control={form.control}
                                 name="confirmPassword"
-                                rules={{ required: "Please input your confirm password!" }}
+                                rules={{ required: "Vui lòng nhập lại mật khẩu!" }}
                                 render={({ field }) => (
                                     <FormItem>
-                                        <Label>Confirm password</Label>
+                                        <Label>Nhập lại mật khẩu</Label>
                                         <FormControl>
                                             <Input type="password" {...field} />
                                         </FormControl>
@@ -116,7 +121,7 @@ const ChangePassword = () => {
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit" className="w-full">Apply</Button>
+                            <Button type="submit" className="w-full">Xác nhận</Button>
                         </form>
                     </Form>
                 </CardContent>

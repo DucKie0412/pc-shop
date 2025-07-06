@@ -109,7 +109,7 @@ const AdminRefundsPage = () => {
     return (
         <div className="container mx-auto py-8">
             <div className="bg-white rounded-lg shadow p-6">
-                <h1 className="text-2xl font-bold mb-6">Quản lý yêu cầu hoàn tiền</h1>
+                <h1 className="text-2xl font-bold mb-6">Yêu cầu hoàn tiền</h1>
                 <div className="flex items-center gap-4 mb-6">
                     <input
                         type="text"
@@ -153,13 +153,13 @@ const AdminRefundsPage = () => {
                                                         className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-md text-xs"
                                                         onClick={() => handleApproveReject(request._id, 'approve')}
                                                     >
-                                                        Approve
+                                                        Duyệt
                                                     </button>
                                                     <button
                                                         className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-xs"
                                                         onClick={() => handleApproveReject(request._id, 'reject')}
                                                     >
-                                                        Reject
+                                                        Từ chối
                                                     </button>
                                                 </div>
                                             ) : (

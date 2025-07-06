@@ -79,7 +79,7 @@ export default function EditProductPage() {
                         >
                             <ArrowLeft className="h-4 w-4" />
                         </Button>
-                        <CardTitle>Edit Product</CardTitle>
+                        <CardTitle>Sửa sản phẩm</CardTitle>
                     </div>
                 </CardHeader>
                 <CardContent>
