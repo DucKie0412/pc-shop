@@ -53,6 +53,16 @@ const OrderLookupModal: React.FC<OrderLookupModalProps> = ({ isOpen, onClose }) 
     }
   };
 
+  // Add this mapping for order statuses
+  const statusMap: Record<string, { label: string; color: string }> = {
+    pending:   { label: 'Chờ xử lý', color: 'text-yellow-600' },
+    completed: { label: 'Hoàn thành', color: 'text-green-600' },
+    cancelled: { label: 'Đã hủy', color: 'text-red-600' },
+    shipping:  { label: 'Đang giao', color: 'text-blue-600' },
+    approved: {label: 'Đã được hoàn tiền', color: 'text-green-600'},
+    rejected: {label: 'Bị hủy hoàn tiền', color: 'text-red-600'}
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl relative">
@@ -90,7 +100,14 @@ const OrderLookupModal: React.FC<OrderLookupModalProps> = ({ isOpen, onClose }) 
                 <div className="flex justify-between items-center mb-2">
                   <div><span className="font-bold">Mã đơn:</span> {order._id}</div>
                   <div><span className="font-bold">Ngày đặt:</span> {new Date(order.createdAt).toLocaleString('vi-VN')}</div>
-                  {order.status && <div><span className="font-bold">Trạng thái:</span> {order.status}</div>}
+                  {order.status && (
+                    <div>
+                      <span className="font-bold">Trạng thái:</span>{' '}
+                      <span className={statusMap[order.status]?.color || ''}>
+                        {statusMap[order.status]?.label || order.status}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <table className="w-full text-sm mb-2">

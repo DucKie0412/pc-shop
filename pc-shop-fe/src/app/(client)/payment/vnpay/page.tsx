@@ -25,22 +25,22 @@ const VnpayPage = () => {
 
     // List of supported banks
     const banks = [
-        { name: 'VietcomBank', bankCode: 'VCB', logo: '/banks/vietcombank.png' },
-        { name: 'VIB Bank', bankCode: 'VIB', logo: '/banks/vib.png' },
-        { name: 'MBBank', bankCode: 'MB', logo: '/banks/mbbank.png' },
-        { name: 'VietinBank', bankCode: 'VietinBank', logo: '/banks/vietinbank.png' },
-        { name: 'TPBank', bankCode: 'TPB', logo: '/banks/tpbank.png' },
-        { name: 'HDBank', bankCode: 'HDB', logo: '/banks/hdbank.png' },
-        { name: 'Navibank', bankCode: 'NCB', logo: '/banks/navibank.png' },
-        { name: 'Maritime Bank', bankCode: 'MSB', logo: '/banks/maritimebank.png' },
-        { name: 'GPBank', bankCode: 'GPB', logo: '/banks/gpbank.png' },
-        { name: 'VietABank', bankCode: 'VAB', logo: '/banks/vietabank.png' },
-        { name: 'OceanBank', bankCode: 'OCB', logo: '/banks/oceanbank.png' },
-        { name: 'BacA Bank', bankCode: 'BAB', logo: '/banks/bacabank.png' },
-        { name: 'ABBank', bankCode: 'ABB', logo: '/banks/abbank.png' },
-        { name: 'BIDV', bankCode: 'BIDV', logo: '/banks/bidv.png' },
-        { name: 'SHB', bankCode: 'SHB', logo: '/banks/shb.png' },
-        { name: 'BaoVietBank', bankCode: 'BVB', logo: '/banks/baovietbank.png' },
+        { name: 'VietcomBank', bankCode: 'VCB', accountNo: '1016852345', logo: '/banks/Vietcombank.webp' },
+        { name: 'VIB Bank', bankCode: 'VIB', accountNo: '1234567890', logo: '/banks/vib.webp' },
+        { name: 'MBBank', bankCode: 'MB', accountNo: '2345678901', logo: '/banks/mb.webp' },
+        { name: 'VietinBank', accountNo: '101872836959', bankCode: 'VietinBank', logo: '/banks/Viettinbank.png' },
+        { name: 'TPBank', bankCode: 'TPB', accountNo: '3456789012', logo: '/banks/tpbank.webp' },
+        { name: 'HDBank', bankCode: 'HDB', accountNo: '4567890123', logo: '/banks/hdbank.webp' },
+        { name: 'Navibank', bankCode: 'NCB', accountNo: '5678901234', logo: '/banks/navibank.png' },
+        { name: 'Maritime Bank', bankCode: 'MSB', accountNo: '6789012345', logo: '/banks/maritimebank.png' },
+        { name: 'GPBank', bankCode: 'GPB', accountNo: '7890123456', logo: '/banks/gpbank.png' },
+        { name: 'VietABank', bankCode: 'VAB', accountNo: '8901234567', logo: '/banks/vietabank.png' },
+        { name: 'OceanBank', bankCode: 'OCB', accountNo: '9012345678', logo: '/banks/oceanbank.png' },
+        { name: 'BacA Bank', bankCode: 'BAB', accountNo: '1122334455', logo: '/banks/bacabank.png' },
+        { name: 'ABBank', bankCode: 'ABB', accountNo: '2233445566', logo: '/banks/abbank.png' },
+        { name: 'BIDV', bankCode: 'BIDV', accountNo: '3344556677', logo: '/banks/bidv.png' },
+        { name: 'SHB', bankCode: 'SHB', accountNo: '4455667788', logo: '/banks/shb.png' },
+        { name: 'BaoVietBank', bankCode: 'BVB', accountNo: '5566778899', logo: '/banks/baovietbank.png' },
     ];
     const [selectedBank, setSelectedBank] = useState<null | typeof banks[0]>(null);
 
@@ -166,14 +166,14 @@ const VnpayPage = () => {
                     ) : (
                         <>
                             <Image
-                                src={`https://img.vietqr.io/image/${selectedBank.bankCode}-${bankAccount.accountNo}-compact2.png?amount=${order.total}&addInfo=Thanh+toan+don+hang+${order._id}&accountName=${encodeURIComponent(bankAccount.accountName)}`}
+                                src={`https://img.vietqr.io/image/${selectedBank.bankCode}-${selectedBank.accountNo}-compact2.png?amount=${order.total}&addInfo=Thanh+toan+don+hang+${order._id}&accountName=${encodeURIComponent(bankAccount.accountName)}`}
                                 alt="VietQR"
                                 width={240}
                                 height={240}
                                 className="mb-4 border-4 border-pink-200 rounded-lg"
                             />
                             <div className="text-xs text-gray-500 mt-2 text-center mb-4">
-                                {bankAccount.accountName} - {bankAccount.accountNo} ({selectedBank.bankCode})<br />
+                                {bankAccount.accountName} - {selectedBank.accountNo} ({selectedBank.bankCode})<br />
                                 Số tiền: {typeof order.total === 'number' ? order.total.toLocaleString('vi-VN') + ' đ' : 'N/A'}<br />
                                 Nội dung: Thanh toan don hang {order._id}
                             </div>

@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { CreditCard, Trash, Truck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import { sendRequest } from '@/utils/api';
 
 const CheckoutPage = () => {
   const { items, updateQuantity, removeFromCart, clearCartItems } = useCart();
@@ -21,6 +22,13 @@ const CheckoutPage = () => {
   const [paymentMethod, setPaymentMethod] = useState('');
   const [paymentMethodError, setPaymentMethodError] = useState('');
 
+  // New state for user profile
+  const [userProfile, setUserProfile] = useState<{ address?: string; phone?: string } | null>(null);
+  const [useRegisteredAddress, setUseRegisteredAddress] = useState(true);
+  const [useRegisteredPhone, setUseRegisteredPhone] = useState(true);
+  const [newAddress, setNewAddress] = useState('');
+  const [newPhone, setNewPhone] = useState('');
+
   const isValidPhone = (phone: string) => /^0[0-9]{9}$/.test(phone.replace(/-/g, ''));
 
   // Prefill for logged-in user
@@ -32,7 +40,36 @@ const CheckoutPage = () => {
     }
   }, [session]);
 
-  const total = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+  // Fetch user profile for address/phone if logged in
+  useEffect(() => {
+    if (session?.user?._id && session?.user?.accessToken) {
+      sendRequest<any>({
+        url: `${process.env.NEXT_PUBLIC_API_URL}/users/${session.user._id}`,
+        method: 'GET',
+        headers: { Authorization: `Bearer ${session.user.accessToken}` },
+      }).then(res => {
+        setUserProfile(res.data || {});
+        if (res.data?.address) setAddress(res.data.address);
+        if (res.data?.phone) setPhone(res.data.phone);
+      });
+    }
+  }, [session]);
+
+  // Update address/phone when toggling between registered/new
+  useEffect(() => {
+    if (useRegisteredAddress && userProfile?.address) {
+      setAddress(userProfile.address);
+    } else if (!useRegisteredAddress) {
+      setAddress(newAddress);
+    }
+  }, [useRegisteredAddress, userProfile, newAddress]);
+  useEffect(() => {
+    if (useRegisteredPhone && userProfile?.phone) {
+      setPhone(userProfile.phone);
+    } else if (!useRegisteredPhone) {
+      setPhone(newPhone);
+    }
+  }, [useRegisteredPhone, userProfile, newPhone]);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -116,6 +153,8 @@ const CheckoutPage = () => {
       toast.error(data.message || 'Có lỗi xảy ra khi đặt hàng.');
     }
   };
+
+  const total = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
 
   return (
     <div className="container mx-auto py-8">
@@ -205,21 +244,74 @@ const CheckoutPage = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Địa chỉ</label>
-              <input
-                className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition"
-                value={address}
-                onChange={e => setAddress(e.target.value)}
-                required
-              />
+              {session?.user ? (
+                <>
+                  <select
+                    className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 mb-2"
+                    value={useRegisteredAddress ? 'registered' : 'new'}
+                    onChange={e => setUseRegisteredAddress(e.target.value === 'registered')}
+                  >
+                    <option value="registered" disabled={!userProfile?.address}>
+                      {userProfile?.address ? `${userProfile.address}` : ' (chưa có)'}
+                    </option>
+                    <option value="new">Nhập địa chỉ mới</option>
+                  </select>
+                  {!useRegisteredAddress && (
+                    <input
+                      className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition"
+                      value={newAddress}
+                      onChange={e => {
+                        setNewAddress(e.target.value);
+                        setAddress(e.target.value);
+                      }}
+                      required
+                    />
+                  )}
+                </>
+              ) : (
+                <input
+                  className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition"
+                  value={address}
+                  onChange={e => setAddress(e.target.value)}
+                  required
+                />
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Số điện thoại</label>
-              <input
-                className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition"
-                value={phone}
-                onChange={handlePhoneChange}
-                required
-              />
+              {session?.user ? (
+                <>
+                  <select
+                    className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 mb-2"
+                    value={useRegisteredPhone ? 'registered' : 'new'}
+                    onChange={e => setUseRegisteredPhone(e.target.value === 'registered')}
+                  >
+                    <option value="registered" disabled={!userProfile?.phone}>
+                      {userProfile?.phone ? `${userProfile.phone}` : ' (chưa có)'}
+                    </option>
+                    <option value="new">Nhập số điện thoại mới</option>
+                  </select>
+                  {!useRegisteredPhone && (
+                    <input
+                      className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition"
+                      value={newPhone}
+                      onChange={e => {
+                        setNewPhone(e.target.value);
+                        setPhone(e.target.value);
+                        handlePhoneChange({ target: { value: e.target.value } } as React.ChangeEvent<HTMLInputElement>);
+                      }}
+                      required
+                    />
+                  )}
+                </>
+              ) : (
+                <input
+                  className="mt-1 block w-full rounded border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition"
+                  value={phone}
+                  onChange={handlePhoneChange}
+                  required
+                />
+              )}
               {phoneError && <p className="text-red-500 text-sm">{phoneError}</p>}
             </div>
             <div>

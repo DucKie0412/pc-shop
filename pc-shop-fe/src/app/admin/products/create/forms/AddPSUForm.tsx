@@ -42,7 +42,7 @@ const psuSchema = z.object({
   images: z.array(z.string()).optional(),
   imagePublicIds: z.array(z.string()).optional(),
   details: z.array(z.object({
-    title: z.string().min(1, "Tiêu đề là bắt buộc"),
+    title: z.string().optional(),
     content: z.string().optional(),
     image: z.string().optional()
   })).optional()
@@ -136,9 +136,9 @@ export default function AddPSUForm({ onBack }: { onBack: () => void }) {
         categoryId: values.categoryId,
         manufacturerId: values.manufacturerId,
         specs: {
-          wattage: values.wattage,
-          efficiency: values.efficiency,
-          modular: values.modular,
+          psuWattage: values.psuWattage,
+          psuEfficiency: values.psuEfficiency,
+          psuModular: values.psuModular,
         },
         images,
         imagePublicIds,

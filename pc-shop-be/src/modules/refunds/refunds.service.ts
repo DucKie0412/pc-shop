@@ -20,13 +20,13 @@ export class RefundsService {
     async create(userId: string, createRefundRequestDto: CreateRefundRequestDto): Promise<RefundRequestDocument> {
         const { orderId, products, reason } = createRefundRequestDto;
 
-        // 1. Find and validate the order
+        // Find and validate the order
         const order = await this.orderModel.findOne({ _id: orderId, user: userId }).exec();
         if (!order) {
             throw new NotFoundException('Order not found or does not belong to the user');
         }
 
-        // 2. Validate products requested for refund against the order items
+        // Validate products requested for refund against the order items
         for (const requestedProduct of products) {
             const orderItem = order.items.find(
                 (item) => item.productId.toString() === requestedProduct.product
@@ -45,7 +45,7 @@ export class RefundsService {
             }
         }
 
-        // 3. Create the refund request
+        // Create the refund request
         const createdRefundRequest = new this.refundRequestModel({
             order: new Types.ObjectId(orderId),
             user: new Types.ObjectId(userId),
@@ -54,7 +54,7 @@ export class RefundsService {
             status: 'pending',
         });
 
-        // 4. Save and return the request
+        // Save and return the request
         return createdRefundRequest.save();
     }
 
@@ -75,11 +75,9 @@ export class RefundsService {
         // Find the associated order and update its status
         const order = await this.orderModel.findById(refundRequest.order).exec();
         if (order) {
-            order.status = 'refunded'; // Or 'partially-refunded' if applicable
+            order.status = 'approved';
             await order.save();
         }
-
-        // TODO: Add logic to potentially initiate payment refund etc.
 
         // Fetch user and send email
         const user = await this.usersService.findOne(refundRequest.user.toString());
@@ -114,12 +112,10 @@ export class RefundsService {
         // Find the associated order and update its status (optional, depending on desired flow)
         const order = await this.orderModel.findById(refundRequest.order).exec();
         if (order) {
-             // You might revert the status or set a specific 'refund-rejected' status
-            order.status = 'refund-rejected'; // Example: setting a specific status
+            order.status = 'rejected'; 
             await order.save();
         }
 
-        // TODO: Add logic to potentially notify user etc.
 
         // Fetch user and send email
         const user = await this.usersService.findOne(refundRequest.user.toString());
@@ -133,7 +129,6 @@ export class RefundsService {
                     refundId: (refundRequest._id as any).toString(),
                     orderId: refundRequest.order.toString(),
                     reason: refundRequest.reason,
-                    // Include other relevant details from refundRequest
                 },
             });
         }

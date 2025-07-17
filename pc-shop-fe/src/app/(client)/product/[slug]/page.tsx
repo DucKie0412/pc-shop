@@ -6,6 +6,7 @@ import { useCart } from '@/lib/hooks/useCart';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 interface IProduct {
     _id: string;
@@ -111,9 +112,10 @@ function ProductPage() {
     const [mainImage, setMainImage] = useState<string | null>(null);
     const [mainImageIdx, setMainImageIdx] = useState<number>(0);
     const [loading, setLoading] = useState(true);
-    const { addToCart, status } = useCart();
+    const { addToCart, status, items } = useCart();
     const [modalImageIdx, setModalImageIdx] = useState<number | null>(null);
     const router = useRouter();
+    const [modalOpen, setModalOpen] = useState(false);
 
     const openModal = (idx: number) => {
         setModalImageIdx(idx);
@@ -183,7 +185,29 @@ function ProductPage() {
     }, [modalImageIdx]);
 
     const handleAddToCart = () => {
-        if (product) {
+        if (!product) return;
+        const price = product.finalPrice;
+        const existingItem = items.find(i => i.productId === product._id);
+        if (price < 25_000_000) {
+            if (existingItem && existingItem.quantity >= 2) {
+                toast.warning('Bạn chỉ có thể mua tối đa 2 sản phẩm này.');
+                return;
+            }
+            const addQuantity = existingItem ? Math.min(2 - existingItem.quantity, 1) : 1;
+            if (addQuantity <= 0) return;
+            addToCart({
+                productId: product._id,
+                name: product.name,
+                price: product.finalPrice,
+                quantity: addQuantity,
+                image: product.images[0],
+            });
+            toast.success('Đã thêm sản phẩm vào giỏ hàng', { autoClose: 1200 });
+        } else if (price >= 25_000_000) {
+            if (existingItem && existingItem.quantity >= 1) {
+                setModalOpen(true);
+                return;
+            }
             addToCart({
                 productId: product._id,
                 name: product.name,
@@ -191,14 +215,36 @@ function ProductPage() {
                 quantity: 1,
                 image: product.images[0],
             });
-            console.log('adding to cart', product._id, product.name);
-            
             toast.success('Đã thêm sản phẩm vào giỏ hàng', { autoClose: 1200 });
         }
     };
-
     const handleBuyNow = () => {
-        if (product) {
+        if (!product) return;
+        const price = product.finalPrice;
+        const existingItem = items.find(i => i.productId === product._id);
+        if (price < 25_000_000) {
+            if (existingItem && existingItem.quantity >= 2) {
+                toast.warning('Bạn chỉ có thể mua tối đa 2 sản phẩm này.');
+                return;
+            }
+            const addQuantity = existingItem ? Math.min(2 - existingItem.quantity, 1) : 1;
+            if (addQuantity <= 0) return;
+            addToCart({
+                productId: product._id,
+                name: product.name,
+                price: product.finalPrice,
+                quantity: addQuantity,
+                image: product.images[0],
+            });
+            toast.success('Chuyển hướng đến trang thanh toán...', { autoClose: 2000 });
+            setTimeout(() => {
+                router.push('/checkout');
+            }, 2000);
+        } else if (price >= 25_000_000) {
+            if (existingItem && existingItem.quantity >= 1) {
+                setModalOpen(true);
+                return;
+            }
             addToCart({
                 productId: product._id,
                 name: product.name,
@@ -298,7 +344,7 @@ function ProductPage() {
                     </div>
                     {/* Out of stock message */}
                     {product.stock === 0 && (
-                        <span className="inline-block mb-2 px-3 py-1 text-xs bg-red-100 text-red-600 rounded font-semibold">Sản phẩm tạm thời hết hàng</span>
+                        <span className="inline-block mb-2 px-3 py-1 text-sm bg-red-100 text-red-600 rounded font-semibold">Sản phẩm đang tạm thời hết hàng</span>
                     )}
                     <div className="mb-4">
                         <h2 className="text-lg font-semibold mb-1">Thông số sản phẩm:</h2>
@@ -332,8 +378,20 @@ function ProductPage() {
                         </div>
                     </div>
                     <div className="flex gap-4">
-                        <button onClick={handleAddToCart} className="bg-blue-600 text-white px-6 py-3 rounded font-semibold hover:bg-blue-700 transition">Thêm vào giỏ hàng</button>
-                        <button onClick={handleBuyNow} className="bg-blue-600 text-white px-6 py-3 rounded font-semibold hover:bg-blue-700 transition">Mua ngay</button>
+                        <button
+                            onClick={handleAddToCart}
+                            className={`bg-blue-600 text-white px-6 py-3 rounded font-semibold transition ${product.stock === 0 ? 'bg-gray-400 cursor-not-allowed' : 'hover:bg-blue-700'}`}
+                            disabled={product.stock === 0}
+                        >
+                            Thêm vào giỏ hàng
+                        </button>
+                        <button
+                            onClick={handleBuyNow}
+                            className={`bg-blue-600 text-white px-6 py-3 rounded font-semibold transition ${product.stock === 0 ? 'bg-gray-400 cursor-not-allowed' : 'hover:bg-blue-700'}`}
+                            disabled={product.stock === 0}
+                        >
+                            Mua ngay
+                        </button>
                     </div>
                 </div>
             </div>
@@ -423,6 +481,19 @@ function ProductPage() {
                     </div>
                 </div>
             )}
+            <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Liên hệ cửa hàng</DialogTitle>
+                        <DialogDescription>
+                            Nếu bạn muốn mua nhiều hơn, vui lòng liên hệ với cửa hàng qua chat để được hỗ trợ.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <button onClick={() => setModalOpen(false)} className="bg-blue-600 text-white px-4 py-2 rounded">Đóng</button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

@@ -2,7 +2,7 @@ import React from 'react'
 
 function AdminFooter() {
     return (
-        <div>AdminFooter</div>
+        <div className='flex items-center text-center'>DuckieStore Copyright 2025@</div>
     )
 }
 

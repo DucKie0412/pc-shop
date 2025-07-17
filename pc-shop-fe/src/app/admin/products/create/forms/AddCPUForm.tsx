@@ -57,7 +57,7 @@ const cpuSchema = z.object({
 
 const AMD_SOCKETS = ["AM4", "AM5"];
 const INTEL_SOCKETS = [
-  "LGA1700", "LGA1200", "LGA1151", "LGA1150", "LGA1155", "LGA1156", "LGA2066", "LGA2011"
+  "LGA1700", "LGA1200", "LGA1151", "LGA1150", "LGA1155", "LGA1156", "LGA2066", "LGA2011", "LGA1851"
 ];
 
 export default function AddCPUForm({ onBack }: { onBack: () => void }) {

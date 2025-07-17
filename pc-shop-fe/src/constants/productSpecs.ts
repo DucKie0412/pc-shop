@@ -72,7 +72,7 @@ export const PRODUCT_TYPE_SPECS = {
     { name: 'monitorResponseTime', label: 'Thời gian phản hồi (ms)', type: 'number', options: ['1', '2', '4', '5', '8', 'Custom'] },
   ],
   other: [
-    { name: 'detail', label: 'Chi tiết', type: 'text' },
+    { name: 'type', label: 'Loại', type: 'text' },
   ],
 };
 

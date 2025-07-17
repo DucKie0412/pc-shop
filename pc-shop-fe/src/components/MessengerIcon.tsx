@@ -1,11 +1,14 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, Bot } from 'lucide-react';
+import ChatGPTChat from './ChatbotIcon';
 
 export const MessengerIcon = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [chatGptOpen, setChatGptOpen] = useState(false);
     const popupRef = useRef<HTMLDivElement>(null);
+    const [showTooltip, setShowTooltip] = useState(false);
 
     const toggleOpen = () => {
         setIsOpen(!isOpen);
@@ -30,7 +33,7 @@ export const MessengerIcon = () => {
     }, [isOpen]); // Re-run effect when isOpen changes
 
     return (
-        <div className="fixed bottom-6 right-6 z-50">
+        <div className="flex flex-col items-end gap-4">
             {isOpen && (
                 <div
                     ref={popupRef}
@@ -55,9 +58,16 @@ export const MessengerIcon = () => {
             )}
             <button
                 onClick={toggleOpen}
-                className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
+                className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110 relative"
                 aria-label="Open Messenger Chat"
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
             >
+                {showTooltip && (
+                    <div className="absolute right-full top-1/2 -translate-y-1/2 mr-3 bg-gray-800 text-white text-xs rounded px-3 py-1 shadow-lg whitespace-nowrap z-50">
+                        Chat với Messenger
+                    </div>
+                )}
                 <MessageCircle className="w-6 h-6" />
             </button>
         </div>

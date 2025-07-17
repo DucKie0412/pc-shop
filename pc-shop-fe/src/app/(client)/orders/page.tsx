@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 interface OrderItem {
     productId: string;
@@ -26,6 +28,8 @@ const OrderStatus = {
     shipped: 'Đang giao hàng',
     delivered: 'Đã giao hàng',
     cancelled: 'Đã hủy',
+    approved: 'Đã được chấp thuận hoàn tiền',
+    rejected: 'Bị từ chối yêu cầu hoàn tiền'
 }
 
 const OrdersPage = () => {
@@ -104,6 +108,31 @@ const OrdersPage = () => {
         router.push(`/refund/${orderId}`);
     };
 
+    // Export order to XLSX
+    function handleExportOrder(order: Order) {
+        const rows = [
+            [],
+            [`Mã đơn: ${order._id}`],
+            [`Ngày đặt: ${new Date(order.createdAt).toLocaleString('vi-VN')}`],
+            [],
+            ['Tên sản phẩm', 'Đơn giá', 'Số lượng', 'Thành tiền'],
+            ...order.items.map(item => [
+                item.name,
+                item.price.toLocaleString('vi-VN') + ' đ',
+                item.quantity,
+                (item.price * item.quantity).toLocaleString('vi-VN') + ' đ'
+            ]),
+            [],
+            ['Tổng cộng', '', '', order.total.toLocaleString('vi-VN') + ' đ'],
+        ];
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Order Detail');
+        const filename = `order_${order._id}.xlsx`;
+        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        saveAs(new Blob([wbout], { type: 'application/octet-stream' }), filename);
+    }
+
     return (
         <div className="container mx-auto py-8">
             <h1 className="text-2xl font-bold mb-4">Lịch sử đơn hàng</h1>
@@ -139,6 +168,7 @@ const OrdersPage = () => {
                         const hasPendingRefund = refunds.some(
                             (refund) => refund.order === order._id && refund.status === 'pending'
                         );
+                        const isRefundDisabled = hasPendingRefund || order.status === 'approved' || order.status === 'rejected';
                         return (
                             <div key={order._id} className="border rounded p-4 bg-white shadow">
                                 <div className="flex justify-between items-center mb-2">
@@ -177,15 +207,27 @@ const OrdersPage = () => {
                                     <div className="flex flex-col items-end">
                                         <div className="font-bold text-red-600">Tổng tiền: {order.total.toLocaleString('vi-VN')} đ</div>
                                         <button
+                                            onClick={() => handleExportOrder(order)}
+                                            className="px-3 py-1 rounded bg-green-500 text-white hover:bg-green-600 mt-2 mb-2"
+                                        >
+                                            Xuất hóa đơn ra Excel
+                                        </button>
+                                        <button
                                             onClick={() => handleRefundClick(order._id)}
-                                            className={`px-4 py-2 rounded-md transition mt-2 ${hasPendingRefund
+                                            className={`px-4 py-2 rounded-md transition mt-2 ${isRefundDisabled
                                                     ? 'bg-gray-400 cursor-not-allowed'
                                                     : 'bg-red-500 hover:bg-red-600 text-white'
                                                 }`}
-                                            disabled={hasPendingRefund}
+                                            disabled={isRefundDisabled}
                                         >
-                                            Refund
+                                            Yêu cầu hoàn tiền
                                         </button>
+                                        {isRefundDisabled && !hasPendingRefund && (
+                                            <div className="text-xs text-red-500 mt-1">
+                                                {order.status === 'approved' && 'Đơn hàng này đã được chấp thuận hoàn tiền.'}
+                                                {order.status === 'rejected' && 'Yêu cầu hoàn tiền cho đơn hàng này đã bị từ chối.'}
+                                            </div>
+                                        )}
                                         {hasPendingRefund && (
                                             <div className="text-xs text-red-500 mt-1">
                                                 Đã có yêu cầu hoàn tiền đang chờ xử lý cho đơn hàng này.
