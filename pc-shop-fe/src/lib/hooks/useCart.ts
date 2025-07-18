@@ -12,6 +12,7 @@ import {
     updateItemQuantity,
     setGuestStatus,
     CartItem,
+    addMultipleItems,
 } from '../features/cart/cartSlice';
 
 export const useCart = () => {
@@ -102,6 +103,36 @@ export const useCart = () => {
         [dispatch, cart.items, status]
     );
 
+    const addMultipleToCart = useCallback(
+        async (items: CartItem[]) => {
+            dispatch(addMultipleItems(items));
+            if (status === 'authenticated') {
+                const updatedItems = [...cart.items];
+                items.forEach(item => {
+                    const existing = updatedItems.find(i => i.productId === item.productId);
+                    if (existing) {
+                        existing.quantity += item.quantity;
+                    } else {
+                        updatedItems.push(item);
+                    }
+                });
+                dispatch(updateCart(updatedItems));
+            } else {
+                const updatedItems = [...cart.items];
+                items.forEach(item => {
+                    const existing = updatedItems.find(i => i.productId === item.productId);
+                    if (existing) {
+                        existing.quantity += item.quantity;
+                    } else {
+                        updatedItems.push(item);
+                    }
+                });
+                dispatch(updateGuestCart(updatedItems));
+            }
+        },
+        [dispatch, cart.items, status]
+    );
+
     const clearCartItems = useCallback(async () => {
         if (status === 'authenticated') {
             dispatch(clearCart());
@@ -119,5 +150,6 @@ export const useCart = () => {
         removeFromCart,
         updateQuantity,
         clearCartItems,
+        addMultipleToCart,
     };
 }; 

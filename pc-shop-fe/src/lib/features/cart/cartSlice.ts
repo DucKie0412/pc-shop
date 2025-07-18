@@ -103,7 +103,7 @@ const cartSlice = createSlice({
         setGuestStatus: (state, action: PayloadAction<boolean>) => {
             state.isGuest = action.payload;
         },
-        // Add item to cart (optimistic update)
+        // Add item to cart
         addItem: (state, action: PayloadAction<CartItem>) => {
             const existingItem = state.items.find(
                 item => item.productId === action.payload.productId
@@ -114,11 +114,22 @@ const cartSlice = createSlice({
                 state.items.push(action.payload);
             }
         },
-        // Remove item from cart (optimistic update)
+        // Batch add multiple items
+        addMultipleItems: (state, action: PayloadAction<CartItem[]>) => {
+            action.payload.forEach(item => {
+                const existingItem = state.items.find(i => i.productId === item.productId);
+                if (existingItem) {
+                    existingItem.quantity += item.quantity;
+                } else {
+                    state.items.push(item);
+                }
+            });
+        },
+        // Remove item from cart
         removeItem: (state, action: PayloadAction<string>) => {
             state.items = state.items.filter(item => item.productId !== action.payload);
         },
-        // Update item quantity (optimistic update)
+        // Update item quantity
         updateItemQuantity: (
             state,
             action: PayloadAction<{ productId: string; quantity: number }>
@@ -167,5 +178,5 @@ const cartSlice = createSlice({
     },
 });
 
-export const { setGuestStatus, addItem, removeItem, updateItemQuantity } = cartSlice.actions;
+export const { setGuestStatus, addItem, removeItem, updateItemQuantity, addMultipleItems } = cartSlice.actions;
 export default cartSlice.reducer;
