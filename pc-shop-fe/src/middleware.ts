@@ -12,13 +12,14 @@ export default auth((req) => {
             return NextResponse.redirect(new URL("/auth/login", nextUrl.origin));
         }
 
-        if (req.auth.user.role !== "ADMIN") {
-            // Đã đăng nhập nhưng không phải admin -> Chặn truy cập
+        // Chỉ cho phép ADMIN và STAFF truy cập admin pages
+        if (req.auth.user.role !== "ADMIN" && req.auth.user.role !== "STAFF") {
+            // Đã đăng nhập nhưng không phải admin hoặc staff -> Chặn truy cập
             return NextResponse.redirect(new URL("/", nextUrl.origin));
         }
     }
 
-    // Nếu là admin hoặc không vào admin route, cho phép tiếp tục
+    // Nếu là admin/staff hoặc không vào admin route, cho phép tiếp tục
     return NextResponse.next();
 });
 

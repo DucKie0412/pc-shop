@@ -21,6 +21,7 @@ import { toast } from "react-toastify";
 import { IUser } from "@/types/next-auth";
 import { ArrowLeft } from "lucide-react";
 import * as z from "zod";
+import { RoleGuard } from "@/components/auth/role-guard";
 
 const formSchema = z.object({
     email: z.string().email().optional(),
@@ -33,7 +34,7 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export default function EditUserPage() {
+function EditUserPageContent() {
     const { id } = useParams();
     const session = useSession();
     const [user, setUser] = useState<IUser | null>(null);
@@ -202,11 +203,21 @@ export default function EditUserPage() {
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit" className="w-full">Lưu thay đổi</Button>
+                            <Button type="submit" className="w-full">
+                                Cập nhật
+                            </Button>
                         </form>
                     </Form>
                 </CardContent>
             </Card>
         </div>
+    );
+}
+
+export default function EditUserPage() {
+    return (
+        <RoleGuard allowedRoles={["ADMIN"]}>
+            <EditUserPageContent />
+        </RoleGuard>
     );
 }

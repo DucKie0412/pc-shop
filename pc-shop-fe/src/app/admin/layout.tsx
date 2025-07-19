@@ -15,7 +15,8 @@ export default async function AdminLayout({
         redirect("/auth/signin");
     }
 
-    if (session.user.role !== "ADMIN") {
+    // Chỉ cho phép ADMIN và STAFF truy cập admin pages
+    if (session.user.role !== "ADMIN" && session.user.role !== "STAFF") {
         redirect("/");
     }
 

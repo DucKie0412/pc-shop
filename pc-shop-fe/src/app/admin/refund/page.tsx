@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { sendRequest } from '@/utils/api';
 import { toast } from 'react-toastify';
+import { RoleGuard } from "@/components/auth/role-guard";
 
 interface RefundRequest {
     _id: string;
@@ -33,7 +34,7 @@ const statusColors: Record<string, string> = {
     done: 'bg-gray-100 text-gray-800',
 };
 
-const AdminRefundsPage = () => {
+const AdminRefundsPageContent = () => {
     const { data: session } = useSession();
     const [refundRequests, setRefundRequests] = useState<RefundRequest[]>([]);
     const [loading, setLoading] = useState(true);
@@ -174,6 +175,14 @@ const AdminRefundsPage = () => {
                 )}
             </div>
         </div>
+    );
+};
+
+const AdminRefundsPage = () => {
+    return (
+        <RoleGuard allowedRoles={["ADMIN"]}>
+            <AdminRefundsPageContent />
+        </RoleGuard>
     );
 };
 

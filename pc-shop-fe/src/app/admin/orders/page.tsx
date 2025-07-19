@@ -42,7 +42,7 @@ const OrderStatus = {
     shipped: 'Đang giao hàng',
     delivered: 'Đã giao hàng',
     cancelled: 'Đã hủy',
-    refunded: 'Đã hoàn tiền',
+    approved: 'Đã hoàn tiền',
     rejected: 'Từ chối hoàn tiền'
 };
 

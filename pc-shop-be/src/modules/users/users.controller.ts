@@ -37,6 +37,12 @@ export class UsersController {
     return this.usersService.update(updateUserDto);
   }
 
+  @Patch('toggle-role/:id')
+  @ResponseMessage('User role toggled successfully')
+  toggleRole(@Param('id') _id: string) {
+    return this.usersService.toggleUserRole(_id);
+  }
+
   @Delete(':id')
   @ResponseMessage('User deleted successfully')
   remove(@Param('id') _id: string) {

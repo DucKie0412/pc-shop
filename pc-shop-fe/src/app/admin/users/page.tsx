@@ -7,8 +7,9 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { IUser } from "@/types/next-auth";
 import { sendRequest } from "@/utils/api";
+import { RoleGuard } from "@/components/auth/role-guard";
 
-export default function UsersPage() {
+function UsersPageContent() {
     const [users, setUsers] = useState<IUser[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [isLoading, setIsLoading] = useState(true);
@@ -69,5 +70,13 @@ export default function UsersPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function UsersPage() {
+    return (
+        <RoleGuard allowedRoles={["ADMIN"]}>
+            <UsersPageContent />
+        </RoleGuard>
     );
 }

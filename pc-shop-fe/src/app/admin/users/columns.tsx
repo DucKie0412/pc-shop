@@ -15,6 +15,9 @@ import {
     DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu"
 import { DeleteConfirmationModal } from "@/components/ui/delete-confirmation-modal";
+import { sendRequest } from "@/utils/api";
+import { toast } from "react-toastify";
+import { useSession } from "next-auth/react";
 
 export const columns: ColumnDef<IUser>[] = [
     {
@@ -88,6 +91,22 @@ export const columns: ColumnDef<IUser>[] = [
         maxSize: 200,
     },
     {
+        header: "Vai trò",
+        accessorKey: "role",
+        size: 100,
+        enableResizing: true,
+        minSize: 50,
+        maxSize: 200,
+        cell: ({ row }) => {
+            const role = row.original.role;
+            return <Badge className={role === 'ADMIN' ? "border-transparent bg-red-500 text-primary-foreground shadow hover:bg-red-500/80"
+                : role === 'STAFF' ? "border-transparent bg-blue-500 text-primary-foreground shadow hover:bg-blue-500/80"
+                : "border-transparent bg-gray-500 text-primary-foreground shadow hover:bg-gray-500/80"}>
+                {role === 'ADMIN' ? 'Quản trị viên' : role === 'STAFF' ? 'Nhân viên' : 'Người dùng'}
+            </Badge>
+        },
+    },
+    {
         header: ({ column }) => (
             <div
                 onClick={column.getToggleSortingHandler()}
@@ -119,6 +138,27 @@ export const columns: ColumnDef<IUser>[] = [
         cell: ({ row }) => {
             const user = row.original
             const router = useRouter()
+            const { data: session } = useSession();
+
+            const handleToggleRole = async () => {
+                try {
+                    const res = await sendRequest<any>({
+                        method: "PATCH",
+                        url: `${process.env.NEXT_PUBLIC_API_URL}/users/toggle-role/${user._id}`,
+                        headers: { Authorization: `Bearer ${session?.user?.accessToken}` },
+                    });
+                    
+                    if (res?.statusCode === 200) {
+                        toast.success(res.message);
+                        // Refresh the page to update the data
+                        window.location.reload();
+                    } else {
+                        toast.error(res?.error || "Có lỗi xảy ra khi thay đổi vai trò");
+                    }
+                } catch (error) {
+                    toast.error("Có lỗi xảy ra khi thay đổi vai trò");
+                }
+            };
 
             return (
                 <DropdownMenu>
@@ -140,6 +180,14 @@ export const columns: ColumnDef<IUser>[] = [
                             router.push(`/admin/users/edit/${user._id}`)
                         }}>Sửa người dùng</DropdownMenuItem>
                         <DropdownMenuSeparator />
+                        {user.role !== 'ADMIN' && (
+                            <>
+                                <DropdownMenuItem onClick={handleToggleRole}>
+                                    {user.role === 'STAFF' ? 'Chuyển về người dùng' : 'Chọn làm nhân viên'}
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                            </>
+                        )}
                         <DeleteConfirmationModal
                             title="Xác nhận xóa"
                             description="Hành động này không thể được khôi phục. Bạn muốn xóa bỏ người dùng"

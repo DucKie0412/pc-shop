@@ -83,10 +83,10 @@ function Header() {
                                     <option value="ram">RAM</option>
                                     <option value="hdd">HDD</option>
                                     <option value="ssd">SSD</option>
-                                    <option value="psu">PSU</option>
+                                    <option value="psu">NGUỒN</option>
+                                    <option value="monitor">MÀN HÌNH</option>
                                     <option value="case">CASE</option>
-                                    <option value="fan">FAN</option>
-                                    <option value="other">PHU KIEN MÁY TÍNH</option>
+                                    <option value="other">PHỤ KIỆN MÁY TÍNH</option>
                                 </select>
                                 <input
                                     type="text"
@@ -320,7 +320,7 @@ function Header() {
                                                     </ul>
                                                 </div>
                                                 <div className="space-y-4">
-                                                    <h3 className="font-bold text-[#0088D1] border-b pb-2">PSU</h3>
+                                                    <h3 className="font-bold text-[#0088D1] border-b pb-2">NGUỒN MÁY TÍNH</h3>
                                                     <ul className="space-y-2 text-gray-700">
                                                         {[
                                                             "MSI",
@@ -357,14 +357,12 @@ function Header() {
                                                     </ul>
                                                 </div>
                                                 <div className="space-y-4">
-                                                    <h3 className="font-bold text-[#0088D1] border-b pb-2">PHU KIEN MÁY TÍNH</h3>
+                                                    <h3 className="font-bold text-[#0088D1] border-b pb-2">PHỤ KIỆN MÁY TÍNH</h3>
                                                     <ul className="space-y-2 text-gray-700">
                                                         {[
                                                             "Tai nghe",
                                                             "Chuột",
                                                             "Bàn phím",
-                                                            "Webcam",
-                                                            "Microphone"
                                                         ].map(item => (
                                                             <li
                                                                 key={item}
@@ -386,8 +384,9 @@ function Header() {
                                 <Link href="/category/ram" className="hover:text-gray-200 transition-colors">RAM</Link>
                                 <Link href="/category/hdd" className="hover:text-gray-200 transition-colors">HDD</Link>
                                 <Link href="/category/ssd" className="hover:text-gray-200 transition-colors">SSD</Link>
-                                <Link href="/category/psu" className="hover:text-gray-200 transition-colors">PSU</Link>
+                                <Link href="/category/psu" className="hover:text-gray-200 transition-colors">NGUỒN</Link>
                                 <Link href="/category/case" className="hover:text-gray-200 transition-colors">CASE</Link>
+                                <Link href="/category/monitor" className="hover:text-gray-200 transition-colors">MÀN HÌNH</Link>
                                 <Link href="/category/other" className="hover:text-gray-200 transition-colors">PHU KIEN MÁY TÍNH</Link>
                             </div>
                         </div>

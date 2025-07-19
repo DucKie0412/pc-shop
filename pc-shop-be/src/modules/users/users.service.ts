@@ -264,4 +264,21 @@ export class UsersService {
     return { message: "Change password successfully!", user: user };
   }
 
+  async toggleUserRole(userId: string) {
+    const user = await this.userModel.findById(userId);
+    
+    if (!user) {
+      throw new BadRequestException('User not found!');
+    }
+
+    const newRole = user.role === 'USER' ? 'STAFF' : 'USER';
+    await this.userModel.updateOne({ _id: userId }, { role: newRole });
+
+    return { 
+      message: `User role updated successfully!`, 
+      newRole: newRole,
+      previousRole: user.role 
+    };
+  }
+
 }

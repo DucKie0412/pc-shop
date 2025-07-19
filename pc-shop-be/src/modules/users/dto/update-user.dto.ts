@@ -21,4 +21,7 @@ export class UpdateUserDto {
     @IsOptional()
     isActive: boolean;
 
+    @IsOptional()
+    role: string;
+
 }

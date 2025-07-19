@@ -267,7 +267,7 @@ const DashboardPage = () => {
                             className="px-3 py-1 rounded bg-green-500 text-white hover:bg-green-600"
                             onClick={handleExport}
                             type="button"
-                        >Export to Excel</button>
+                        >Xuất ra Excel</button>
                     </div>
                 </div>
                 {loading ? <div>Đang tải dữ liệu...</div> : <Bar data={chartData} options={options} height={220} />}
